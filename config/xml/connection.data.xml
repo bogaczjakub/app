@@ -1,0 +1,7 @@
+<connection>
+    <login>root</login>
+    <password>88010517</password>
+    <host>localhost</host>
+    <database>app</database>
+    <database_prefix>jol</database_prefix>
+</connection>

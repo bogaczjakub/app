@@ -1,0 +1,7 @@
+<connection>        
+    <login>root</login>
+    <password></password>
+    <host>localhost</host>
+    <database>app</database>
+    <database_prefix>app</database_prefix>
+</connection>

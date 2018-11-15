@@ -1,59 +1,18 @@
 <?php
-/*
-* 2017 app
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@app.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade app to newer
-* versions in the future. If you wish to customize app for your
-* needs please refer to http://www.app.com for more information.
-*
-*  @author Jakub Bogacz SA <bogaczjakub@gmail.com>
-*  @copyright  2017 app
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/
-
-namespace classes;
 
 class Tools
 {
-    function __construct()
+    public function __construct()
     {
 
     }
 
     public static function getConnectionData()
     {
-        // Get connection data file if exist
-
-        if (file_exists(CONNECTION_DATA)) {
-            $connection_data_content = self::readXMLContent(CONNECTION_DATA);
-            $xml_parser = xml_parser_create(CONNECTION_DATA);
-            echo $xml_parser;
-            xml_parse_into_struct($xml_parser);
-        } else {
-            throw new CustomException('Could not find connection data file. Please check your connection data file');
+        $xml_array = array();
+        if (file_exists(CONNECTION_DATA) && !empty(CONNECTION_DATA)) {
+            $xml = simplexml_load_file(CONNECTION_DATA);
+            return $xml;
         }
     }
-
-    public function getDefinesData()
-    {
-        $Db = new Db();
-    }
-
-    static function readXMLContent($file)
-    {
-
-    }
-
 }

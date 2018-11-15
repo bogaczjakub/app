@@ -1,53 +1,31 @@
 <?php
-/*
-* 2017 app
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@app.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade app to newer
-* versions in the future. If you wish to customize app for your
-* needs please refer to http://www.app.com for more information.
-*
-*  @author Jakub Bogacz SA <bogaczjakub@gmail.com>
-*  @copyright  2017 app
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/
-
-namespace classes;
 
 class Core
 {
-    private $settings_array = array();
-    private $Settings;
-    private $page;
+    private $main_controller;
 
-    function __construct()
+    public function __construct()
     {
-        $this->page = '';
         $this->Settings = new Settings();
-        $this->settings_array = $this->Settings->getPreloadSettings();
+        $this->global_settings = $this->Settings->getGlobalSettings();
     }
 
     public function appInit($page)
     {
-        $this->page = $page;
-        $this->settings = $this->Settings->getSettings($this->page);
-//        echo 'AppInit loaded with '.$test_var;
-//        $db = new Db();
-//        $db->select('dupa')->from('wagina')->displayQueryString();
-//        $act = new AdminClassTest();
-//        $act->testMessage();
-//        print_r(Route::getDecodedUrl());
-//        print_r($_SERVER);
+        global $config;
+        try {
+            if($page == 'Aadmin' && file_exists(ADMIN_CONTROLLERS . $page . 'Controller.php') && !empty(ADMIN_CONTROLLERS . $page . 'Controller.php')) {
+                $config['current_inc_dir'] = 'admin';
+                $this->main_controller = new AdminController($this->Settings->getAdminSettings());
+            } elseif ($page == 'Front' && file_exists(FRONT_CONTROLLERS . $page . 'Controller.php') && !empty(FRONT_CONTROLLERS . $page . 'Controller.php')) {
+                $config['current_inc_dir'] = 'front';
+                $this->main_controller = new FrontController($this->Settings->getFrontSettings());
+            } else {
+                throw new CustomException('Could not find ' . $page . ' controller.');
+            }
+        } catch (customException $e) {
+            echo $e->getCustomMessage($e);
+            exit(); 
+        }
     }
 }

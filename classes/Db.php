@@ -1,57 +1,106 @@
 <?php
 
-/*
-* 2017 app
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@app.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade app to newer
-* versions in the future. If you wish to customize app for your
-* needs please refer to http://www.app.com for more information.
-*
-*  @author Jakub Bogacz SA <bogaczjakub@gmail.com>
-*  @copyright  2017 app
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/
-
-namespace classes;
-
 class Db
 {
     private $connection_data;
-    private $connection;
+    public $connection;
+    public $query = array('function' => array(), 'string' => array());
 
-    function __construct()
+    public function __construct()
     {
-        $this->db_connection = mysqli_connect('localhost', "root", "88010517", "app");
+        $this->db_data = Tools::getConnectionData();
+        @$this->connection = new mysqli($this->db_data->host, $this->db_data->login, $this->db_data->password, $this->db_data->database);
+        try {
+            if ($this->connection->connect_errno) {
+                throw new CustomException('Could not connect to the database.');
+            } else {
+                empty($query);
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+
     }
 
-    public function select($query_selector)
+    public function select($chunk)
     {
-        $this->sql_query .= $query_selector;
+        array_push($this->query['function'], __FUNCTION__);
+        array_push($this->query['string'], "SELECT $chunk");
         return $this;
     }
 
-    public function from($query_from)
+    public function from($chunk)
     {
-        $this->sql_query .= $query_from;
+        try {
+            if (end($this->query['function']) == 'select') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "FROM $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+    }
+
+    public function insert($chunk)
+    {
+        array_push($this->query['function'], __FUNCTION__);
+        array_push($this->query['string'], "INSERT INTO ($chunk)");
         return $this;
+    }
+
+    public function columns()
+    {
+        try {
+            if (end($this->query['function']) == 'insert') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "($chunk)");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect databprivatease query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
 
     }
 
-    public function where()
+    public function values($chunk)
     {
+        try {
+            if (end($this->query['function']) == 'columns') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "VALUES ($chunk)");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
 
+    }
+
+    public function where($chunk)
+    {
+        try {
+            if (end($this->query['function']) == 'from') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "WHERE $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
     }
 
     public function innerJoin()
@@ -59,20 +108,141 @@ class Db
 
     }
 
-    public function displayQueryString()
+    public function join()
     {
-        echo $this->sql_query;
+
     }
 
-    public function execute()
+    public function leftJoin()
     {
 
+    }
+
+    public function rightJoin()
+    {
+
+    }
+
+    public function execute($type)
+    {
+        if (implode('', $this->query['function']) !== 'customQuery') {
+            $this->query['string'] = join(' ', $this->query['string']);
+        } else {
+
+        }
+        switch ($type) {
+            case 'array':
+                $fetch_array = array();
+                try {
+                    if (!empty($this->query['string'])) {
+                        $exec = $this->connection->query($this->query['string']);
+                        if (!$exec) {
+                            throw new CustomException('Invalid or empty query results.');
+                        } else {
+                            while ($assoc = $exec->fetch_array()) {
+                                array_push($fetch_array, $assoc);
+                            }
+                        }
+                        empty($this->query['string']);
+                        empty($this->query['function']);
+                    } else {
+                        throw new CustomException('Query string is empty.');
+                    }
+                } catch (CustomException $e) {
+                    echo $e->getCustomMessage($e);
+                    exit();
+                }
+                break;
+            case 'assoc':
+                $fetch_array = array();
+                try {
+                    if (!empty($this->query['string'])) {
+                        $exec = $this->connection->query($this->query['string']);
+                        if (!$exec) {
+                            throw new CustomException('Invalid or empty query results.');
+                        } else {
+                            while ($assoc = $exec->fetch_assoc()) {
+                                array_push($fetch_array, $assoc);
+                            }
+                        }
+                        empty($this->query['string']);
+                        empty($this->query['function']);
+                    } else {
+                        throw new CustomException('Query string is empty.');
+                    }
+                } catch (CustomException $e) {
+                    echo $e->getCustomMessage($e);
+                    exit();
+                }
+                break;
+            case 'object':
+                $fetch_array = array();
+                try {
+                    if (!empty($this->query['string'])) {
+                        $exec = $this->connection->query($this->query['string']);
+                        if (!$exec) {
+                            throw new CustomException('Invalid or empty query results.');
+                        } else {
+                            while ($assoc = $exec->fetch_assoc()) {
+                                array_push($fetch_array, $assoc);
+                            }
+                        }
+                        empty($this->query['string']);
+                        empty($this->query['function']);
+                    } else {
+                        throw new CustomException('Query string is empty.');
+                    }
+                } catch (CustomException $e) {
+                    echo $e->getCustomMessage($e);
+                    exit();
+                }
+                break;
+            case 'object':
+                $fetch_array = array();
+                try {
+                    if (!empty($this->query['string'])) {
+                        $exec = $this->connection->query($this->query['string']);
+                        if (!$exec) {
+                            throw new CustomException('Invalid or empty query results.');
+                        } else {
+                            while ($assoc = $exec->fetch_object()) {
+                                array_push($fetch_array, $assoc);
+                            }
+                        }
+                        empty($this->query['string']);
+                        empty($this->query['function']);
+                    } else {
+                        throw new CustomException('Query string is empty.');
+                    }
+                } catch (CustomException $e) {
+                    echo $e->getCustomMessage($e);
+                    exit();
+                }
+                break;
+            case 'default':
+        }
+        return $fetch_array;
     }
 
     public function customQuery($custom_query)
     {
-
+        try {
+            if (empty($this->query['function'])) {
+                array_push($this->query['function'], __FUNCTION__);
+                $this->query['string'] = $this->cleaner($custom_query);
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (customException $e) {
+            echo $e->getCustomMessage($e);
+        }
+        return $this;
     }
 
+    private function cleaner($chunks)
+    {
+        return $chunks;
+
+    }
 
 }

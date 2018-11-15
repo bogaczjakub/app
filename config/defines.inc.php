@@ -1,36 +1,21 @@
 <?php
-/*
-* 2017 app
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@app.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade app to newer
-* versions in the future. If you wish to customize app for your
-* needs please refer to http://www.app.com for more information.
-*
-*  @author Jakub Bogacz SA <bogaczjakub@gmail.com>
-*  @copyright  2017 app
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/
-namespace defines;
 
-use classes\Tools;
-$Tools = new Tools();
-$Tools->getDefinesData();
+define('DS', DIRECTORY_SEPARATOR);
+define('_ROOT_DIR_', $_SERVER['DOCUMENT_ROOT'] . DS);
+define('CONFIG_DIR', _ROOT_DIR_ . '/config/');
+define('GLOBAL_CLASSES_DIR', _ROOT_DIR_ . '/classes/');
+define('GLOBAL_CONTROLLERS_DIR', _ROOT_DIR_ . '/controllers/');
+define('ADMIN_CONTROLLERS', _ROOT_DIR_ . '/admin/controllers/');
+define('FRONT_CONTROLLERS', _ROOT_DIR_ . '/front/controllers/');
+define('ADMIN_CLASSES', _ROOT_DIR_ . '/admin/classes/');
+define('FRONT_CLASSES', _ROOT_DIR_ . '/front/classes/');
+define('CONNECTION_DATA', _ROOT_DIR_ . '/config/xml/connection.xml');
 
-define('_ROOT_DIR_', $_SERVER['DOCUMENT_ROOT']);
-define('CLASSES_DIR', _ROOT_DIR_ . '/classes/');
-define('CONTROLLERS_DIR', _ROOT_DIR_ . '/controllers/');
-define('ADMIN_CONTROLLERS', _ROOT_DIR_ . CONTROLLERS_DIR . '/admin/');
-define('FRONT_CONTROLLERS', _ROOT_DIR_ . CONTROLLERS_DIR .'/front/');
-define('CONNECTION_DATA', _ROOT_DIR_ . '/config/xml/connection.data.xml');
+// define('SMARTY_FRONT_VIEWS', _ROOT_DIR_ . 'front' . DS . 'themes' . DS . 'views' .DS);
+// define('SMARTY_FRONT_VIEWS', _ROOT_DIR_ . 'front' . DS . 'themes' . DS . 'cache' .DS);
+// define('SMARTY_FRONT_VIEWS', _ROOT_DIR_ . 'front' . DS . 'themes' . DS . 'compile' .DS);
+// define('SMARTY_FRONT_VIEWS', _ROOT_DIR_ . 'front' . DS . 'themes' . DS . 'configs' .DS);
+// define('SMARTY_ADMIN_VIEWS', _ROOT_DIR_ . 'admin' . DS . 'themes' . DS . 'views' .DS);
+// define('SMARTY_ADMIN_VIEWS', _ROOT_DIR_ . 'admin' . DS . 'themes' . DS . 'cache' .DS);
+// define('SMARTY_ADMIN_VIEWS', _ROOT_DIR_ . 'admin' . DS . 'themes' . DS . 'compile' .DS);
+// define('SMARTY_ADMIN_VIEWS', _ROOT_DIR_ . 'admin' . DS . 'themes' . DS . 'configs' .DS);

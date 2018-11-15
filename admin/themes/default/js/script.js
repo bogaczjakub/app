@@ -1,8 +1,5 @@
-jQuery(document).ready(function (asdads, dasdasd, dasdasd) {
-	var dasd = 'dasdsada';
-	dasd.toLocaleLowerCase;
-	var czxcxz = {
-		asdas: dasdad,
-		dadasd: 13123
-	};
+/// <reference path="/home/jakubb/typings/globals/jquery/index.d.ts"/>
+
+jQuery(document).ready(function () {
+	
 });

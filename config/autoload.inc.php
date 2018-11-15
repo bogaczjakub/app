@@ -1,36 +1,12 @@
 <?php
-/*
-* 2017 app
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@app.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade app to newer
-* versions in the future. If you wish to customize app for your
-* needs please refer to http://www.app.com for more information.
-*
-*  @author Jakub Bogacz SA <bogaczjakub@gmail.com>
-*  @copyright  2017 app
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*/
 
-function autoloadClass($class_name)
-{
-    includeFiles(checkPatches($class_name, 'class'));
-}
+define('INCLUDE_PATHS_ADMIN', $config['include_paths']['admin']);
+define('INCLUDE_PATHS_FRONT', $config['include_paths']['front']);
+define('INCLUDE_PATHS_GLOBAL', $config['include_paths']['global']);
 
-function autoloadControllers($controller_name)
+function autoload($class_name)
 {
-    includeFiles(checkPatches($controller_name, 'controller'));
+    includeFiles(checkPatches($class_name));
 }
 
 function includeFiles($files_array)
@@ -45,9 +21,7 @@ function includeFiles($files_array)
 
 function checkIfFileIncluded($to_include_array)
 {
-    $real_files_array = Array();
-
-    // get all included files with their paths
+    $real_files_array = array();
     $included = get_included_files();
     foreach ($to_include_array as $path) {
         $real_path = realpath($path);
@@ -60,58 +34,54 @@ function checkIfFileIncluded($to_include_array)
     return $real_files_array;
 }
 
-function checkPatches($type_name, $type)
+function checkPatches($type_name)
 {
-    $results = Array();
-
-        if ($type == 'class') {
-//            Works only if namespaces are disabled
-//            $class_file = CLASSES_DIR . $type_name . '.php';
-//            if(file_exists($class_file)) {
-//                array_push($results, $class_file);
-//            } else {
-//                $admin_class_file = ADMIN_CLASSES_DIR . $type_name . '.php';
-//                if(file_exists($admin_class_file))
-//                {
-//                    array_push($results, $admin_class_file);
-//                } else {
-//                    throw new CustomException('Could not load ' . $admin_class_file .'.');
-//                }
-//            }
-            $class_file = $type_name . '.php';
-            $fix_path = str_replace('\\', '/', $class_file);
-            if (file_exists($fix_path)) {
-                array_push($results, $fix_path);
-            } else {
-                throw new CustomException('Could not load ' . $fix_path .' class file.');
-            }
-        } elseif ($type = 'controller') {
-//            Works only if namespaces are disabled
-//            $controller_file = CONTROLLERS_DIR . $type_name . '.php';
-//            if(file_exists($controller_file)) {
-//                array_push($results, $controller_file);
-//
-//            } else {
-//                $admin_controller_file = ADMIN_CONTROLLERS_DIR . $type_name . '.php';
-//                if(file_exists($admin_controller_file)) {
-//                    array_push($results, $admin_controller_file);
-//
-//                } else {
-//                    throw new CustomException('Could not load ' . $admin_controller_file . '.');
-//                }
-//            }
-            $controller_file = $type_name . '.php';
-            $fix_path = str_replace('\\', '/', $controller_file);
-            if (file_exists($fix_path)) {
-                array_push($results, $fix_path);
-            } else {
-                throw new CustomException('Could not load ' . $fix_path .' controller file.');
+    global $config;
+    $results = array();
+    $class_file = $type_name . '.php';
+    if (isReserved($type_name)) {
+        foreach (INCLUDE_PATHS_GLOBAL as $path) {
+            $joined_paths = $path . $class_file;
+            if (file_exists($joined_paths) && !empty($joined_paths)) {
+                array_push($results, $joined_paths);
             }
         }
+    } else {
+        if (!empty($config['current_inc_dir']) && $config['current_inc_dir'] == 'front') {
+            foreach (INCLUDE_PATHS_FRONT as $path) {
+                $joined_paths = $path . $class_file;
+                if (file_exists($joined_paths) && !empty($joined_paths)) {
+                    array_push($results, $joined_paths);
+                }
+            }
+        } elseif (!empty($config['current_inc_dir']) && $config['current_inc_dir'] == 'admin') {
+            foreach (INCLUDE_PATHS_ADMIN as $path) {
+                $joined_paths = $path . $class_file;
+                if (file_exists($joined_paths) && !empty($joined_paths)) {
+                    array_push($results, $joined_paths);
+                }
+            }
+        } 
+    }
+    if (count($results) > 0) {
+        return $results;
+    } else {
+        throw new CustomException('Could not include "' . $class_file . '" file.');
+    }
 
-    return $results;
+}
+
+function isReserved($name)
+{
+    global $config;
+    $is = 0;
+    foreach ($config['reserved_classes'] as $reserved) {
+        if (strtolower($reserved) == strtolower($name)) {
+            $is++;
+        }
+    }
+    return $is;
 }
 
 // Register autoload functions
-spl_autoload_register('autoloadClass');
-spl_autoload_register('autoloadControllers');
+spl_autoload_register('autoload');

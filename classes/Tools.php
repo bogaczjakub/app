@@ -15,4 +15,10 @@ class Tools
             return $xml;
         }
     }
+
+    public static function isLogged()
+    {
+        return 0;
+
+    }
 }

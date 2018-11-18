@@ -2,11 +2,11 @@
 
 class Settings
 {
-    private $Db;
+    public static $Db;
 
     public function __construct()
     {
-        $this->Db = new Db();
+        self::$Db = new Db();
     }
 
     public function getGlobalSettings()
@@ -16,18 +16,23 @@ class Settings
 
     public function getAdminSettings()
     {
-        return $this->Db->customQuery('select * from admin_settings')->execute('assoc');
+        return self::$Db->select('*')->from('admin_settings')->execute('assoc');
     }
 
     public function getFrontSettings()
     {
-        return $this->Db->customQuery('select * from front_settings')->execute('assoc');
+        return self::$Db->select('*')->from('front_settings')->execute('assoc');
     }
 
     public static function getSettingValue($array, $setting_name)
     {
         $key = array_search($setting_name, array_column($array, 'setting_name'));
         return $array[$key]['setting_value'];
+    }
+
+    public static function getPageDetails($page)
+    {
+        return self::$Db->select('*')->from('admin_pages')->where("title = '" . $page . "'")->execute('row');
     }
 
 }

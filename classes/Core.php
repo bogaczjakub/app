@@ -14,7 +14,7 @@ class Core
     {
         global $config;
         try {
-            if($page == 'Aadmin' && file_exists(ADMIN_CONTROLLERS . $page . 'Controller.php') && !empty(ADMIN_CONTROLLERS . $page . 'Controller.php')) {
+            if($page == 'Admin' && file_exists(ADMIN_CONTROLLERS . $page . 'Controller.php') && !empty(ADMIN_CONTROLLERS . $page . 'Controller.php')) {
                 $config['current_inc_dir'] = 'admin';
                 $this->main_controller = new AdminController($this->Settings->getAdminSettings());
             } elseif ($page == 'Front' && file_exists(FRONT_CONTROLLERS . $page . 'Controller.php') && !empty(FRONT_CONTROLLERS . $page . 'Controller.php')) {

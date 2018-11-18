@@ -13,8 +13,6 @@ class Db
         try {
             if ($this->connection->connect_errno) {
                 throw new CustomException('Could not connect to the database.');
-            } else {
-                empty($query);
             }
         } catch (CustomException $e) {
             echo $e->getCustomMessage($e);
@@ -61,7 +59,7 @@ class Db
                 array_push($this->query['string'], "($chunk)");
                 return $this;
             } else {
-                throw new CustomException('Incorrect databprivatease query string');
+                throw new CustomException('Incorrect database query string');
             }
         } catch (CustomException $e) {
             echo $e->getCustomMessage($e);
@@ -125,17 +123,18 @@ class Db
 
     public function execute($type)
     {
+        $joined = '';
         if (implode('', $this->query['function']) !== 'customQuery') {
-            $this->query['string'] = join(' ', $this->query['string']);
-        } else {
-
+            $joined = join(' ', $this->query['string']);
+        } elseif ($this->query['function'] !== 'customQuery') {
+            $joined = $this->query['string'];
         }
         switch ($type) {
             case 'array':
                 $fetch_array = array();
                 try {
-                    if (!empty($this->query['string'])) {
-                        $exec = $this->connection->query($this->query['string']);
+                    if (!empty($joined)) {
+                        $exec = $this->connection->query($joined);
                         if (!$exec) {
                             throw new CustomException('Invalid or empty query results.');
                         } else {
@@ -143,8 +142,7 @@ class Db
                                 array_push($fetch_array, $assoc);
                             }
                         }
-                        empty($this->query['string']);
-                        empty($this->query['function']);
+                        $this->query['string'] = $this->query['function'] = array();
                     } else {
                         throw new CustomException('Query string is empty.');
                     }
@@ -156,8 +154,8 @@ class Db
             case 'assoc':
                 $fetch_array = array();
                 try {
-                    if (!empty($this->query['string'])) {
-                        $exec = $this->connection->query($this->query['string']);
+                    if (!empty($joined)) {
+                        $exec = $this->connection->query($joined);
                         if (!$exec) {
                             throw new CustomException('Invalid or empty query results.');
                         } else {
@@ -165,8 +163,7 @@ class Db
                                 array_push($fetch_array, $assoc);
                             }
                         }
-                        empty($this->query['string']);
-                        empty($this->query['function']);
+                        $this->query['string'] = $this->query['function'] = array();
                     } else {
                         throw new CustomException('Query string is empty.');
                     }
@@ -178,8 +175,8 @@ class Db
             case 'object':
                 $fetch_array = array();
                 try {
-                    if (!empty($this->query['string'])) {
-                        $exec = $this->connection->query($this->query['string']);
+                    if (!empty($joined)) {
+                        $exec = $this->connection->query($joined);
                         if (!$exec) {
                             throw new CustomException('Invalid or empty query results.');
                         } else {
@@ -187,8 +184,7 @@ class Db
                                 array_push($fetch_array, $assoc);
                             }
                         }
-                        empty($this->query['string']);
-                        empty($this->query['function']);
+                        $this->query['string'] = $this->query['function'] = array();
                     } else {
                         throw new CustomException('Query string is empty.');
                     }
@@ -197,20 +193,20 @@ class Db
                     exit();
                 }
                 break;
-            case 'object':
+            case 'row':
                 $fetch_array = array();
+                echo $joined;
                 try {
-                    if (!empty($this->query['string'])) {
-                        $exec = $this->connection->query($this->query['string']);
+                    if (!empty($joined)) {
+                        $exec = $this->connection->query($joined);
                         if (!$exec) {
                             throw new CustomException('Invalid or empty query results.');
                         } else {
-                            while ($assoc = $exec->fetch_object()) {
-                                array_push($fetch_array, $assoc);
+                            while ($row = $exec->fetch_row()) {
+                                array_push($fetch_array, $row);
                             }
                         }
-                        empty($this->query['string']);
-                        empty($this->query['function']);
+                        $this->query['string'] = $this->query['function'] = array();
                     } else {
                         throw new CustomException('Query string is empty.');
                     }
@@ -239,7 +235,7 @@ class Db
         return $this;
     }
 
-    private function cleaner($chunks)
+    private function cleanAfterSend()
     {
         return $chunks;
 

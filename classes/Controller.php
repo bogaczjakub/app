@@ -2,9 +2,9 @@
 
 abstract class Controller
 {
-    public static $theme;
     public static $type;
     private static $smarty;
+    public static $page_details;
 
     public function __construct($_theme, $_type)
     {
@@ -23,11 +23,16 @@ abstract class Controller
 
     public function render($tpl = 'index')
     {
+        var_dump(self::$page_details);
         self::$smarty->display($tpl . '.tpl');
-        
     }
 
-    public function getPageInfo($page)
+    public function assingVars()
+    {
+
+    }
+
+    public function templateScheme($page)
     {
 
     }

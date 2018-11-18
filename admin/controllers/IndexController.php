@@ -1,6 +1,6 @@
 <?php
 
-class IndexController extends FrontController
+class IndexController extends AdminController
 {
     private $args;
     private $action;
@@ -22,6 +22,7 @@ class IndexController extends FrontController
 
     public function index($_args)
     {
+        $this->assingVars();
         $this->render('index');
     }
 }

@@ -11,8 +11,8 @@ try {
             } else {
                 throw new CustomException('Could not include config file.');
             }
-            if (file_exists(_ROOT_DIR_ . 'libs/Smarty.class.php') && !empty(_ROOT_DIR_ . 'libs/Smarty.class.php')) {
-                include _ROOT_DIR_ . 'libs/Smarty.class.php';
+            if (file_exists(_ROOT_DIR_ . 'libs/smarty/Smarty.class.php') && !empty(_ROOT_DIR_ . 'libs/Smarty.class.php')) {
+                include _ROOT_DIR_ . 'libs/smarty/Smarty.class.php';
             } else {
                 throw new CustomException('Could not include Smarty file.');
             }

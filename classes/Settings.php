@@ -11,7 +11,7 @@ class Settings
 
     public function getGlobalSettings()
     {
-        // return $this->Db->customQuery('select * from global_settings')->execute('assoc');
+        return self::$Db->select('*')->from('global_settings')->execute('assoc');
     }
 
     public function getAdminSettings()
@@ -32,7 +32,16 @@ class Settings
 
     public static function getPageDetails($page)
     {
-        return self::$Db->select('*')->from('admin_pages')->where("title = '" . $page . "'")->execute('row');
+        return self::$Db->select('*')->from('admin_pages')->where("page_title = '" . $page . "'")->execute('assoc');
+    }
+
+    public function fillGlobalDetails($settings_array)
+    {
+        $array = array();
+        $array['site_language'] = self::getSettingValue($settings_array, 'site_language');
+        $array['site_author'] = self::getSettingValue($settings_array, 'site_author');
+        $array['base_url'] = self::getSettingValue($settings_array, 'base_url');
+        return $array;
     }
 
 }

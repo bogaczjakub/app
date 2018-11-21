@@ -61,7 +61,7 @@ function checkPatches($type_name)
                     array_push($results, $joined_paths);
                 }
             }
-        } 
+        }
     }
     if (count($results) > 0) {
         return $results;

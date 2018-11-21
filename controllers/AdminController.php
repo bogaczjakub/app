@@ -6,31 +6,32 @@ class AdminController extends Controller
     protected $request;
     protected $login_required;
 
-    public function __construct($settings)
+    public function __construct($settings, $type)
     {
         global $config;
         $this->admin_settings = $settings;
         $this->request = Url::requestToArray();
         $this->login_required = Settings::getSettingValue($this->admin_settings, 'login_required');
-        parent::__construct(Settings::getSettingValue($this->admin_settings, 'theme'), 'admin');
-        if (($this->login_required && Tools::isLogged()) OR (!$this->login_required)) {
-            $this->pageConstructor($this->request, 'admin');
+       
+        parent::$type = $type;
+        parent::__construct(Settings::getSettingValue($this->admin_settings, 'theme'));
+
+        if (($this->login_required && Tools::isLogged()) or (!$this->login_required)) {
+            $this->pageConstructor($this->request);
         } elseif ($this->login_required && !Tools::isLogged()) {
             $this->request['query']['controller'] = 'Login';
-            $this->pageConstructor($this->request, 'admin');
+            $this->pageConstructor($this->request);
         }
     }
 
-    private function pageConstructor($url, $type)
+    private function pageConstructor($url)
     {
         try {
             if (!empty($url)) {
                 isset($url['query']['controller']) ? $url['query']['controller'] : $url['query']['controller'] = 'Index';
-                $controller_path = _ROOT_DIR_ . $type . DS . 'controllers' . DS . $url['query']['controller'] . 'Controller.php';
+                $controller_path = _ROOT_DIR_ . parent::$type . DS . 'controllers' . DS . $url['query']['controller'] . 'Controller.php';
                 if (file_exists($controller_path) && !empty($controller_path)) {
-                    parent::$page_details = Settings::getPageDetails($url['query']['controller']);
-                    $controller_full = $url['query']['controller'] . 'Controller';
-                    $page_controller = new $controller_full($url['query']);
+                    parent::pageController($url);
                 } else {
                     throw new CustomException('Can not find controller file or it is empty.');
                 }

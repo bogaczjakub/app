@@ -22,7 +22,7 @@ class IndexController extends AdminController
 
     public function index($_args)
     {
-        $this->assingVars();
+        $this->assignVars();
         $this->render('index');
     }
 }

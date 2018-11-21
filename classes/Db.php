@@ -195,7 +195,6 @@ class Db
                 break;
             case 'row':
                 $fetch_array = array();
-                echo $joined;
                 try {
                     if (!empty($joined)) {
                         $exec = $this->connection->query($joined);
@@ -235,7 +234,7 @@ class Db
         return $this;
     }
 
-    private function cleanAfterSend()
+    private function cleaner($chunks)
     {
         return $chunks;
 

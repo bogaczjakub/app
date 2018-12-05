@@ -1,15 +1,14 @@
 <?php
 
-class Core extends Controller
+class dispatcher
 {
+    private $settings;
     private $main_controller;
-    private $global_settings;
 
     public function __construct()
     {
-        $this->Settings = new Settings();
-        $this->global_settings = $this->Settings->getGlobalSettings();
-        parent::$global_pages_details = $this->Settings->fillGlobalDetails($this->global_settings);
+        $this->settings = new Settings();
+        Page::$global_pages_details = $this->settings->fillGlobalDetails($this->settings->getGlobalSettings());
     }
 
     public function appInit($page)
@@ -17,11 +16,13 @@ class Core extends Controller
         global $config;
         try {
             if ($page == 'admin' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php')) {
-                $config['current_inc_dir'] = 'admin';
-                $this->main_controller = new AdminController($this->Settings->getAdminSettings(), $page);
+                $config['page']['type'] = 'admin';
+                Page::$type = $page;
+                $this->main_controller = new AdminController($this->settings->getAdminSettings());
             } elseif ($page == 'front' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php')) {
-                $config['current_inc_dir'] = 'front';
-                $this->main_controller = new FrontController($this->Settings->getFrontSettings(), $page);
+                $config['page']['type'] = 'front';
+                Page::$type = $page;
+                $this->main_controller = new FrontController($this->settings->getFrontSettings());
             } else {
                 throw new CustomException('Could not find ' . ucfirst($page) . ' controller.');
             }

@@ -2,26 +2,26 @@
 
 class Settings
 {
-    public static $Db;
+    public static $db;
 
     public function __construct()
     {
-        self::$Db = new Db();
+        self::$db = new Db();
     }
 
     public function getGlobalSettings()
     {
-        return self::$Db->select('*')->from('global_settings')->execute('assoc');
+        return self::$db->select('*')->from('global_settings')->execute('assoc');
     }
 
     public function getAdminSettings()
     {
-        return self::$Db->select('*')->from('admin_settings')->execute('assoc');
+        return self::$db->select('*')->from('admin_settings')->execute('assoc');
     }
 
     public function getFrontSettings()
     {
-        return self::$Db->select('*')->from('front_settings')->execute('assoc');
+        return self::$db->select('*')->from('front_settings')->execute('assoc');
     }
 
     public static function getSettingValue($array, $setting_name)
@@ -30,9 +30,9 @@ class Settings
         return $array[$key]['setting_value'];
     }
 
-    public static function getPageDetails($page)
+    public function getPageDetails($page)
     {
-        return self::$Db->select('*')->from('admin_pages')->where("page_title = '" . $page . "'")->execute('assoc');
+        return self::$db->select('*')->from('admin_pages')->where("page_title = '" . $page . "'")->execute('assoc');
     }
 
     public function fillGlobalDetails($settings_array)

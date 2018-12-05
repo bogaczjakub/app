@@ -1,8 +1,5 @@
-html {
-    margin: 0;
-    padding: 0;
-    font-family: "Arial", Helvetica, sans-serif;
-    overflow: hidden;
-    z-index: auto;
-    font-size: 14px;
+@import "../../../../libs/bootstrap/assets/stylesheets/bootstrap";
+@import "theme";
+
+html {    
 }

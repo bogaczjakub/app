@@ -1,3 +1,16 @@
-body {
-  text-align: center;
+@import "variables";
+@import "mixins";
+
+@font-face {
+    font-family: 'Glyphicons Halflings';
+    src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot");
+    src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"),
+        url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"),
+        url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"),
+        url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"),
+        url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
+}
+
+html {
+    
 }

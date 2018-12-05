@@ -1,7 +1,26 @@
-<title></title>
-<meta name="description" content="{if isset($page_details[0].page_description) && !empty($page_details[0].page_description)}{$page_details[0].page_description}{/if}">
-<meta name="keywords" content="{if isset($page_details[0].page_keywords) && !empty($page_details[0].page_keywords)}{$page_details[0].page_keywords}{/if}">
-<meta name="author" content="{if isset($global_page_details.site_author) && !empty($global_page_details.site_author)}{$global_page_details.site_author}{/if}">
-<meta http-equiv="refresh" content="">
-<meta name="viewport" content="">
-<base href="{if isset($global_page_details.base_url) && !empty($global_page_details.base_url)}{$global_page_details.base_url}{/if}" target="_blank">
+<nav id="admin-navbar" class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand">CMS</a>
+        </div>
+        <form class="navbar-form navbar-left">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    aria-expanded="false">Dropdown<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Action</a></li>
+                    <li><a href="#">Another action</a></li>
+                    <li><a href="#">Something else here</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

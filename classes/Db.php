@@ -4,7 +4,7 @@ class Db
 {
     private $connection_data;
     public $connection;
-    public $query = array('function' => array(), 'string' => array());
+    private $query = array('function' => array(), 'string' => array());
 
     public function __construct()
     {
@@ -180,8 +180,8 @@ class Db
                         if (!$exec) {
                             throw new CustomException('Invalid or empty query results.');
                         } else {
-                            while ($assoc = $exec->fetch_assoc()) {
-                                array_push($fetch_array, $assoc);
+                            while ($object = $exec->fetch_object()) {
+                                array_push($fetch_array, $object);
                             }
                         }
                         $this->query['string'] = $this->query['function'] = array();
@@ -234,10 +234,13 @@ class Db
         return $this;
     }
 
-    private function cleaner($chunks)
+    public function cleanInput($input)
     {
-        return $chunks;
-
+        if (!empty($input) && is_string($input)) {
+            $input = $this->connection->real_escape_string($input);
+            $input = trim($input);
+        }
+        return $input;
     }
 
 }

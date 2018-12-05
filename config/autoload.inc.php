@@ -47,14 +47,14 @@ function checkPatches($type_name)
             }
         }
     } else {
-        if (!empty($config['current_inc_dir']) && $config['current_inc_dir'] == 'front') {
+        if (!empty($config['page']['type']) && $config['page']['type'] == 'front') {
             foreach (INCLUDE_PATHS_FRONT as $path) {
                 $joined_paths = $path . $class_file;
                 if (file_exists($joined_paths) && !empty($joined_paths)) {
                     array_push($results, $joined_paths);
                 }
             }
-        } elseif (!empty($config['current_inc_dir']) && $config['current_inc_dir'] == 'admin') {
+        } elseif (!empty($config['page']['type']) && $config['page']['type'] == 'admin') {
             foreach (INCLUDE_PATHS_ADMIN as $path) {
                 $joined_paths = $path . $class_file;
                 if (file_exists($joined_paths) && !empty($joined_paths)) {

@@ -1,0 +1,29 @@
+html {
+    body {
+        background-color: #dddddd;
+
+        .flex-center-column {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            #login-container {
+                padding: 20% 0;
+                display: block;
+                margin: 0;
+                max-width: 375px;
+
+                .login-lock {
+                    font-size: 65px;
+                    text-align: center;
+                    display: block;
+                    margin: 30px;
+                }
+
+                .login-plain-faq {
+                    margin: 0 0 20px 0;
+                }
+            }
+        }
+    }
+}

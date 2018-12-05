@@ -1,24 +1,31 @@
 <?php
 
-class LoginController extends AdminController
+class LoginController extends Page
 {
     public function __construct()
     {
-
+        $this->addJs('login.js');
+        $this->addCss('login.css');
     }
 
     public function index($args)
     {
-        $this->assignVars(array('var_1' => 'aaaaaaaa', 'var_2' => 'bbbbbbbbbbbbb'));
         $this->render('login');
     }
 
-    public function signIn()
+    public function login($args)
     {
-        # code...
+        $object = new Model();
+        $model = $object->getPageModel(__CLASS__);
+        $results = $model->login($args);
+        if (!empty($results) && isset($results[0]->id)) {
+            $this->assignVariables();
+            header('Location: ?controller=Index&action=index');
+            // $this->render('index');
+        }
     }
 
-    public function signUp()
+    public function remindMePassword()
     {
         # code...
     }

@@ -1,6 +1,6 @@
 <?php
 
-include dirname(__FILE__) . '/phpSettings.inc.php';
+include dirname(__FILE__) . '/php.settings.inc.php';
 try {
     if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/classes/CustomException.php') && !empty($_SERVER['DOCUMENT_ROOT'] . '/classes/CustomException.php')) {
         include $_SERVER['DOCUMENT_ROOT'] . '/classes/CustomException.php';

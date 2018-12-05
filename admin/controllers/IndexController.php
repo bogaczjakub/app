@@ -1,28 +1,15 @@
 <?php
 
-class IndexController extends AdminController
+class IndexController extends Page
 {
-    private $args;
-    private $action;
-
-    public function __construct($_query)
+    public function __construct()
     {
-        array_key_exists('action', $_query) ? $this->action = $_query['action'] : $this->action = 'index';
-        array_key_exists('args', $_query) ? $this->args = $_query['args'] : $this->args = '';
-        $methods = get_class_methods(__CLASS__);
-        if (!empty($this->action)) {
-            foreach ($methods as $method) {
-                if ($method == $this->action) {
-                    self::$method($this->args);
-                    break;
-                }
-            }
-        }
+        $this->addCss('index.css');
+
     }
 
-    public function index($_args)
+    public function index($args)
     {
-        $this->assignVars();
         $this->render('index');
     }
 }

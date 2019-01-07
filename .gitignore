@@ -36,11 +36,13 @@
 ehthumbs.db
 Thumbs.db
 
-# Cache and compile files
-#########################
+# Cache and compile files #
+###########################
 **/cache
 **/compile
 **/.sass-cache
 
+# Node modules and libs files #
+###############################
 node_modules/
 libs/

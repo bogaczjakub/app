@@ -2,29 +2,28 @@
 
 class dispatcher
 {
-    private $settings;
+    public $settings;
     private $main_controller;
 
-    public function __construct()
+    public function __construct(object $collector)
     {
         $this->settings = new Settings();
-        Page::$global_pages_details = $this->settings->fillGlobalDetails($this->settings->getGlobalSettings());
+        $collector->globalPageDetails($this->settings->fillGlobalDetails($this->settings->getGlobalSettings()));
+        $this->appInit($collector);
     }
 
-    public function appInit($page)
+    public function appInit(object $collector)
     {
         global $config;
         try {
-            if ($page == 'admin' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php')) {
-                $config['page']['type'] = 'admin';
-                Page::$type = $page;
-                $this->main_controller = new AdminController($this->settings->getAdminSettings());
-            } elseif ($page == 'front' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($page) . 'Controller.php')) {
-                $config['page']['type'] = 'front';
-                Page::$type = $page;
-                $this->main_controller = new FrontController($this->settings->getFrontSettings());
+            if ($collector->collection['type'] == 'admin' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php')) {
+                $config['page']['type'] = $collector->collection['type'];
+                $this->main_controller = new AdminController($collector);
+            } elseif ($collector->collection['type'] == 'front' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php')) {
+                $config['page']['type'] = $collector->collection['type'];
+                $this->main_controller = new FrontController($collector);
             } else {
-                throw new CustomException('Could not find ' . ucfirst($page) . ' controller.');
+                throw new CustomException('Could not find ' . ucfirst($collector->collection['type']) . ' controller.');
             }
         } catch (customException $e) {
             echo $e->getCustomMessage($e);

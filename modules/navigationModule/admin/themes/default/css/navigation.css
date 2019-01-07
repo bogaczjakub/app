@@ -1,0 +1,25 @@
+#navigation .panel .panel-body .nav li.opened > a > .caret {
+  transform: rotate(180deg); }
+
+#navigation .panel .panel-body .nav li.opened > .subcategory-nav {
+  display: block; }
+
+#navigation .panel .panel-body .nav li .subcategory-nav {
+  display: none; }
+
+#navigation .panel .panel-body .nav li a {
+  display: flex;
+  justify-content: flex-start;
+  -ms-text-justify: flex-start;
+  align-items: center; }
+  #navigation .panel .panel-body .nav li a span.glyphicon {
+    line-height: unset;
+    top: 0;
+    flex: 1; }
+  #navigation .panel .panel-body .nav li a .category-name {
+    flex: 8; }
+
+#navigation .panel .panel-body .nav li .nav {
+  padding-left: 5%;
+  margin-top: 5px;
+  margin-bottom: 5px; }

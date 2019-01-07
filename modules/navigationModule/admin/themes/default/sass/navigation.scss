@@ -1,0 +1,50 @@
+#navigation {
+    .panel {
+        .panel-body {
+            .nav {
+                li {
+                    &.opened {
+                        &>a {
+                            &>.caret {
+                                transform: rotate(180deg);
+                            }
+                        }
+
+                        &>.subcategory-nav {
+                            display: block;
+                        }
+                    }
+
+                    .subcategory-nav {
+                        display: none;
+                    }
+
+                    a {
+                        display: flex;
+                        justify-content: flex-start;
+                        -ms-text-justify: flex-start;
+                        align-items: center;
+
+                        span.glyphicon {
+                            line-height: unset;
+                            top: 0;
+                            flex: 1;
+                        }
+
+                        .category-name {
+                            flex: 8;
+                        }
+
+                    }
+
+                    .nav {
+                        padding-left: 5%;
+                        margin-top: 5px;
+                        margin-bottom: 5px;
+
+                    }
+                }
+            }
+        }
+    }
+}

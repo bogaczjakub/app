@@ -3,6 +3,7 @@
 jQuery(document).ready(function () {
 
     $('form[method=get]').submit(function (e) {
+
         var form_method = $(this).attr('method');
         var form_action = $(this).attr('action');
         var form_serialize = $(this).serialize();
@@ -11,6 +12,7 @@ jQuery(document).ready(function () {
             var location = form_action + '&' + form_serialize;
             window.location.href = location;
         }
+        
         return false;
     })
 

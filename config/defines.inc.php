@@ -13,3 +13,4 @@ define('CONNECTION_DATA', _ROOT_DIR_ . '/config/xml/connection.xml');
 define('ADMIN_THEMES', _ROOT_DIR_ . 'admin' . DS . 'themes' . DS);
 define('FRONT_THEMES', _ROOT_DIR_ . 'front' . DS . 'themes' . DS);
 define('LIBS_DIR', _ROOT_DIR_ . 'libs' . DS);
+define('MODULES_DIR', _ROOT_DIR_ . 'modules' .DS);

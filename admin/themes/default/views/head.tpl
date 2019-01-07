@@ -4,17 +4,23 @@
 <meta name="author" content="{if isset($global_page_details.site_author) && !empty($global_page_details.site_author)}{$global_page_details.site_author}{/if}">
 <meta http-equiv="refresh" content="">
 <meta name="viewport" content="">
-<base href="{if isset($global_page_details.base_url) && !empty($global_page_details.base_url)}{$global_page_details.base_url}{/if}" target="_blank">
+<base href="{if isset($global_page_details.base_url) && !empty($global_page_details.base_url)}{$global_page_details.base_url}{/if}"
+    target="_blank">
 {if isset($head_links && !empty($head_links))}
-    {foreach from=$head_links key=key item=item}
-        {if $key == 'css'}
-            {foreach from=$item item=link}
-                <link rel="stylesheet" type="text/css" href="{$link}">
-            {/foreach}
-        {elseif $key == 'js'}
-            {foreach from=$item item=link}
-                <script src="{$link}" type="text/javascript"></script>
-            {/foreach}
-        {/if}
-    {/foreach}
+{foreach $head_links as $key => $value}
+{if $key == 'css'}
+{foreach $value as $link}
+<link rel="stylesheet" type="text/css" href="{$link}">
+{/foreach}
+{elseif $key == 'js'}
+{foreach $value as $link}
+<script src="{$link}" type="text/javascript"></script>
+{/foreach}
+{/if}
+{/foreach}
+{/if}
+{if isset($head_gap) && !empty($head_gap)}
+{foreach $head_gap as $key => $value}
+{$value}
+{/foreach}
 {/if}

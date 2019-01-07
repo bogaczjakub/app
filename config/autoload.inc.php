@@ -3,6 +3,7 @@
 define('INCLUDE_PATHS_ADMIN', $config['include_paths']['admin']);
 define('INCLUDE_PATHS_FRONT', $config['include_paths']['front']);
 define('INCLUDE_PATHS_GLOBAL', $config['include_paths']['global']);
+define('INCLUDE_PATHS_MODULES', $config['include_paths']['modules']);
 
 function autoload($class_name)
 {
@@ -46,6 +47,28 @@ function checkPatches($type_name)
                 array_push($results, $joined_paths);
             }
         }
+    } elseif (isModule($type_name)) {
+        foreach (INCLUDE_PATHS_MODULES as $path) {
+            $module_file = $path . $type_name . DS . $config['page']['type'] . DS . $class_file;
+            if (file_exists($module_file) && !empty($module_file)) {
+                array_push($results, $module_file);
+            }
+        }
+    } elseif (isModuleController($type_name)) {
+        $module_controller_file = MODULES_DIR . str_replace('Controller', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'controllers' . DS . $class_file;
+        if (file_exists($module_controller_file) && !empty($module_controller_file)) {
+            array_push($results, $module_controller_file);
+        }
+    } elseif (isModuleModel($type_name)) {
+        $module_model_file = MODULES_DIR . str_replace('Model', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'models' . DS . $class_file;
+        if (file_exists($module_model_file) && !empty($module_model_file)) {
+            array_push($results, $module_model_file);
+        }
+    } elseif (isModuleClass($type_name)) {
+        $module_class_file = MODULES_DIR . str_replace('Class', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'class' . DS . $class_file;
+        if (file_exists($module_class_file) && !empty($module_class_file)) {
+            array_push($results, $module_class_file);
+        }
     } else {
         if (!empty($config['page']['type']) && $config['page']['type'] == 'front') {
             foreach (INCLUDE_PATHS_FRONT as $path) {
@@ -76,12 +99,66 @@ function isReserved($name)
     global $config;
     $is = 0;
     foreach ($config['reserved_classes'] as $reserved) {
-        if (strtolower($reserved) == strtolower($name)) {
+        if (strtolower($reserved) === strtolower($name)) {
             $is++;
         }
     }
     return $is;
 }
 
-// Register autoload functions
+function isModule($name)
+{
+    global $config;
+    $is = 0;
+    $replaced = str_replace('Module', '', $name);
+    foreach ($config['modules'] as $module) {
+        if (strtolower($module) === str_replace('Module', '', strtolower($replaced))) {
+            $is++;
+        }
+    }
+    return $is;
+}
+
+function isModuleController($name)
+{
+    global $config;
+    $is = 0;
+    if (preg_match('/.+Controller$/', $name)) {
+        $clean_name = str_replace('Controller', '', $name);
+        $controller_file = MODULES_DIR . $clean_name . 'Module' . DS . $config['page']['type'] . DS . 'controllers' . DS . $name . '.php';
+        if (file_exists($controller_file)) {
+            $is++;
+        }
+    }
+    return $is;
+}
+
+function isModuleModel($name)
+{
+    global $config;
+    $is = 0;
+    if (preg_match('/.+Model$/', $name)) {
+        $clean_name = str_replace('Model', '', $name);
+        $model_file = MODULES_DIR . $clean_name . 'Module' . DS . $config['page']['type'] . DS . 'models' . DS . $name . '.php';
+        if (file_exists($model_file)) {
+            $is++;
+        }
+    }
+    return $is;
+}
+
+function isModuleClass($name)
+{
+    global $config;
+    $is = 0;
+    if (preg_match('/.+Class$/', $name)) {
+        $clean_name = str_replace('Class', '', $name);
+        $class_file = MODULES_DIR . $clean_name . 'Module' . DS . $config['page']['type'] . DS . 'classes' . DS . $name . '.php';
+        if (file_exists($class_file)) {
+            $is++;
+        }
+    }
+    return $is;
+}
+
 spl_autoload_register('autoload');

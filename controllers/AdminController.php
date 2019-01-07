@@ -4,31 +4,32 @@ class AdminController
 {
     private $request;
     protected $login_required;
+    public $settings;
 
-    public function __construct($settings)
+    public function __construct($collector)
     {
-        $this->request = Url::requestToArray();
-        $this->login_required = Settings::getSettingValue($settings, 'login_required');
-        Page::$theme = $config['page']['theme'] =  Settings::getSettingValue($settings, 'theme');
-        Page::$url = $this->request;
+        $this->settings = new Settings();
+        $collector->collection['type_settings'] = $this->settings->getAdminSettings();
+        $this->login_required = Settings::getSettingValue($collector->collection['type_settings'], 'login_required');
+        $collector->collection['theme'] = $config['page']['theme'] = Settings::getSettingValue($collector->collection['type_settings'], 'theme');
+        $collector->collection['request'] = Url::requestToArray();
 
         if (($this->login_required && Tools::isLogged()) or (!$this->login_required)) {
-            $this->pageConstructor();
+            $this->pageConstructor($collector);
         } elseif ($this->login_required && !Tools::isLogged()) {
-            $this->request['controller'] = 'Login';
-            $this->pageConstructor();
+            $collector->collection['request']['controller'] = 'Login';
+            $this->pageConstructor($collector);
         }
     }
 
-    private function pageConstructor()
+    private function pageConstructor($collector)
     {
         try {
-            if (!empty($this->request)) {
-                (isset($this->request['controller']) && !empty($this->request['controller'])) ? $this->request['controller'] : $this->request['controller'] = 'Index';
-                $controller_path = _ROOT_DIR_ . Page::$type . DS . 'controllers' . DS . $this->request['controller'] . 'Controller.php';
+            if (!empty($collector->collection['request'])) {
+                (isset($collector->collection['request']['controller']) && !empty($collector->collection['request']['controller'])) ? $collector->collection['request']['controller'] : $collector->collection['request']['controller'] = 'Index';
+                $controller_path = _ROOT_DIR_ . $collector->collection['type'] . DS . 'controllers' . DS . $collector->collection['request']['controller'] . 'Controller.php';
                 if (file_exists($controller_path) && !empty($controller_path)) {
-                    $page = new Page();
-                    $page->init();
+                    $page = new Page($collector->collection, true);
                 } else {
                     throw new CustomException('Can not find controller file or it is empty.');
                 }

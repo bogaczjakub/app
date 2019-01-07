@@ -1,6 +1,47 @@
 @font-face {
   font-family: 'Glyphicons Halflings';
   src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot");
-  src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg");
-}
-/*# sourceMappingURL=theme.css.map */
+  src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg"); }
+
+html,
+body,
+#page-container {
+  height: auto;
+  min-height: 100%; }
+
+html body {
+  background-color: #f8f8f8; }
+  html body #page-container #header-section #admin-navbar {
+    border-radius: 0;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    background-color: #ffffff; }
+    html body #page-container #header-section #admin-navbar #admin-user-dropdown > li.dropdown > a {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      -ms-text-justify: flex-start; }
+      html body #page-container #header-section #admin-navbar #admin-user-dropdown > li.dropdown > a > .glyphicon-user {
+        margin-right: 5px;
+        top: 0;
+        line-height: unset; }
+  html body #page-container #content-section #content-container #top #breadcrumb .breadcrumb {
+    background-color: #ffffff; }
+  html body #page-container #footer-section {
+    background-color: #ffffff;
+    border-top: 1px solid #e7e7e7;
+    margin-top: 20px;
+    height: 50px;
+    bottom: 0;
+    width: 100%; }
+    html body #page-container #footer-section #footer {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px; }
+      html body #page-container #footer-section #footer p.footer-info {
+        text-align: center;
+        color: #777777;
+        margin: 0; }

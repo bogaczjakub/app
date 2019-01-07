@@ -2,123 +2,192 @@
 
 class Page
 {
-    private $settings;
-    private $css;
-    private $js;
-    private $model;
-    public static $url;
-    public static $type;
-    public static $theme;
-    public static $action;
-    public static $args;
-    public static $page;
+    public $page;
+    public static $js = array();
+    public static $css = array();
     public static $smarty;
-    public static $template_vars;
-    public static $template_js;
-    public static $template_css;
-    public static $theme_index;
-    public static $page_details;
-    public static $page_model;
-    public static $global_pages_details;
-    public static $head_links = array('js' => array(), 'css' => array());
+    public static $collection;
+    public static $module;
+    public static $passive;
 
-    public function __construct($global_pages_details = array(), $type = '', $theme = '', $url = array())
+    public function __construct(array $collection = array(), bool $passive = true)
     {
-        if (empty(self::$global_pages_details)) {
-            self::$global_pages_details = $global_pages_details;
+        self::$collection = $collection;
+        self::$passive = $passive;
+        if (self::$passive) {
+            $this->setTheme();
         }
-        if (empty(self::$type)) {
-            self::$type = $type;
-        }
-        if (empty(self::$theme)) {
-            self::$theme = $theme;
-        }
-        if (empty(self::$url)) {
-            self::$url = $url;
-        }
-
     }
 
-    public function init()
+    public function setTheme(string $type = 'front', string $theme = 'default')
     {
-        self::$theme_index = _ROOT_DIR_ . self::$type . DS . 'themes' . DS . self::$theme . DS . 'views' . DS . 'Index.tpl';
-        self::$smarty = new SmartyApp(self::$theme, self::$type);
-        $this->getPage();
+        if (!self::$passive) {
+            self::$collection['type'] = $type;
+            self::$collection['theme'] = $theme;
+        }
+        self::$collection['theme_index'] = _ROOT_DIR_ . self::$collection['type'] . DS . 'themes' . DS . self::$collection['theme'] . DS . 'views' . DS . 'Index.tpl';
+        if (self::$passive) {
+            $this->setPage();
+        }
     }
 
-    public function getPage()
+    public function setPage(string $controller = 'Index')
     {
-        $this->settings = new Settings();
-        self::$page_details = $this->settings->getPageDetails(self::$url['controller']);
-        $page_controller = self::$url['controller'] . 'Controller';
-        self::$page = new $page_controller();
-        $this->action();
+        $settings = new Settings();
+        if (!self::$passive) {
+            self::$collection['request']['controller'] = $controller;
+        }
+        self::$collection['page_details'] = $settings->getPageDetails(self::$collection['request']['controller']);
+        $page_controller = self::$collection['request']['controller'] . 'Controller';
+        $this->page = new $page_controller();
+        if (self::$passive) {
+            $this->setAction();
+        }
     }
 
-    public function action()
+    public function setAction(array $query = array(), string $action = 'index')
     {
-        array_key_exists('action', self::$url) && !empty(self::$url['action']) ? self::$action = self::$url['action'] : self::$action = 'index';
-        array_key_exists('query', self::$url) && !empty(self::$url['query'])? self::$args = self::$url['query'] : self::$args = array();
-        $methods = get_class_methods(get_class(self::$page));
-        if (!empty(self::$action)) {
+        if (self::$passive) {
+            array_key_exists('action', self::$collection['request']) && !empty(self::$collection['request']['action']) ? self::$collection['request']['action'] = self::$collection['request']['action'] : self::$collection['request']['action'] = 'index';
+            array_key_exists('query', self::$collection['request']) && !empty(self::$collection['request']['query']) ? self::$collection['request']['query'] = self::$collection['request']['query'] : self::$collection['request']['query'] = array();
+        } else {
+            self::$collection['request']['action'] = $action;
+            self::$collection['request']['query'] = $query;
+        }
+        $methods = get_class_methods(get_class($this->page));
+        if (!empty(self::$collection['request']['action'])) {
             foreach ($methods as $method) {
-                if ($method == self::$action) {
-                    self::$page->$method(self::$args);
+                if ($method == self::$collection['request']['action']) {
+                    $this->page->{$method}(self::$collection['request']['query']);
                     break;
                 }
             }
         }
     }
 
-    public function render($template = 'index')
+    public function initSmarty()
     {
+        self::$smarty = new SmartyApp(self::$collection['theme'], self::$collection['type']);
+    }
+
+    public function render(string $template = 'index')
+    {
+        $this->preRenderActions();
+        self::$module = new Module(self::$collection);
+        $tools = new Tools();
         try {
-            if (file_exists(self::$theme_index)) {
-                $template_path = _ROOT_DIR_ . self::$type . DS . 'themes' . DS . self::$theme . DS . 'views' . DS . $template . '.tpl';
+            if (file_exists(self::$collection['theme_index'])) {
+                $template_path = _ROOT_DIR_ . self::$collection['type'] . DS . 'themes' . DS . self::$collection['theme'] . DS . 'views' . DS . $template . '.tpl';
                 if (file_exists($template_path)) {
-                    $this->addHeadLinks();
+                    self::$smarty->assign('head_gap', self::$module->getModule($tools->getGapModules('head_gap')));
+                    self::$smarty->assign('header_gap', self::$module->getModule($tools->getGapModules('header_gap')));
+                    self::$smarty->assign('left_column_gap', self::$module->getModule($tools->getGapModules('left_column_gap')));
+                    self::$smarty->assign('right_column_gap', self::$module->getModule($tools->getGapModules('right_column_gap')));
+                    self::$smarty->assign('top_gap', self::$module->getModule($tools->getGapModules('top_gap')));
+                    self::$smarty->assign('center_column_gap', self::$module->getModule($tools->getGapModules('center_column_gap')));
+                    self::$smarty->assign('bottom_gap', self::$module->getModule($tools->getGapModules('bottom_gap')));
+                    self::$smarty->assign('footer_gap', self::$module->getModule($tools->getGapModules('footer_gap')));
                     self::$smarty->assign('content', $template_path);
-                    self::$smarty->assign('global_page_details', self::$global_pages_details);
-                    self::$smarty->assign('page_details', self::$page_details);
-                    self::$smarty->assign('template_vars', self::$template_vars);
-                    self::$smarty->assign('head_links', self::$head_links);
-                    self::$smarty->display(self::$theme_index);
+                    self::$smarty->assign('global_page_details', self::$collection['global_pages_details']);
+                    self::$smarty->assign('page_details', self::$collection['page_details']);
+                    self::$smarty->assign('template_data', self::$collection['template_data']);
+                    self::$smarty->assign('head_links', self::$collection['head_links']);
+                    self::$smarty->assign('alerts', self::$collection['alerts']);
+                    self::$smarty->assign('breadcrumbs', self::$collection['breadcrumbs']);
+                    self::$smarty->display(self::$collection['theme_index']);
                 } else {
                     throw new CustomException('Could not find ' . $template . ' template.');
                 }
             } else {
-                throw new CustomException('Could not find index file of ' . self::$theme . ' theme.');
+                throw new CustomException('Could not find index file of ' . self::$collection['theme'] . ' theme.');
             }
         } catch (CustomException $e) {
             echo $e->getCustomMessage($e);
         }
+        $this->postRenderActions();
     }
 
-    public function assignVariables($variables_array = array())
+    public function display(string $template = 'index')
     {
-        self::$template_vars = $variables_array;
+        if (self::$passive) {
+            $this->render($template);
+        }
+    }
+
+    public function preRenderActions()
+    {
+        $this->addHeadLinks();
+        $this->initSmarty();
+        $this->buildBreadcrumbs();
+    }
+
+    public function postRenderActions()
+    {
+
+    }
+
+    public function assignData($data)
+    {
+        if (!empty($data)) {
+            self::$collection['template_data'] = $data;
+        }
+    }
+
+    public function assignAlert(string $type, string $title, string $message)
+    {
+        $alert_array = compact('type', 'title', 'message');
+        if (!empty($alert_array['type']) && !empty($alert_array['message'])) {
+            $alert = new Alert($alert_array);
+            array_push(self::$collection['alerts'], $alert->getAlert());
+        }
     }
 
     public function addJs($js)
     {
         if (!empty($js)) {
-            $this->js = $js;
+            if (is_string($js)) {
+                array_push(self::$js, $js);
+            } elseif (is_array($js)) {
+                foreach ($js as $element) {
+                    if (preg_match('/^.+\.js$/', $element, $matches)) {
+                        array_push(self::$js, $element);
+                    }
+                }
+            } else {
+                return false;
+            }
         }
     }
 
     public function addCss($css)
     {
         if (!empty($css)) {
-            $this->css = $css;
+            if (is_string($css)) {
+                array_push(self::$css, $css);
+            } elseif (is_array($css)) {
+                foreach ($css as $element) {
+                    if (preg_match('/^.+\.css$/', $element)) {
+                        array_push(self::$css, $element);
+                    }
+                }
+            } else {
+                return false;
+            }
         }
     }
 
     private function addHeadLinks()
     {
         $tools = new Tools();
-        self::$head_links = $tools->addLibraries(self::$head_links, self::$type);
-        self::$head_links = $tools->themeHeadLinks(self::$head_links, self::$type, self::$theme);
-        self::$head_links = $tools->templateHeadLinks(self::$head_links, $this->css, self::$type, self::$theme, 'css');
-        self::$head_links = $tools->templateHeadLinks(self::$head_links, $this->js, self::$type, self::$theme, 'js');
+        self::$collection['head_links'] = $tools->addLibraries(self::$collection['head_links'], self::$collection['type']);
+        self::$collection['head_links'] = $tools->themeHeadLinks(self::$collection['head_links'], self::$collection['type'], self::$collection['theme']);
+        self::$collection['head_links'] = $tools->templateHeadLinks(self::$collection['head_links'], self::$css, self::$collection['type'], self::$collection['theme'], 'css');
+        self::$collection['head_links'] = $tools->templateHeadLinks(self::$collection['head_links'], self::$js, self::$collection['type'], self::$collection['theme'], 'js');
+    }
+
+    public function buildBreadcrumbs()
+    {
+        $breadcrumbs = new Breadcrumbs();
+        self::$collection['breadcrumbs'] = $breadcrumbs->build(self::$collection['request']['controller'], self::$collection['type']);
     }
 }

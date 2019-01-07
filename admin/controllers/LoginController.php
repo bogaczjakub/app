@@ -8,20 +8,22 @@ class LoginController extends Page
         $this->addCss('login.css');
     }
 
-    public function index($args)
+    public function index(array $args)
     {
         $this->render('login');
     }
 
-    public function login($args)
+    public function login(array $args)
     {
-        $object = new Model();
-        $model = $object->getPageModel(__CLASS__);
-        $results = $model->login($args);
-        if (!empty($results) && isset($results[0]->id)) {
-            $this->assignVariables();
-            header('Location: ?controller=Index&action=index');
-            // $this->render('index');
+        if (!empty($args)) {
+            $model = new Model();
+            $login_model = $model->getPageModel(__CLASS__);
+            $results = $login_model->login($args);
+            if (!empty($results) && isset($results[0]->id)) {
+                Url::redirectUrl('Index', 'index', array());
+            }
+        } else {
+            Url::redirectUrl('Login', 'index');
         }
     }
 

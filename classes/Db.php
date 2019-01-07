@@ -12,7 +12,7 @@ class Db
         @$this->connection = new mysqli($this->db_data->host, $this->db_data->login, $this->db_data->password, $this->db_data->database);
         try {
             if ($this->connection->connect_errno) {
-                throw new CustomException('Could not connect to the database.');
+                throw new CustomException('Could not connect to the database. Error code: ' . $this->connection->connect_errno);
             }
         } catch (CustomException $e) {
             echo $e->getCustomMessage($e);
@@ -65,7 +65,6 @@ class Db
             echo $e->getCustomMessage($e);
             exit();
         }
-
     }
 
     public function values($chunk)
@@ -82,13 +81,12 @@ class Db
             echo $e->getCustomMessage($e);
             exit();
         }
-
     }
 
     public function where($chunk)
     {
         try {
-            if (end($this->query['function']) == 'from') {
+            if (end($this->query['function']) == 'from' || end($this->query['function']) == 'on') {
                 array_push($this->query['function'], __FUNCTION__);
                 array_push($this->query['string'], "WHERE $chunk");
                 return $this;
@@ -101,14 +99,36 @@ class Db
         }
     }
 
-    public function innerJoin()
+    public function innerJoin($chunk)
     {
-
+        try {
+            if (end($this->query['function']) == 'from' || end($this->query['function']) == 'on') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "INNER JOIN $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
     }
 
-    public function join()
+    public function on($chunk)
     {
-
+        try {
+            if (end($this->query['function']) == 'innerJoin') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "ON $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
     }
 
     public function leftJoin()
@@ -121,12 +141,29 @@ class Db
 
     }
 
+    public function orderBy($chunk, $direction = 'ASC')
+    {
+        try {
+            if (end($this->query['function']) == 'where' || end($this->query['function']) == 'from') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "ORDER BY $chunk");
+                array_push($this->query['string'], "$direction");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+    }
+
     public function execute($type)
     {
         $joined = '';
-        if (implode('', $this->query['function']) !== 'customQuery') {
+        if (implode('', $this->query['function']) != 'customQuery') {
             $joined = join(' ', $this->query['string']);
-        } elseif ($this->query['function'] !== 'customQuery') {
+        } elseif ($this->query['function'] != 'customQuery') {
             $joined = $this->query['string'];
         }
         switch ($type) {

@@ -3,6 +3,29 @@
         .panel-body {
             .nav {
                 li {
+                    a {
+                        display: flex;
+                        justify-content: flex-start;
+                        -ms-text-justify: flex-start;
+                        align-items: center;
+
+                        span.glyphicon {
+                            line-height: unset;
+                            top: 0;
+                            flex: 1;
+                        }
+
+                        .category-name {
+                            flex: 8;
+
+                            .badge {
+                                margin-left: 5px;
+                                background-color: #286090;
+                            }
+                        }
+
+                    }
+
                     &.opened {
                         &>a {
                             &>.caret {
@@ -19,22 +42,13 @@
                         display: none;
                     }
 
-                    a {
-                        display: flex;
-                        justify-content: flex-start;
-                        -ms-text-justify: flex-start;
-                        align-items: center;
-
-                        span.glyphicon {
-                            line-height: unset;
-                            top: 0;
-                            flex: 1;
+                    &.active {
+                        a {
+                            .badge {
+                                background-color: #ffffff;
+                                color: #286090;
+                            }
                         }
-
-                        .category-name {
-                            flex: 8;
-                        }
-
                     }
 
                     .nav {

@@ -19,11 +19,11 @@ class Breadcrumbs
             $db = new Db();
             $results = $db->select("*")->
                 from($this->type_select)->
-                where("category_controller = '$controller'")->
+                where("categories_controller='$controller'")->
                 execute("object");
             if (!empty($results)) {
                 array_push($this->breadcrumbs_temporary_array, $results[0]);
-                $this->collectBreadcrumbs($results[0]->category_parent_id);
+                $this->collectBreadcrumbs($results[0]->categories_parent_id);
                 if (!empty($this->breadcrumbs_temporary_array)) {
                     return $this->buildBreadcrumbsArray($this->breadcrumbs_temporary_array);
                 }
@@ -35,9 +35,9 @@ class Breadcrumbs
     {
         $results = $this->getCategoryById($parent_id);
         if (!empty($results)) {
-            if ($results[0]->category_parent_id != 0) {
+            if ($results[0]->categories_parent_id != 0) {
                 array_push($this->breadcrumbs_temporary_array, $results[0]);
-                $this->collectBreadcrumbs($results[0]->category_parent_id);
+                $this->collectBreadcrumbs($results[0]->categories_parent_id);
             } else {
                 return false;
             }
@@ -62,9 +62,9 @@ class Breadcrumbs
                 'category_uri' => $_SERVER['DOCUMENT_URI'] . '?controller=Index' . '&action=index');
             foreach ($collection as $pack) {
                 $temporary_array['category_id'] = (int) $pack->id;
-                $temporary_array['category_name'] = $pack->category_name;
-                $temporary_array['category_controller'] = $pack->category_controller;
-                $temporary_array['category_uri'] = $_SERVER['DOCUMENT_URI'] . '?controller=' . $pack->category_controller . '&action=index';
+                $temporary_array['category_name'] = $pack->categories_name;
+                $temporary_array['category_controller'] = $pack->categories_controller;
+                $temporary_array['category_uri'] = $_SERVER['DOCUMENT_URI'] . '?controller=' . $pack->categories_controller . '&action=index';
                 array_push($this->breadcrumbs_array, $temporary_array);
             }
             usort($this->breadcrumbs_array, function ($a, $b) {

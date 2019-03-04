@@ -8,7 +8,7 @@ class dispatcher
     public function __construct(object $collector)
     {
         $this->settings = new Settings();
-        $collector->globalPageDetails($this->settings->fillGlobalDetails($this->settings->getGlobalSettings()));
+        $collector->globalDetails($this->settings->fillGlobalDetails($this->settings->getGlobalSettings()));
         $this->appInit($collector);
     }
 

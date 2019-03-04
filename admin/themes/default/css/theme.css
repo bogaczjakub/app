@@ -11,23 +11,147 @@ body,
 
 html body {
   background-color: #f8f8f8; }
+  html body #page-container #header-section .navbar-header .navbar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -ms-text-justify: center;
+    padding: 0 15px; }
+    html body #page-container #header-section .navbar-header .navbar-brand img {
+      height: 80%; }
   html body #page-container #header-section #admin-navbar {
     border-radius: 0;
     border-top: 0;
     border-left: 0;
     border-right: 0;
     background-color: #ffffff; }
-    html body #page-container #header-section #admin-navbar #admin-user-dropdown > li.dropdown > a {
+    html body #page-container #header-section #admin-navbar .navbar-form .btn-group {
       display: flex;
       align-items: center;
       justify-content: flex-start;
       -ms-text-justify: flex-start; }
-      html body #page-container #header-section #admin-navbar #admin-user-dropdown > li.dropdown > a > .glyphicon-user {
+      html body #page-container #header-section #admin-navbar .navbar-form .btn-group input {
+        flex: none;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0; }
+      html body #page-container #header-section #admin-navbar .navbar-form .btn-group button {
+        float: none;
+        height: 34px; }
+    html body #page-container #header-section #admin-navbar .admin-navbar-dropdown > li.dropdown > a {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      -ms-text-justify: flex-start; }
+      html body #page-container #header-section #admin-navbar .admin-navbar-dropdown > li.dropdown > a > .glyphicon {
         margin-right: 5px;
         top: 0;
         line-height: unset; }
+    html body #page-container #header-section #admin-navbar .admin-navbar-dropdown > li.dropdown > .dropdown-menu li.logout-li > a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -ms-text-justify: center; }
+      html body #page-container #header-section #admin-navbar .admin-navbar-dropdown > li.dropdown > .dropdown-menu li.logout-li > a > .glyphicon {
+        top: 0;
+        line-height: unset;
+        margin-right: 5px;
+        font-size: 12px; }
   html body #page-container #content-section #content-container #top #breadcrumb .breadcrumb {
     background-color: #ffffff; }
+  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-heading .window-buttons button {
+      font-size: 9px;
+      padding: 2px 4px; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-heading .window-buttons button:last-child {
+        margin-left: 5px; }
+  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form table tbody tr td .checkbox {
+    padding-top: 0px; }
+  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group {
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    margin: 1% 5%;
+    display: flex;
+    justify-content: center;
+    align-items: stretch; }
+    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-left {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+      background-color: #f2f2f2;
+      border-top-left-radius: 4px;
+      padding: 15px 30px;
+      border-bottom-left-radius: 4px;
+      flex-direction: column; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-left label {
+        padding: 0; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-left .update-info {
+        font-size: 10px;
+        margin: 5px 0;
+        font-style: italic;
+        color: darkgrey; }
+    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right {
+      padding: 15px 30px;
+      display: flex;
+      justify-content: start;
+      align-items: start;
+      flex-direction: column; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-on {
+        color: #fff;
+        background-color: #5cb85c;
+        border-color: #4cae4c; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-off {
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc; }
+        html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-off:hover {
+          color: #333;
+          background-color: #e6e6e6;
+          border-color: #adadad; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-on {
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc; }
+        html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-on:hover {
+          color: #333;
+          background-color: #e6e6e6;
+          border-color: #adadad; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-off {
+        color: #fff;
+        background-color: #d9534f;
+        border-color: #d43f3a; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .alert {
+        padding: 4px 8px;
+        margin: 5px 0;
+        font-size: 12px; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .glyphicon {
+        margin-right: 5px; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right textarea {
+        min-height: 150px; }
+      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .cke {
+        border-radius: 4px;
+        padding: 2px 0; }
+  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-footer button {
+    margin-left: 5px; }
+    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-footer button .glyphicon {
+      margin-right: 5px; }
+  html body #page-container #content-section #content-container #content-row #center-column #alerts .alert {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center; }
+    html body #page-container #content-section #content-container #content-row #center-column #alerts .alert .glyphicon {
+      font-size: 24px;
+      flex: 1;
+      order: 1; }
+    html body #page-container #content-section #content-container #content-row #center-column #alerts .alert .alert-content {
+      flex: 28;
+      order: 2; }
+    html body #page-container #content-section #content-container #content-row #center-column #alerts .alert button.close {
+      flex: 1;
+      order: 3; }
   html body #page-container #footer-section {
     background-color: #ffffff;
     border-top: 1px solid #e7e7e7;

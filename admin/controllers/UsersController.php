@@ -8,7 +8,6 @@ class UsersController extends Page
 
     public function index($args)
     {
-        $this->assignData($args);
-        $this->display('test');
+        $this->display('users');
     }
 }

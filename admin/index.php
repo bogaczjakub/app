@@ -1,4 +1,5 @@
 <?php
+
 try {
     if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/config/setup.inc.php')) {
         include $_SERVER['DOCUMENT_ROOT'] . '/config/setup.inc.php';

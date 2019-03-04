@@ -10,8 +10,8 @@ class IndexController extends Page
 
     public function index($args)
     {
-        $this->assignAlert('success', 'It is alert!', 'Thank You for submitted alert message.');
-        $this->assignAlert('danger', 'It is alert danger!', 'Thank You for submitted alert message.');
+        $alerts = new Alerts();
+        $alerts->newAlert('danger', 'Dashboard', 'It is alert danger!', 'Index');
         $this->assignData($args);
         $this->display('index');
     }

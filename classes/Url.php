@@ -3,12 +3,14 @@
 class Url
 {
     public static $url = array();
+    public static $page_url;
+
     public function __construct()
     {
 
     }
 
-    public static function requestToArray()
+    public function requestToArray()
     {
         $query_array = array();
         self::$url = array('path' => '', 'query' => array(), 'controller' => '', 'action' => '', 'module' => array());
@@ -47,13 +49,22 @@ class Url
         } else {
             self::$url['module']['args'] = '';
         }
+        unset($query_array['module']);
         if (!empty($query_array)) {
-            self::$url['query'] = $query_array;
+            foreach ($query_array as $key => $value) {
+                self::$url['query'][$key] = $value;
+            }
         }
+        if (!empty($_POST)) {
+            foreach ($_POST as $key => $value) {
+                self::$url['query'][$key] = $value;
+            }
+        }
+        self::$page_url = $this->buildPageUrl(self::$url['controller'], self::$url['action']);
         return self::$url;
     }
 
-    public static function redirectUrl($controller, $action, $args = array())
+    public static function redirectUrl(string $controller, string $action, array $args = array())
     {
         if (Tools::checkExisting($controller, 'controller')) {
             $class_methods = get_class_methods($controller . 'Controller');
@@ -66,7 +77,13 @@ class Url
                 header($location);
             }
         }
+    }
 
+    public static function buildPageUrl(string $page_controller, string $page_action)
+    {
+        $page_controller = (empty($page_controller) || $page_controller = 'this') ? self::$url['controller'] : $page_controller;
+        $page_action = (empty($page_controller)) ? self::$url['action'] : $page_action;
+        return $_SERVER['PHP_SELF'] . '?controller=' . $page_controller . '&action=' . $page_action;
     }
 
 }

@@ -4,7 +4,7 @@ class Collector
 {
     public $collection = array(
         'type' => '',
-        'global_pages_details' => array(),
+        'global_details' => array(),
         'type_settings' => array(),
         'theme' => '',
         'request' => '',
@@ -13,7 +13,8 @@ class Collector
         'template_data' => array(),
         'head_links' => array('js' => array(), 'css' => array()),
         'alerts' => array(),
-        'breadcrumbs' => array()
+        'breadcrumbs' => array(),
+        'page_forms' => array()
     );
 
     public function __construct()
@@ -28,9 +29,9 @@ class Collector
         }
     }
 
-    public function globalPageDetails(array $global_page_details = array()) {
-        if (!empty($global_page_details)) {
-            $this->collection['global_pages_details'] = $global_page_details;
+    public function globalDetails(array $global_details = array()) {
+        if (!empty($global_details)) {
+            $this->collection['global_details'] = $global_details;
         }
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-class navigationCLass {
+class navigationModuleCLass {
 
     public function __constructor()
     {

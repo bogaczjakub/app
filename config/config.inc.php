@@ -17,11 +17,14 @@ $config = array(
         'FrontController',
         'Collector',
         'Module',
-        'Alert',
-        'Breadcrumbs'
+        'Alerts',
+        'Breadcrumbs',
+        'Forms',
+        'Tables'
     ),
     'modules' => array(
         'navigation',
+        'login',
     ),
     'include_paths' => array(
         'admin' => array(
@@ -38,19 +41,22 @@ $config = array(
             $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR,
             $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'libs/smarty' . DIRECTORY_SEPARATOR),
         'modules' => array(
-            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR
-        )
+            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR,
+        ),
     ),
     'global_libs' => array(
         'front' => array(),
         'admin' => array(),
         'all' => array(
             'jquery' => array(
-                'dist/jquery.min.js'
+                'dist/jquery.min.js',
             ),
             'bootstrap' => array(
                 // 'assets' . DIRECTORY_SEPARATOR . 'javascripts' . DIRECTORY_SEPARATOR . 'bootstrap.min.js',
                 'assets' . DIRECTORY_SEPARATOR . 'javascripts' . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . '*',
+            ),
+            'ckeditor' => array(
+                'ckeditor.js',
             ),
         ),
     ),

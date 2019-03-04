@@ -13,7 +13,6 @@ class navigationModule extends Module
         $module_controller = $this->loadModuleController('navigation');
         $category_tree = $module_controller->buildCategoryTree();
         $this->assignData($category_tree);
-        $this->assignAlert('danger', 'navigation', 'Stupid navigation.');
         $this->render('navigation.tpl');
     }
 }

@@ -36,7 +36,7 @@ class Model
         global $config;
         try {
             if (!empty($module) && !empty($model)) {
-                $model_name = $model . 'Model';
+                $model_name = $model . 'ModuleModel';
                 $module_path_name = $module . 'Module';
                 $model_path = MODULES_DIR . $module_path_name . DS . $config['page']['type'] . DS . 'models' . DS . $model_name . '.php';
                 if (file_exists($model_path) && !empty($model_path)) {

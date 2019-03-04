@@ -37,7 +37,7 @@ class Page
         if (!self::$passive) {
             self::$collection['request']['controller'] = $controller;
         }
-        self::$collection['page_details'] = $settings->getPageDetails(self::$collection['request']['controller']);
+        self::$collection['page_details'] = $settings->getPageDetails(self::$collection['request']['controller'], self::$collection['type']);
         $page_controller = self::$collection['request']['controller'] . 'Controller';
         $this->page = new $page_controller();
         if (self::$passive) {
@@ -48,8 +48,8 @@ class Page
     public function setAction(array $query = array(), string $action = 'index')
     {
         if (self::$passive) {
-            array_key_exists('action', self::$collection['request']) && !empty(self::$collection['request']['action']) ? self::$collection['request']['action'] = self::$collection['request']['action'] : self::$collection['request']['action'] = 'index';
-            array_key_exists('query', self::$collection['request']) && !empty(self::$collection['request']['query']) ? self::$collection['request']['query'] = self::$collection['request']['query'] : self::$collection['request']['query'] = array();
+            array_key_exists('action', self::$collection['request']) && (!empty(self::$collection['request']['action'])) ? self::$collection['request']['action'] = self::$collection['request']['action'] : self::$collection['request']['action'] = 'index';
+            array_key_exists('query', self::$collection['request']) && (!empty(self::$collection['request']['query'])) ? self::$collection['request']['query'] = self::$collection['request']['query'] : self::$collection['request']['query'] = array();
         } else {
             self::$collection['request']['action'] = $action;
             self::$collection['request']['query'] = $query;
@@ -88,12 +88,16 @@ class Page
                     self::$smarty->assign('bottom_gap', self::$module->getModule($tools->getGapModules('bottom_gap')));
                     self::$smarty->assign('footer_gap', self::$module->getModule($tools->getGapModules('footer_gap')));
                     self::$smarty->assign('content', $template_path);
-                    self::$smarty->assign('global_page_details', self::$collection['global_pages_details']);
+                    self::$smarty->assign('global_details', self::$collection['global_details']);
                     self::$smarty->assign('page_details', self::$collection['page_details']);
+                    self::$smarty->assign('pages_gaps_allowed', $this->getPageGapsAllowed(self::$collection['page_details']));
                     self::$smarty->assign('template_data', self::$collection['template_data']);
                     self::$smarty->assign('head_links', self::$collection['head_links']);
                     self::$smarty->assign('alerts', self::$collection['alerts']);
                     self::$smarty->assign('breadcrumbs', self::$collection['breadcrumbs']);
+                    self::$smarty->assign('page_forms', self::$collection['page_forms']);
+                    self::$smarty->assign('page_url', Url::$page_url);
+                    self::$smarty->assign('session', $_SESSION);
                     self::$smarty->display(self::$collection['theme_index']);
                 } else {
                     throw new CustomException('Could not find ' . $template . ' template.');
@@ -119,6 +123,7 @@ class Page
         $this->addHeadLinks();
         $this->initSmarty();
         $this->buildBreadcrumbs();
+        $this->getAlerts();
     }
 
     public function postRenderActions()
@@ -133,13 +138,10 @@ class Page
         }
     }
 
-    public function assignAlert(string $type, string $title, string $message)
+    private function getAlerts()
     {
-        $alert_array = compact('type', 'title', 'message');
-        if (!empty($alert_array['type']) && !empty($alert_array['message'])) {
-            $alert = new Alert($alert_array);
-            array_push(self::$collection['alerts'], $alert->getAlert());
-        }
+        $alerts = new Alerts();
+        array_push(self::$collection['alerts'], $alerts->getAlerts(self::$collection['request']['controller']));
     }
 
     public function addJs($js)
@@ -183,6 +185,18 @@ class Page
         self::$collection['head_links'] = $tools->themeHeadLinks(self::$collection['head_links'], self::$collection['type'], self::$collection['theme']);
         self::$collection['head_links'] = $tools->templateHeadLinks(self::$collection['head_links'], self::$css, self::$collection['type'], self::$collection['theme'], 'css');
         self::$collection['head_links'] = $tools->templateHeadLinks(self::$collection['head_links'], self::$js, self::$collection['type'], self::$collection['theme'], 'js');
+    }
+
+    private function getPageGapsAllowed(array $page_details)
+    {
+        if (!empty($page_details)) {
+            $return_array = array();
+            $page_gaps = explode(',', $page_details[0]['pages_gaps_allowed']);
+            foreach ($page_gaps as $key => $value) {
+                $return_array[$value] = 1;
+            }
+            return $return_array;
+        }
     }
 
     public function buildBreadcrumbs()

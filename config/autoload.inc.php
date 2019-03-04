@@ -55,17 +55,17 @@ function checkPatches($type_name)
             }
         }
     } elseif (isModuleController($type_name)) {
-        $module_controller_file = MODULES_DIR . str_replace('Controller', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'controllers' . DS . $class_file;
+        $module_controller_file = MODULES_DIR . str_replace('ModuleController', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'controllers' . DS . $class_file;
         if (file_exists($module_controller_file) && !empty($module_controller_file)) {
             array_push($results, $module_controller_file);
         }
     } elseif (isModuleModel($type_name)) {
-        $module_model_file = MODULES_DIR . str_replace('Model', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'models' . DS . $class_file;
+        $module_model_file = MODULES_DIR . str_replace('ModuleModel', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'models' . DS . $class_file;
         if (file_exists($module_model_file) && !empty($module_model_file)) {
             array_push($results, $module_model_file);
         }
     } elseif (isModuleClass($type_name)) {
-        $module_class_file = MODULES_DIR . str_replace('Class', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'class' . DS . $class_file;
+        $module_class_file = MODULES_DIR . str_replace('ModuleClass', 'Module', $type_name) . DS . $config['page']['type'] . DS . 'class' . DS . $class_file;
         if (file_exists($module_class_file) && !empty($module_class_file)) {
             array_push($results, $module_class_file);
         }
@@ -123,8 +123,8 @@ function isModuleController($name)
 {
     global $config;
     $is = 0;
-    if (preg_match('/.+Controller$/', $name)) {
-        $clean_name = str_replace('Controller', '', $name);
+    if (preg_match('/.+ModuleController$/', $name)) {
+        $clean_name = str_replace('ModuleController', '', $name);
         $controller_file = MODULES_DIR . $clean_name . 'Module' . DS . $config['page']['type'] . DS . 'controllers' . DS . $name . '.php';
         if (file_exists($controller_file)) {
             $is++;
@@ -137,8 +137,8 @@ function isModuleModel($name)
 {
     global $config;
     $is = 0;
-    if (preg_match('/.+Model$/', $name)) {
-        $clean_name = str_replace('Model', '', $name);
+    if (preg_match('/.+ModuleModel$/', $name)) {
+        $clean_name = str_replace('ModuleModel', '', $name);
         $model_file = MODULES_DIR . $clean_name . 'Module' . DS . $config['page']['type'] . DS . 'models' . DS . $name . '.php';
         if (file_exists($model_file)) {
             $is++;
@@ -151,8 +151,8 @@ function isModuleClass($name)
 {
     global $config;
     $is = 0;
-    if (preg_match('/.+Class$/', $name)) {
-        $clean_name = str_replace('Class', '', $name);
+    if (preg_match('/.+ModuleClass$/', $name)) {
+        $clean_name = str_replace('ModuleClass', '', $name);
         $class_file = MODULES_DIR . $clean_name . 'Module' . DS . $config['page']['type'] . DS . 'classes' . DS . $name . '.php';
         if (file_exists($class_file)) {
             $is++;

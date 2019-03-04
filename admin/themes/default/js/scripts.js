@@ -1,19 +1,19 @@
 /// <reference path="../../../../node_modules/@types/jquery/index.d.ts"/>
 
 jQuery(document).ready(function () {
-
-    $('form[method=get]').submit(function (e) {
-
-        var form_method = $(this).attr('method');
-        var form_action = $(this).attr('action');
-        var form_serialize = $(this).serialize();
-
-        if (form_method.toLocaleLowerCase() == 'get' && form_action.length > 0) {
-            var location = form_action + '&' + form_serialize;
-            window.location.href = location;
-        }
-        
-        return false;
-    })
-
+    $('form#search-form .search-selector-list li a').on('click', pickSearchCategory);
+    function pickSearchCategory(event) {
+        event.preventDefault();
+        var search_category = $(this).attr('href');
+        var hidden_selector = $('form#search-form').find('.search-selector-input');
+        var search_button = $('form#search-form ').find('.search-selector-text');
+        search_button.text(search_category);
+        hidden_selector.val(search_category);
+    }
+    $('#navigation li.active').parents('li.parent').addClass('opened');
+    $('button[data-dismiss="alert"]').on('click', function (e) {
+        $.ajax({
+            
+        });
+    });
 });

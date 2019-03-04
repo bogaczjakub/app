@@ -9,7 +9,6 @@ class PagesController extends Page
 
     public function index($args)
     {
-        $this->assignData($args);
         $this->display('pages');
     }
 }

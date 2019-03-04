@@ -31,7 +31,7 @@ class Db
     public function from($chunk)
     {
         try {
-            if (end($this->query['function']) == 'select') {
+            if (end($this->query['function']) == 'select' || end($this->query['function']) == 'delete') {
                 array_push($this->query['function'], __FUNCTION__);
                 array_push($this->query['string'], "FROM $chunk");
                 return $this;
@@ -47,8 +47,38 @@ class Db
     public function insert($chunk)
     {
         array_push($this->query['function'], __FUNCTION__);
-        array_push($this->query['string'], "INSERT INTO ($chunk)");
+        array_push($this->query['string'], "INSERT INTO $chunk");
         return $this;
+    }
+
+    public function delete()
+    {
+        array_push($this->query['function'], __FUNCTION__);
+        array_push($this->query['string'], "DELETE");
+        return $this;
+    }
+
+    public function update($chunk)
+    {
+        array_push($this->query['function'], __FUNCTION__);
+        array_push($this->query['string'], "UPDATE $chunk");
+        return $this;
+    }
+
+    public function set($chunk)
+    {
+        try {
+            if (end($this->query['function']) == 'update' || end($this->query['function']) == 'on') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "SET $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
     }
 
     public function columns()
@@ -70,7 +100,7 @@ class Db
     public function values($chunk)
     {
         try {
-            if (end($this->query['function']) == 'columns') {
+            if (end($this->query['function']) == 'columns' || end($this->query['function']) == 'insert') {
                 array_push($this->query['function'], __FUNCTION__);
                 array_push($this->query['string'], "VALUES ($chunk)");
                 return $this;
@@ -86,7 +116,7 @@ class Db
     public function where($chunk)
     {
         try {
-            if (end($this->query['function']) == 'from' || end($this->query['function']) == 'on') {
+            if (end($this->query['function']) == 'from' || end($this->query['function']) == 'on' || end($this->query['function']) == 'set') {
                 array_push($this->query['function'], __FUNCTION__);
                 array_push($this->query['string'], "WHERE $chunk");
                 return $this;
@@ -102,9 +132,73 @@ class Db
     public function innerJoin($chunk)
     {
         try {
-            if (end($this->query['function']) == 'from' || end($this->query['function']) == 'on') {
+            if (end($this->query['function']) == 'from' || end($this->query['function']) == 'on' || end($this->query['function']) == 'update') {
                 array_push($this->query['function'], __FUNCTION__);
                 array_push($this->query['string'], "INNER JOIN $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+    }
+
+    public function leftJoin()
+    {
+        try {
+            if (end($this->query['function']) == 'from') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "LEFT JOIN $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+    }
+
+    public function rightJoin()
+    {
+        try {
+            if (end($this->query['function']) == 'from') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "RIGHT JOIN $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+    }
+
+    public function crossJoin()
+    {
+        try {
+            if (end($this->query['function']) == 'from') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "CROSS JOIN $chunk");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+    }
+
+    public function naturalJoin()
+    {
+        try {
+            if (end($this->query['function']) == 'from') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "NATURAL JOIN $chunk");
                 return $this;
             } else {
                 throw new CustomException('Incorrect database query string');
@@ -131,20 +225,10 @@ class Db
         }
     }
 
-    public function leftJoin()
-    {
-
-    }
-
-    public function rightJoin()
-    {
-
-    }
-
     public function orderBy($chunk, $direction = 'ASC')
     {
         try {
-            if (end($this->query['function']) == 'where' || end($this->query['function']) == 'from') {
+            if (end($this->query['function']) == 'where' || end($this->query['function']) == 'from' || end($this->query['function']) == 'on') {
                 array_push($this->query['function'], __FUNCTION__);
                 array_push($this->query['string'], "ORDER BY $chunk");
                 array_push($this->query['string'], "$direction");
@@ -251,6 +335,39 @@ class Db
                     exit();
                 }
                 break;
+            case 'print':
+                $fetch_array = array();
+                try {
+                    if (!empty($joined)) {
+                        echo $joined;
+                        die();
+                    } else {
+                        throw new CustomException('Query string is empty.');
+                    }
+                } catch (CustomException $e) {
+                    echo $e->getCustomMessage($e);
+                    exit();
+                }
+                break;
+            case 'bool':
+                $fetch_array = array();
+                try {
+                    if (!empty($joined)) {
+                        $exec = $this->connection->query($joined);
+                        if (!$exec) {
+                            throw new CustomException('Invalid or empty query results.');
+                        } else {
+                            array_push($fetch_array, $exec);
+                        }
+                        $this->query['string'] = $this->query['function'] = array();
+                    } else {
+                        throw new CustomException('Query string is empty.');
+                    }
+                } catch (CustomException $e) {
+                    echo $e->getCustomMessage($e);
+                    exit();
+                }
+                break;
             case 'default':
         }
         return $fetch_array;
@@ -261,7 +378,7 @@ class Db
         try {
             if (empty($this->query['function'])) {
                 array_push($this->query['function'], __FUNCTION__);
-                $this->query['string'] = $this->cleaner($custom_query);
+                $this->query['string'] = $custom_query;
             } else {
                 throw new CustomException('Incorrect database query string');
             }
@@ -271,9 +388,9 @@ class Db
         return $this;
     }
 
-    public function cleanInput($input)
+    public function escapeString(string $input)
     {
-        if (!empty($input) && is_string($input)) {
+        if (!empty($input)) {
             $input = $this->connection->real_escape_string($input);
             $input = trim($input);
         }

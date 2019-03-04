@@ -1,6 +1,6 @@
 <?php
 
-class navigationController
+class navigationModuleController
 {
     public $html;
     public $navigation_model;
@@ -18,9 +18,14 @@ class navigationController
         $this->categories = $this->navigation_model->getNavigationCategories();
 
         if (!empty($this->categories) && count($this->categories) > 0) {
+            $category_name = $this->navigation_model->getCategoryNameByController(Url::$url['controller']);
             $this->html = '<div id="navigation">';
             $this->html .= '<div class="panel panel-default">';
-            $this->html .= '<div class="panel-heading">Dashboard</div>';
+            if (!empty($category_name)) {
+                $this->html .= '<div class="panel-heading">' . ucfirst($category_name[0]->categories_name) . '</div>';
+            } else {
+                $this->html .= '<div class="panel-heading"></div>';
+            }
             $this->html .= '<div class="panel-body">';
             $this->html .= '<ul class="nav nav-pills nav-stacked">';
             $this->categoryLevelBuild(0);
@@ -38,13 +43,21 @@ class navigationController
         foreach ($categories as $category) {
             $subcategories = $this->navigation_model->getCategoryByParent($category->id);
             if ($category->id != 1) {
-                $this->html .= '<li ' . ($category->category_controller == Url::$url['controller'] ? 'class="active"' : '');
-                $this->html .= ($subcategories ? ' class="parent"' : '');
-                $this->html .= 'role="presentation"><a target="_self" href="' . $this->buildCategoryLink($category->category_controller) . '">';
-                if (!empty($category->category_icon) && $category->category_level == 1) {
-                    $this->html .= '<span class="glyphicon ' . $category->category_icon . '" aria-hidden="true"></span>';
+                $active_category = ($category->categories_controller == Url::$url['controller']);
+                $this->html .= '<li ' . ($active_category ? 'class="active"' : '');
+                if ($active_category) {
+
                 }
-                $this->html .= '<span class="category-name">' . ucfirst($category->category_name) . '</span>';
+                $this->html .= ($subcategories ? ' class="parent"' : '');
+                $this->html .= 'role="presentation"><a target="_self" href="' . $this->buildCategoryLink($category->categories_controller) . '">';
+                if (!empty($category->categories_icon) && $category->categories_level == 1) {
+                    $this->html .= '<span class="glyphicon ' . $category->categories_icon . '" aria-hidden="true"></span>';
+                }
+                $this->html .= '<span class="category-name">' . ucfirst($category->categories_name) . '</span>';
+                $badges = Alerts::getAlertsCount($category->categories_controller);
+                if ($badges[0]['count'] > 0) {
+                    $this->html .= '<span class="badge">' . $badges[0]['count'] . '</span>';
+                }
                 if ($subcategories) {
                     $this->html .= '<span class="caret"></span>';
                     $this->html .= '</a>';
@@ -61,10 +74,10 @@ class navigationController
         }
     }
 
-    private function buildCategoryLink($category_controller)
+    private function buildCategoryLink(string $categories_controller)
     {
-        if (!empty($category_controller)) {
-            return $link = Url::$url['path'] . '?controller=' . $category_controller . '&action=index';
+        if (!empty($categories_controller)) {
+            return $link = Url::$url['path'] . '?controller=' . $categories_controller . '&action=index';
         }
     }
 

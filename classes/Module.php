@@ -10,6 +10,7 @@ class Module
     public static $module_smarty;
     public static $modules_array = array();
     public static $current_module;
+    public static $silence_flag = 0;
 
     public function __construct(array $collection)
     {
@@ -45,7 +46,7 @@ class Module
             if (self::$collection['request']['module']['name'] == strtolower(str_replace('Module', '', self::$current_module))) {
                 foreach ($methods as $method) {
                     if ($method == self::$collection['request']['module']['action']) {
-                        $this->module->{$method}(self::$collection['request']['module']['args']);
+                        $this->module->{$method}(isset(self::$collection['request']['module']['args']) && (!empty(self::$collection['request']['module']['args'])) ? self::$collection['request']['module']['args'] : self::$collection['request']['query']);
                         break;
                     }
                 }
@@ -64,9 +65,15 @@ class Module
         global $config;
         self::$modules_array = array();
         foreach ($modules as $module) {
-            if (isset($module['module_name']) && !empty($module['module_name'])) {
-                if (in_array($module['module_name'], $config['modules'])) {
-                    $this->setModule($module['module_name']);
+            if (isset($module['modules_name']) && !empty($module['modules_name'])) {
+                if (in_array($module['modules_name'], $config['modules']) && $this->moduleAllowedForPage(Url::$url['controller'], $module['modules_name'])) {
+                    self::$silence_flag = 0;
+                    $this->setModule($module['modules_name']);
+                    $this->setTheme(self::$collection['type']);
+                    $this->setAction();
+                } elseif (in_array($module['modules_name'], $config['modules']) && $this->moduleSilenceMode($module['modules_name'])) {
+                    self::$silence_flag = 1;
+                    $this->setModule($module['modules_name']);
                     $this->setTheme(self::$collection['type']);
                     $this->setAction();
                 }
@@ -85,14 +92,18 @@ class Module
     public function render(string $template = 'index')
     {
         $this->preRenderActions();
-        $fetch = self::$module_smarty->fetch($template);
-        self::$modules_array[self::$current_module] = $fetch;
+        if (!self::$silence_flag) {
+            $fetch = self::$module_smarty->fetch($template);
+            self::$modules_array[self::$current_module] = $fetch;
+        }
         $this->postRenderActions();
     }
 
     public function preRenderActions()
     {
-        $this->addHeadLinks();
+        if (!self::$silence_flag) {
+            $this->addHeadLinks();
+        }
     }
 
     public function postRenderActions()
@@ -111,7 +122,7 @@ class Module
     {
         $alert_array = compact('type', 'title', 'message');
         if (!empty($alert_array['type']) && !empty($alert_array['message'])) {
-            $alert = new Alert($alert_array);
+            $alert = new Alerts($alert_array);
             array_push(Page::$collection['alerts'], $alert->getAlert());
         }
     }
@@ -159,17 +170,52 @@ class Module
 
     public function loadModuleController($controller_name)
     {
-        $tools = new Tools();
         if (!empty($controller_name)) {
+            $tools = new Tools();
             return $tools->getModuleController($controller_name, self::$current_module, self::$collection['type']);
         }
     }
 
     public function loadModuleClass($class_name)
     {
-        $tools = new Tools();
         if (!empty($class_name)) {
+            $tools = new Tools();
             $tools->getModuleClass($class_name, self::$current_module, self::$collection['type']);
         }
+    }
+
+    public function moduleAllowedForPage($controller, $module_name)
+    {
+        $tools = new Tools();
+        $allowed = $tools->getModuleAllowedPages($module_name);
+        if (!empty($allowed) && $allowed[0]['modules_pages_allowed'] != 'All') {
+            $pages = explode(',', $allowed[0]['modules_pages_allowed']);
+            foreach ($pages as $key => $value) {
+                if (strtolower($value) === strtolower($controller)) {
+                    return true;
+                }
+            }
+        } elseif ($allowed[0]['modules_pages_allowed'] == 'All') {
+            return true;
+        }
+    }
+
+    public function moduleSilenceMode($module_name)
+    {
+        if (!empty($module_name) && !empty(Url::$url['controller'])) {
+            $tools = new Tools();
+            $silence_pages = $tools->getModuleSilencePages($module_name);
+            if (!empty($silence_pages) && $silence_pages[0]['modules_silence_pages_allowed'] != 'All') {
+                $exploded = explode(',', $silence_pages[0]['modules_silence_pages_allowed']);
+                foreach ($exploded as $page) {
+                    if ($page === Url::$url['controller']) {
+                        return true;
+                    }
+                }
+            } elseif ($silence_pages[0]['modules_silence_pages_allowed'] == 'All') {
+                return true;
+            }
+        }
+
     }
 }

@@ -10,12 +10,15 @@ class loginModule extends Module
 
     public function index()
     {
+        $module_controller = $this->loadModuleController('login');
+        $login_form_action = $module_controller->createLoginFormAction();
+        $this->assignData(array('login_form_action' => $login_form_action));
         $this->render('login.tpl');
     }
 
     public function login(array $args)
     {
-        if (!empty($args['login-form_login']) && !empty($args['login-form_password'])) {
+        if (!empty($args['login_form-login']) && !empty($args['login_form-password'])) {
             $module_controller = $this->loadModuleController('login');
             $results = $module_controller->login($args);
             if (!empty($results) && isset($results[0]->id)) {
@@ -24,12 +27,14 @@ class loginModule extends Module
                     Url::redirectUrl('Index', 'index', array());
                 }
             } else {
-                // $this->assignAlert('danger', 'Login', 'Wrong user name or password.');
-                $this->render('login.tpl');
+                $alerts = new Alerts();
+                $alerts->newAlert('danger', 'Login', 'Wrong user name or password.', 'Login');
+                Url::redirectUrl('Login', 'index', array());
             }
         } else {
-            // $this->assignAlert('warning', 'Login', 'You must enter user login and password.');
-            $this->render('login.tpl');
+            $alerts = new Alerts();
+            $alerts->newAlert('warning', 'Login', 'You must enter user login and password.', 'Login');
+            Url::redirectUrl('Login', 'index', array());
         }
     }
 

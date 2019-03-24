@@ -5,7 +5,6 @@ class Breadcrumbs
 
     public $breadcrumbs_temporary_array = array();
     public $breadcrumbs_array = array();
-    public $type_select;
 
     public function __constructor()
     {
@@ -14,12 +13,12 @@ class Breadcrumbs
 
     public function build(string $controller, string $type)
     {
-        $this->type_select = (!empty($type) && $type == 'front') ? 'front_categories' : 'admin_categories';
+        $type_select = (!empty($type) && $type == 'front') ? 'front_categories' : 'admin_categories';
         if (!empty($controller)) {
             $db = new Db();
             $results = $db->select("*")->
-                from($this->type_select)->
-                where("categories_controller='$controller'")->
+                from("{$type_select}")->
+                where("categories_controller='{$controller}'")->
                 execute("object");
             if (!empty($results)) {
                 array_push($this->breadcrumbs_temporary_array, $results[0]);
@@ -46,10 +45,11 @@ class Breadcrumbs
 
     private function getCategoryById(int $parent_id)
     {
+        $type_select = (!empty($type) && $type == 'front') ? 'front_categories' : 'admin_categories';
         $db = new Db();
         return $db->select("*")->
-            from($this->type_select)->
-            where("id = '$parent_id'")->
+            from("{$type_select}")->
+            where("id='{$parent_id}'")->
             execute("object");
     }
 

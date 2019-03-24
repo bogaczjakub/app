@@ -22,6 +22,9 @@ class dispatcher
             } elseif ($collector->collection['type'] == 'front' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php')) {
                 $config['page']['type'] = $collector->collection['type'];
                 $this->main_controller = new FrontController($collector);
+            } elseif ($collector->collection['type'] == 'ajax' && file_exists(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php') && !empty(GLOBAL_CONTROLLERS_DIR . ucfirst($collector->collection['type']) . 'Controller.php')) {
+                $config['page']['type'] = $collector->collection['type'];
+                $this->main_controller = new AjaxController($collector);
             } else {
                 throw new CustomException('Could not find ' . ucfirst($collector->collection['type']) . ' controller.');
             }

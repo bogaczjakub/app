@@ -2,6 +2,7 @@
 
 define('INCLUDE_PATHS_ADMIN', $config['include_paths']['admin']);
 define('INCLUDE_PATHS_FRONT', $config['include_paths']['front']);
+define('INCLUDE_PATHS_AJAX', $config['include_paths']['ajax']);
 define('INCLUDE_PATHS_GLOBAL', $config['include_paths']['global']);
 define('INCLUDE_PATHS_MODULES', $config['include_paths']['modules']);
 
@@ -79,6 +80,13 @@ function checkPatches($type_name)
             }
         } elseif (!empty($config['page']['type']) && $config['page']['type'] == 'admin') {
             foreach (INCLUDE_PATHS_ADMIN as $path) {
+                $joined_paths = $path . $class_file;
+                if (file_exists($joined_paths) && !empty($joined_paths)) {
+                    array_push($results, $joined_paths);
+                }
+            }
+        } elseif (!empty($config['page']['type']) && $config['page']['type'] == 'ajax') {
+            foreach (INCLUDE_PATHS_AJAX as $path) {
                 $joined_paths = $path . $class_file;
                 if (file_exists($joined_paths) && !empty($joined_paths)) {
                     array_push($results, $joined_paths);

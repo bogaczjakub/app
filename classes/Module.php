@@ -184,7 +184,7 @@ class Module
         }
     }
 
-    public function moduleAllowedForPage($controller, $module_name)
+    public function moduleAllowedForPage(string $controller, string $module_name)
     {
         $tools = new Tools();
         $allowed = $tools->getModuleAllowedPages($module_name);

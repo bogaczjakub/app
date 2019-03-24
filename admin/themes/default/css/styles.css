@@ -5827,14 +5827,24 @@ body,
 
 html body {
   background-color: #f8f8f8; }
+  html body .datepicker {
+    padding: 5px 5px; }
+    html body .datepicker table tr td.active.active {
+      background-color: #337ab7;
+      border-color: #337ab7; }
+      html body .datepicker table tr td.active.active:hover {
+        background-color: #286090;
+        border-color: #204d74; }
   html body #page-container #header-section .navbar-header .navbar-brand {
     display: flex;
     align-items: center;
     justify-content: center;
     -ms-text-justify: center;
     padding: 0 15px; }
-    html body #page-container #header-section .navbar-header .navbar-brand img {
-      height: 80%; }
+    html body #page-container #header-section .navbar-header .navbar-brand .admin-icon {
+      top: 0;
+      margin: 0 4px 0 0;
+      font-size: 22px; }
   html body #page-container #header-section #admin-navbar {
     border-radius: 0;
     border-top: 0;
@@ -5874,25 +5884,54 @@ html body {
         font-size: 12px; }
   html body #page-container #content-section #content-container #top #breadcrumb .breadcrumb {
     background-color: #ffffff; }
-  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-heading {
+  html body #page-container #content-section #content-container #content-row #center-column .panel.collapsed .panel-body,
+  html body #page-container #content-section #content-container #content-row #center-column .panel.collapsed .panel-footer {
+    display: none; }
+  html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-heading {
     display: flex;
     justify-content: space-between;
     align-items: center; }
-    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-heading .window-buttons button {
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-heading .window-buttons button {
       font-size: 9px;
       padding: 2px 4px; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-heading .window-buttons button:last-child {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-heading .window-buttons button:last-child {
         margin-left: 5px; }
-  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form table tbody tr td .checkbox {
-    padding-top: 0px; }
-  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group {
+  html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a {
+    color: black; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a .sort {
+      display: inline-block;
+      margin-left: 4px;
+      cursor: pointer; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a .sort.asc .caret-asc {
+        border-top-color: darkgrey; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a .sort.asc .caret-desc {
+        border-top-color: black; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a .sort.desc .caret-asc {
+        border-top-color: black; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a .sort.desc .caret-desc {
+        border-top-color: darkgrey; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a .sort .caret {
+        margin: 0;
+        display: block; }
+        html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table thead th a .sort .caret.caret-asc {
+          transform: rotate(180deg);
+          margin-bottom: 2px; }
+  html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table tbody tr {
+    cursor: pointer; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table tbody tr:hover {
+      background-color: #f2f2f2; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table tbody tr.selected-row {
+      background-color: #f2f2f2; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form table tbody tr td .checkbox {
+      padding-top: 0px; }
+  html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group {
     background-color: #f8f8f8;
     border-radius: 4px;
     margin: 1% 5%;
     display: flex;
     justify-content: center;
     align-items: stretch; }
-    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-left {
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-left {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -5902,57 +5941,66 @@ html body {
       padding: 15px 30px;
       border-bottom-left-radius: 4px;
       flex-direction: column; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-left label {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-left label {
         padding: 0; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-left .update-info {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-left .update-info {
         font-size: 10px;
         margin: 5px 0;
         font-style: italic;
         color: darkgrey; }
-    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right {
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right {
       padding: 15px 30px;
       display: flex;
       justify-content: start;
       align-items: start;
       flex-direction: column; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-on {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-on {
         color: #fff;
         background-color: #5cb85c;
         border-color: #4cae4c; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-off {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-off {
         color: #333;
         background-color: #fff;
         border-color: #ccc; }
-        html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-off:hover {
+        html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-on .btn-switch-off:hover {
           color: #333;
           background-color: #e6e6e6;
           border-color: #adadad; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-on {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-on {
         color: #333;
         background-color: #fff;
         border-color: #ccc; }
-        html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-on:hover {
+        html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-on:hover {
           color: #333;
           background-color: #e6e6e6;
           border-color: #adadad; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-off {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn-switch.switch-off .btn-switch-off {
         color: #fff;
         background-color: #d9534f;
         border-color: #d43f3a; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .alert {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .form-control,
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn {
+        margin-bottom: 5px; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .input-group {
+        margin-bottom: 5px; }
+        html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .input-group .input-group-addon {
+          cursor: pointer; }
+        html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .input-group > input {
+          margin: 0px !important; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert {
         padding: 4px 8px;
-        margin: 5px 0;
-        font-size: 12px; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .glyphicon {
+        font-size: 12px;
+        margin-bottom: 0; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert-info .glyphicon {
         margin-right: 5px; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right textarea {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right textarea {
         min-height: 150px; }
-      html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-body .admin-form .form-group .admin-form-right .cke {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .cke {
         border-radius: 4px;
         padding: 2px 0; }
-  html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-footer button {
+  html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-footer button {
     margin-left: 5px; }
-    html body #page-container #content-section #content-container #content-row #center-column .form-panel .panel-footer button .glyphicon {
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-footer button .glyphicon {
       margin-right: 5px; }
   html body #page-container #content-section #content-container #content-row #center-column #alerts .alert {
     display: flex;

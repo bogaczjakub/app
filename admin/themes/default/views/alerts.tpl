@@ -11,7 +11,7 @@
         {elseif $alert.alerts_type == "info"}
         <span class="glyphicon glyphicon-info-sign"></span>
         {/if}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="alert" data-alert-id="{$alert.id}" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <div class="alert-content">
             {if !empty($alert.alerts_title)}
             <h5><strong>{$alert.alerts_title}</strong></h5>

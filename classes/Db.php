@@ -225,13 +225,28 @@ class Db
         }
     }
 
-    public function orderBy($chunk, $direction = 'ASC')
+    public function limit($chunk)
+    {
+        try {
+            if (end($this->query['function']) == 'where' || end($this->query['function']) == 'from' || end($this->query['function']) == 'orderBy') {
+                array_push($this->query['function'], __FUNCTION__);
+                array_push($this->query['string'], "LIMIT $chunk ");
+                return $this;
+            } else {
+                throw new CustomException('Incorrect database query string');
+            }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
+        }
+    }
+
+    public function orderBy($chunk)
     {
         try {
             if (end($this->query['function']) == 'where' || end($this->query['function']) == 'from' || end($this->query['function']) == 'on') {
                 array_push($this->query['function'], __FUNCTION__);
                 array_push($this->query['string'], "ORDER BY $chunk");
-                array_push($this->query['string'], "$direction");
                 return $this;
             } else {
                 throw new CustomException('Incorrect database query string');

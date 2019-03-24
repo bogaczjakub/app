@@ -13,11 +13,15 @@ class Url
     public function requestToArray()
     {
         $query_array = array();
-        self::$url = array('path' => '', 'query' => array(), 'controller' => '', 'action' => '', 'module' => array());
+        self::$url = array('path' => '', 'query' => array(), 'controller' => '', 'action' => '', 'module' => array(), 'ajax' => false);
         extract(parse_url($_SERVER['REQUEST_URI']));
         self::$url['path'] = $path;
         if (isset($query)) {
             parse_str($query, $query_array);
+        }
+        if (isset($query_array['ajax'])) {
+            self::$url['ajax'] = $query_array['ajax'];
+            unset($query_array['ajax']);
         }
         if (isset($query_array['controller'])) {
             self::$url['controller'] = $query_array['controller'];
@@ -79,11 +83,53 @@ class Url
         }
     }
 
-    public static function buildPageUrl(string $page_controller, string $page_action)
+    public static function buildPageUrl(string $page_controller, string $page_action, array $params = null, bool $table = false)
     {
         $page_controller = (empty($page_controller) || $page_controller = 'this') ? self::$url['controller'] : $page_controller;
         $page_action = (empty($page_controller)) ? self::$url['action'] : $page_action;
-        return $_SERVER['PHP_SELF'] . '?controller=' . $page_controller . '&action=' . $page_action;
+        $query_params = '&';
+        if ($table) {
+            $table_query_array = array(
+                'page' => '',
+                'sort' => array(),
+            );
+            if (isset($params['page']) && !empty($params['page'])) {
+                $table_query_array['page'] = $params['page'];
+                if (isset(self::$url['query']['sort']) && !empty(self::$url['query']['sort'])) {
+                    $table_query_array['sort'] = self::$url['query']['sort'];
+                } else {
+                    $table_query_array['sort'] = '';
+                }
+            } else {
+                $table_query_array['page'] = 1;
+            }
+            if (isset($params['sort']) && !empty($params['sort'])) {
+                if (isset(self::$url['query']['sort']) && !empty(self::$url['query']['sort'])) {
+                    $merge_sort = array_merge( self::$url['query']['sort'], $params['sort']);
+                    $table_query_array['sort'] = $merge_sort;
+                    if (isset(self::$url['query']['page']) && !empty(self::$url['query']['page'])) {
+                        $table_query_array['page'] = self::$url['query']['page'];
+                    } else {
+                        $table_query_array['page'] = 1;
+                    }
+                } else {
+                    $table_query_array['sort'] = $params['sort'];
+                    if (isset(self::$url['query']['page']) && !empty(self::$url['query']['page'])) {
+                        $table_query_array['page'] = self::$url['query']['page'];
+                    } else {
+                        $table_query_array['page'] = 1;
+                    }
+                }
+            }
+            $query_params .= http_build_query($table_query_array);
+        } else {
+            if (!empty($params)) {
+                $query_params .= http_build_query($params);
+            } else {
+                $query_params = '';
+            }
+        }
+        return $_SERVER['PHP_SELF'] . '?controller=' . $page_controller . '&action=' . $page_action . $query_params;
     }
 
 }

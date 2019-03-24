@@ -3,7 +3,11 @@
 class Alerts
 {
     public $alert_array = array();
-    public $new_alert = array('alert_type' => '', 'alert_title' => '', 'alert_message' => '', 'alert_controller' => '', 'alert_site' => '');
+    public $new_alert = array('alert_type' => '',
+        'alert_title' => '',
+        'alert_message' => '',
+        'alert_controller' => '',
+        'alert_site' => '');
 
     public function __construct()
     {
@@ -22,7 +26,7 @@ class Alerts
             $db = new Db();
             extract($this->new_alert);
             $results = $db->insert("global_alerts")->
-                values("'0','$alert_controller','$alert_type','$alert_title','$alert_message','$alert_site'")->
+                values("'0','{$alert_controller}','{$alert_type}','{$alert_title}','{$alert_message}','{$alert_site}'")->
                 execute('bool');
         }
     }
@@ -33,7 +37,7 @@ class Alerts
             $db = new Db();
             $alerts = $db->select("id,alerts_type,alerts_title,alerts_message")->
                 from("global_alerts")->
-                where("alerts_page_controller='$controller'")->
+                where("alerts_page_controller='{$controller}'")->
                 execute("assoc");
             if (!empty($alerts)) {
                 return $alerts;
@@ -84,7 +88,7 @@ class Alerts
             $db = new Db();
             $alerts_count = $db->select("COUNT(*) as count")->
                 from("global_alerts")->
-                where("alerts_page_controller='$controller'")->
+                where("alerts_page_controller='{$controller}'")->
                 execute("assoc");
             if (!empty($alerts_count)) {
                 return $alerts_count;
@@ -92,4 +96,14 @@ class Alerts
         }
     }
 
+    public function alertDissmis(array $request)
+    {
+        if (isset($request['query']['id']) && !empty($request['query']['id'])) {
+            $db = new Db();
+            return $db->delete()->
+                from("global_alerts")->
+                where("id={$request['query']['id']}")->
+                execute("bool");
+        }
+    }
 }

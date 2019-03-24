@@ -7,20 +7,20 @@ class Tools
 
     }
 
-    public static function checkExisting($file, $type)
+    public static function checkExisting(string $file, string $type)
     {
         global $config;
         if (!empty($type) && !empty($file)) {
             switch ($type) {
                 case 'controller':
-                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . $file . 'Controller.php')) {
+                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . $file . 'Controller.php') || file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . $file . 'Controller.php')) {
                         return true;
                     } else {
                         return false;
                     }
                     break;
                 case 'class':
-                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . $file . '.php')) {
+                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . $file . '.php') || file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . $file . '.php')) {
                         return true;
                     } else {
                         return false;
@@ -63,10 +63,14 @@ class Tools
         if (!empty($type)) {
             $type_select = $type == 'admin' ? ADMIN_THEMES : FRONT_THEMES;
             $styles_file = $type_select . $theme . DS . 'css' . DS . 'styles.css';
+            $ajax_file = $type_select . $theme . DS . 'js' . DS . 'ajax.js';
             $scripts_file = $type_select . $theme . DS . 'js' . DS . 'scripts.js';
             $forms_file = $type_select . $theme . DS . 'js' . DS . 'forms.js';
             if (file_exists($styles_file) && !empty($styles_file)) {
                 array_push($head_links['css'], self::returnAbsolutePath($styles_file));
+            }
+            if (file_exists($scripts_file) && !empty($ajax_file)) {
+                array_push($head_links['js'], self::returnAbsolutePath($ajax_file));
             }
             if (file_exists($scripts_file) && !empty($scripts_file)) {
                 array_push($head_links['js'], self::returnAbsolutePath($scripts_file));
@@ -173,7 +177,7 @@ class Tools
 
     }
 
-    public static function returnAbsolutePath($path)
+    public static function returnAbsolutePath(string $path)
     {
         if (!empty($path)) {
             $absolute_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $path);
@@ -181,7 +185,7 @@ class Tools
         }
     }
 
-    public function getGapModules($gap)
+    public function getGapModules(string $gap)
     {
         if (!empty($gap)) {
             $db = new Db();
@@ -191,12 +195,12 @@ class Tools
                 on("global_modules.id=system_modules_gaps.modules_id")->
                 innerJoin("system_gaps")->
                 on("system_modules_gaps.gaps_id=system_gaps.id")->
-                where("system_gaps.gaps_name='".$gap."'")->
+                where("system_gaps.gaps_name='{$gap}'")->
                 execute('assoc');
         }
     }
 
-    public function getModuleController($controller_name, $module_name, $type)
+    public function getModuleController(string $controller_name, string $module_name, string $type)
     {
         $controller_postfix = $controller_name . 'ModuleController';
         $controller_file = MODULES_DIR . $module_name . DS . $type . DS . 'controllers' . DS . $controller_postfix . '.php';
@@ -220,7 +224,7 @@ class Tools
             $db = new Db();
             return $results = $db->select("modules_pages_allowed")->
                 from("global_modules")->
-                where("modules_name='$module_name'")->
+                where("modules_name='{$module_name}'")->
                 execute("assoc");
         }
     }
@@ -231,7 +235,7 @@ class Tools
             $db = new Db();
             return $db->select("modules_silence_pages_allowed")->
                 from("global_modules")->
-                where("modules_name='$module_name'")->
+                where("modules_name='{$module_name}'")->
                 execute('assoc');
         }
     }
@@ -252,5 +256,21 @@ class Tools
             }
         }
         return $input;
+    }
+
+    public static function protector(string $table_name, string $forbidden_action, array $ids)
+    {
+        if (!empty($table_name) && !empty($forbidden_action)) {
+            $db = new Db();
+            $protected = $db->select("protected_data_row_id")->
+                from("system_protected_data")->
+                where("protected_data_forbidden_action='{$forbidden_action}' AND protected_data_table_name='{$table_name}'")->
+                execute("assoc");
+            if (!empty($protected) && !empty($ids)) {
+                return array_diff($ids, array_column($protected, 'protected_data_row_id'));
+            } else if (!empty($ids)) {
+                return $ids;
+            }
+        }
     }
 }

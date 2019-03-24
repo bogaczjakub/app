@@ -37,4 +37,15 @@ class loginModuleController
             return true;
         }
     }
+
+    public function createLoginFormAction()
+    {
+        $form_params = array(
+            'module' => array(
+                'name' => 'login',
+                'action' => 'login'
+            )
+        );
+        return Url::buildPageUrl('Login', 'index', $form_params);
+    }
 }

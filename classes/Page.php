@@ -98,7 +98,11 @@ class Page
                     self::$smarty->assign('page_forms', self::$collection['page_forms']);
                     self::$smarty->assign('page_url', Url::$page_url);
                     self::$smarty->assign('session', $_SESSION);
-                    self::$smarty->display(self::$collection['theme_index']);
+                    if (isset(self::$collection['request']['ajax']) && self::$collection['request']['ajax'] == true) {
+                        self::$smarty->display($template_path);
+                    }else {
+                        self::$smarty->display(self::$collection['theme_index']);
+                    }
                 } else {
                     throw new CustomException('Could not find ' . $template . ' template.');
                 }
@@ -111,7 +115,7 @@ class Page
         $this->postRenderActions();
     }
 
-    public function display(string $template = 'index')
+    public function display(string $template)
     {
         if (self::$passive) {
             $this->render($template);

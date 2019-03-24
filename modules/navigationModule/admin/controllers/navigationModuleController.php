@@ -44,29 +44,31 @@ class navigationModuleController
             $subcategories = $this->navigation_model->getCategoryByParent($category->id);
             if ($category->id != 1) {
                 $active_category = ($category->categories_controller == Url::$url['controller']);
-                $this->html .= '<li ' . ($active_category ? 'class="active"' : '');
-                if ($active_category) {
-
-                }
-                $this->html .= ($subcategories ? ' class="parent"' : '');
-                $this->html .= 'role="presentation"><a target="_self" href="' . $this->buildCategoryLink($category->categories_controller) . '">';
-                if (!empty($category->categories_icon) && $category->categories_level == 1) {
-                    $this->html .= '<span class="glyphicon ' . $category->categories_icon . '" aria-hidden="true"></span>';
-                }
-                $this->html .= '<span class="category-name">' . ucfirst($category->categories_name) . '</span>';
-                $badges = Alerts::getAlertsCount($category->categories_controller);
-                if ($badges[0]['count'] > 0) {
-                    $this->html .= '<span class="badge">' . $badges[0]['count'] . '</span>';
-                }
-                if ($subcategories) {
-                    $this->html .= '<span class="caret"></span>';
-                    $this->html .= '</a>';
-                    $this->html .= '<ul class="nav nav-pills nav-stacked subcategory-nav">';
-                    $this->categoryLevelBuild($category->id);
-                    $this->html .= '</ul>';
-                } else {
-                    $this->html .= '</a>';
-                    $this->html .= '</li>';
+                $allow_display = $this->navigation_model->categoryAllowedToDisplay($category->id);
+                if ($allow_display[0]['categories_display']) {
+                    $this->html .= '<li ' . ($active_category ? 'class="active"' : '');
+                    $this->html .= ($subcategories ? ' class="parent"' : '');
+                    $this->html .= 'role="presentation"><a target="_self" href="' . $this->buildCategoryLink($category->categories_controller) . '">';
+                    if (!empty($category->categories_icon) && $category->categories_level == 1) {
+                        $this->html .= '<span class="glyphicon ' . $category->categories_icon . '" aria-hidden="true"></span>';
+                    }
+                    $this->html .= '<span class="category-name">' . ucfirst($category->categories_name) . '</span>';
+                    $badges = Alerts::getAlertsCount($category->categories_controller);
+                    if ($badges[0]['count'] > 0) {
+                        $this->html .= '<span class="badge">' . $badges[0]['count'] . '</span>';
+                    }
+                    if ($subcategories) {
+                        $this->html .= '<span class="caret-container badge">';
+                        $this->html .= '<span class="caret"></span>';
+                        $this->html .= '</span>';
+                        $this->html .= '</a>';
+                        $this->html .= '<ul class="nav nav-pills nav-stacked subcategory-nav">';
+                        $this->categoryLevelBuild($category->id);
+                        $this->html .= '</ul>';
+                    } else {
+                        $this->html .= '</a>';
+                        $this->html .= '</li>';
+                    }
                 }
             } else {
                 $this->categoryLevelBuild($category->id);

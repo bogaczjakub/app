@@ -22,6 +22,21 @@ html {
     body {
         background-color: #f8f8f8;
 
+        .datepicker {
+            padding: 5px 5px;
+
+            table tr td.active.active {
+                background-color: #337ab7;
+                border-color: #337ab7;
+
+                &:hover {
+                    background-color: #286090;
+                    border-color: #204d74;
+                }
+            }
+        }
+
+
         #page-container {
 
 
@@ -36,8 +51,10 @@ html {
                         -ms-text-justify: center;
                         padding: 0 15px;
 
-                        img {
-                            height: 80%;
+                        .admin-icon {
+                            top: 0;
+                            margin: 0 4px 0 0;
+                            font-size: 22px;
                         }
                     }
                 }
@@ -120,160 +137,241 @@ html {
 
                     #content-row {
                         #center-column {
-                            .form-panel {
+                            .panel {
+                                &.collapsed {
 
-                                .form-panel-save {}
-
-                                .panel-heading {
-                                    display: flex;
-                                    justify-content: space-between;
-                                    align-items: center;
-
-                                    .table-name {}
-
-                                    .window-buttons {
-                                        button {
-                                            &:last-child {
-                                                margin-left: 5px;
-                                            }
-
-                                            font-size: 9px;
-                                            padding: 2px 4px;
-                                        }
+                                    .panel-body,
+                                    .panel-footer {
+                                        display: none;
                                     }
                                 }
 
-                                .panel-body {
-                                    .admin-form {
-                                        table {
-                                            td {
-                                            }
-                                            thead {
-                                                th {
+                                &.form-panel {
+
+                                    .form-panel-save {}
+
+                                    .panel-heading {
+                                        display: flex;
+                                        justify-content: space-between;
+                                        align-items: center;
+
+                                        .table-name {}
+
+                                        .window-buttons {
+                                            button {
+                                                &:last-child {
+                                                    margin-left: 5px;
                                                 }
+
+                                                font-size: 9px;
+                                                padding: 2px 4px;
                                             }
-                                            tbody {
-                                                tr {
-                                                    td {
-                                                        .checkbox {
-                                                            padding-top: 0px;
+                                        }
+                                    }
+
+                                    .panel-body {
+                                        .admin-form {
+                                            table {
+                                                td {}
+
+                                                thead {
+                                                    th {
+                                                        a {
+                                                            color: black;
+
+                                                            .sort {
+                                                                display: inline-block;
+                                                                margin-left: 4px;
+                                                                cursor: pointer;
+
+                                                                &.asc {
+                                                                    .caret-asc {
+                                                                        border-top-color: darkgrey;
+                                                                    }
+
+                                                                    .caret-desc {
+                                                                        border-top-color: black;
+                                                                    }
+                                                                }
+
+                                                                &.desc {
+                                                                    .caret-asc {
+                                                                        border-top-color: black;
+                                                                    }
+
+                                                                    .caret-desc {
+                                                                        border-top-color: darkgrey;
+                                                                    }
+                                                                }
+
+                                                                .caret {
+                                                                    margin: 0;
+                                                                    display: block;
+
+                                                                    &.caret-asc {
+                                                                        transform: rotate(180deg);
+                                                                        margin-bottom: 2px;
+                                                                    }
+
+                                                                    &.caret-desc {}
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                tbody {
+                                                    tr {
+                                                        &:hover {
+                                                            background-color: #f2f2f2;
+                                                        }
+
+                                                        &.selected-row {
+                                                            background-color: #f2f2f2;
+                                                        }
+
+                                                        cursor: pointer;
+
+                                                        td {
+                                                            .checkbox {
+                                                                padding-top: 0px;
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
-                                        }
 
-                                        .form-group {
-                                            background-color: #f8f8f8;
-                                            border-radius: 4px;
-                                            margin: 1% 5%;
+                                            .form-group {
+                                                background-color: #f8f8f8;
+                                                border-radius: 4px;
+                                                margin: 1% 5%;
 
-                                            display: flex;
-                                            justify-content: center;
-                                            align-items: stretch;
-
-                                            .admin-form-left {
                                                 display: flex;
                                                 justify-content: center;
-                                                align-items: center;
-                                                padding: 10px 0;
-                                                background-color: #f2f2f2;
-                                                border-top-left-radius: 4px;
-                                                padding: 15px 30px;
-                                                border-bottom-left-radius: 4px;
-                                                flex-direction: column;
+                                                align-items: stretch;
 
-                                                label {
-                                                    padding: 0;
+                                                .admin-form-left {
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    padding: 10px 0;
+                                                    background-color: #f2f2f2;
+                                                    border-top-left-radius: 4px;
+                                                    padding: 15px 30px;
+                                                    border-bottom-left-radius: 4px;
+                                                    flex-direction: column;
+
+                                                    label {
+                                                        padding: 0;
+                                                    }
+
+                                                    .update-info {
+                                                        font-size: 10px;
+                                                        margin: 5px 0;
+                                                        font-style: italic;
+                                                        color: darkgrey;
+                                                    }
                                                 }
 
-                                                .update-info {
-                                                    font-size: 10px;
-                                                    margin: 5px 0;
-                                                    font-style: italic;
-                                                    color: darkgrey;
-                                                }
-                                            }
+                                                .admin-form-right {
+                                                    padding: 15px 30px;
+                                                    display: flex;
+                                                    justify-content: start;
+                                                    align-items: start;
+                                                    flex-direction: column;
 
-                                            .admin-form-right {
-                                                padding: 15px 30px;
-                                                display: flex;
-                                                justify-content: start;
-                                                align-items: start;
-                                                flex-direction: column;
+                                                    .btn-switch {
+                                                        &.switch-on {
+                                                            .btn-switch-on {
+                                                                color: #fff;
+                                                                background-color: #5cb85c;
+                                                                border-color: #4cae4c;
+                                                            }
 
-                                                .btn-switch {
-                                                    &.switch-on {
-                                                        .btn-switch-on {
-                                                            color: #fff;
-                                                            background-color: #5cb85c;
-                                                            border-color: #4cae4c;
+                                                            .btn-switch-off {
+                                                                color: #333;
+                                                                background-color: #fff;
+                                                                border-color: #ccc;
+
+                                                                &:hover {
+                                                                    color: #333;
+                                                                    background-color: #e6e6e6;
+                                                                    border-color: #adadad;
+                                                                }
+                                                            }
                                                         }
 
-                                                        .btn-switch-off {
-                                                            color: #333;
-                                                            background-color: #fff;
-                                                            border-color: #ccc;
-
-                                                            &:hover {
+                                                        &.switch-off {
+                                                            .btn-switch-on {
                                                                 color: #333;
-                                                                background-color: #e6e6e6;
-                                                                border-color: #adadad;
+                                                                background-color: #fff;
+                                                                border-color: #ccc;
+
+                                                                &:hover {
+                                                                    color: #333;
+                                                                    background-color: #e6e6e6;
+                                                                    border-color: #adadad;
+                                                                }
+                                                            }
+
+                                                            .btn-switch-off {
+                                                                color: #fff;
+                                                                background-color: #d9534f;
+                                                                border-color: #d43f3a;
                                                             }
                                                         }
                                                     }
 
-                                                    &.switch-off {
-                                                        .btn-switch-on {
-                                                            color: #333;
-                                                            background-color: #fff;
-                                                            border-color: #ccc;
+                                                    .form-control,
+                                                    .btn {
+                                                        margin-bottom: 5px;
+                                                    }
 
-                                                            &:hover {
-                                                                color: #333;
-                                                                background-color: #e6e6e6;
-                                                                border-color: #adadad;
-                                                            }
+                                                    .input-group {
+                                                        margin-bottom: 5px;
+
+                                                        .input-group-addon {
+                                                            cursor: pointer;
                                                         }
 
-                                                        .btn-switch-off {
-                                                            color: #fff;
-                                                            background-color: #d9534f;
-                                                            border-color: #d43f3a;
+                                                        &>input {
+                                                            margin: 0px !important;
                                                         }
+                                                    }
+
+                                                    .alert {
+                                                        padding: 4px 8px;
+                                                        font-size: 12px;
+                                                        margin-bottom: 0;
+                                                    }
+
+                                                    .alert-info {
+                                                        .glyphicon {
+                                                            margin-right: 5px;
+                                                        }
+                                                    }
+
+                                                    textarea {
+                                                        min-height: 150px;
+                                                    }
+
+                                                    .cke {
+                                                        border-radius: 4px;
+                                                        padding: 2px 0;
                                                     }
                                                 }
 
-                                                .alert {
-                                                    padding: 4px 8px;
-                                                    margin: 5px 0;
-                                                    font-size: 12px;
-                                                }
-
-                                                .glyphicon {
-                                                    margin-right: 5px;
-                                                }
-
-                                                textarea {
-                                                    min-height: 150px;
-                                                }
-
-                                                .cke {
-                                                    border-radius: 4px;
-                                                    padding: 2px 0;
-                                                }
                                             }
-
                                         }
                                     }
-                                }
 
-                                .panel-footer {
-                                    button {
-                                        margin-left: 5px;
+                                    .panel-footer {
+                                        button {
+                                            margin-left: 5px;
 
-                                        .glyphicon {
-                                            margin-right: 5px;
+                                            .glyphicon {
+                                                margin-right: 5px;
+                                            }
                                         }
                                     }
                                 }

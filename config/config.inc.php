@@ -20,7 +20,7 @@ $config = array(
         'Alerts',
         'Breadcrumbs',
         'Forms',
-        'Tables'
+        'Tables',
     ),
     'modules' => array(
         'navigation',
@@ -32,9 +32,13 @@ $config = array(
             $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR,
             $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR),
         'front' => array(
-            $_SERVER['DOCUMENT_ROOT'] . '/front' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR,
-            $_SERVER['DOCUMENT_ROOT'] . '/front' . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR,
-            $_SERVER['DOCUMENT_ROOT'] . '/front' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR),
+            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR,
+            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR,
+            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR),
+        'ajax' => array(
+            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR,
+            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR,
+        ),
         'global' => array(
             $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR,
             $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR,
@@ -46,13 +50,17 @@ $config = array(
     ),
     'global_libs' => array(
         'front' => array(),
-        'admin' => array(),
+        'admin' => array(
+            'datepicker' => array(
+                'js/bootstrap-datepicker.min.js',
+                'css/bootstrap-datepicker3.min.css',
+            )
+        ),
         'all' => array(
             'jquery' => array(
                 'dist/jquery.min.js',
             ),
             'bootstrap' => array(
-                // 'assets' . DIRECTORY_SEPARATOR . 'javascripts' . DIRECTORY_SEPARATOR . 'bootstrap.min.js',
                 'assets' . DIRECTORY_SEPARATOR . 'javascripts' . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . '*',
             ),
             'ckeditor' => array(

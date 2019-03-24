@@ -9,11 +9,11 @@ class loginModuleModel
 
     public function login(array $args)
     {
-        if (isset($args['login-form_login']) && isset($args['login-form_password'])) {
+        if (isset($args['login_form-login']) && isset($args['login_form-password'])) {
             $db = new Db();
             return $db->select("id")->
                 from("admin_users")->
-                where("users_login = '" . $db->escapeString($args['login-form_login']) . "' AND users_password = '" . $db->escapeString(md5($args['login-form_password'])) . "'")->
+                where("users_login='{$db->escapeString($args['login_form-login'])}' AND users_password='{$db->escapeString(md5($args['login_form-password']))}'")->
                 execute("object");
         }
     }
@@ -24,7 +24,7 @@ class loginModuleModel
             $db = new Db();
             return $db->select("*")->
                 from("admin_users")->
-                where("id = '$user_id'")->
+                where("id = '{$user_id}'")->
                 execute("assoc");
         }
     }
@@ -35,7 +35,7 @@ class loginModuleModel
         $timestamp = date('Y-m-d H:i:s');
         $user_id = $user_array[0]['id'];
         return $db->insert("admin_logins")->
-            values("'0','$user_id','$timestamp'")->
+            values("'0','{$user_id}','{$timestamp}'")->
             execute('bool');
     }
 }

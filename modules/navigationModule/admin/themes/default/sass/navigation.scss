@@ -24,12 +24,24 @@
                             }
                         }
 
+                        .caret-container {
+                            text-align: center;
+                            background-color: #f2f2f2;
+                            padding: 3px 6px;
+                            .caret {
+                                margin: 0;
+                                color: #337ab7;
+                            }
+                        }
+
                     }
 
                     &.opened {
                         &>a {
-                            &>.caret {
-                                transform: rotate(180deg);
+                            .caret-container {
+                                &>.caret {
+                                    transform: rotate(180deg);
+                                }
                             }
                         }
 

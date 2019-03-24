@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a href="" class="navbar-brand">
-                <!-- <img alt="brand" src="{$global_details['images_directory']}app_icon.png"> -->
+                <span class="glyphicon glyphicon-cog admin-icon"></span>
                 Admin panel
             </a>
         </div>

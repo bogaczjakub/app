@@ -78,9 +78,38 @@ class Tables
         return $new_table;
     }
 
-    public function getTableForAdd()
+    public function getTableForAdd(string $table_name, array $columns, array $args)
     {
-
+        $table_columns = self::getTableColumnNames($table_name);
+        $new_table = array();
+        foreach ($table_columns as $column) {
+            $check = array_search(strtolower($column['Field']), $columns);
+            if (is_numeric($check)) {
+                $single_type = ($column['Type'] == 'datetime' || $column['Type'] == 'timestamp' || $column['Type'] == 'time' || $column['Type'] == 'date') ? 1 : 0;
+                if (!$single_type) {
+                    $column_type = substr($column['Type'], 0, strpos($column['Type'], '('));
+                }
+                $new_table[$table_name][$column['Field']]['setting_name'] = $column['Field'];
+                if ($single_type) {
+                    $new_table[$table_name][$column['Field']]['setting_type'] = $column['Type'];
+                } else {
+                    $new_table[$table_name][$column['Field']]['setting_type'] = $column_type;
+                    if ($column_type == 'enum' || $column_type == 'set') {
+                        if ($column_type == 'enum') {
+                            $values = preg_match('/^enum\(\'(.*)\'\)$/', $column['Type'], $matches);
+                        } else if ($column_type == 'set') {
+                            $values = preg_match('/^set\(\'(.*)\'\)$/', $column['Type'], $matches);
+                        }
+                        if ($values) {
+                            $exploded = explode("','", $matches[1]);
+                            $new_table[$table_name][$column['Field']]['multiple_fields'] = $exploded;
+                        }
+                    }
+                }
+                $new_table[$table_name][$column['Field']]['setting_information'] = $column['Comment'];
+            }
+        }
+        return $new_table;
     }
 
     public function buildTablePagination(string $table_name, array $args)
@@ -121,25 +150,6 @@ class Tables
         return $pagination_html;
     }
 
-    public static function getTableCount(string $table_name)
-    {
-        if (!empty($table_name)) {
-            $db = new Db();
-            return $db->select("COUNT(*) as count")->
-                from("{$table_name}")->
-                execute("assoc");
-        }
-    }
-
-    public static function getTableColumnNames(string $table_name)
-    {
-        if (!empty($table_name)) {
-            $db = new Db();
-            return $db->customQuery("SHOW FULL COLUMNS FROM {$table_name}")->
-                execute("assoc");
-        }
-    }
-
     public static function createColumnName(string $table_name, string $column_name)
     {
         $exploded_name = explode('_', $column_name);
@@ -159,7 +169,7 @@ class Tables
             execute("assoc");
     }
 
-    private function prepareTableRemoveQuery(string $table_name, string $where_query)
+    private function prepareRemoveQuery(string $table_name, string $where_query)
     {
         $db = new Db();
         return $db->delete()->
@@ -174,7 +184,16 @@ class Tables
         return $db->update("{$table_name}")->
             set("{$set}")->
             where("{$where}")->
-            execute("print");
+            execute("bool");
+    }
+
+    private function prepareSaveQuery(string $table_name, string $columns, string $values)
+    {
+        $db = new Db();
+        return $db->insert("{$table_name}")->
+            columns("{$columns}")->
+            values("{$values}")->
+            execute("bool");
     }
 
     private function getQuerySelect(array $columns)
@@ -199,32 +218,25 @@ class Tables
         return $limit;
     }
 
-    private function getQuerySet(array $columns, string $table_name, array $ids)
+    private function getQuerySet(array $columns, string $table_name)
     {
-        if (isset($columns['change-password']['value']) &&
-            !empty($columns['change-password']['value']) &&
-            $columns['change-password']['value'] == 1 &&
-            isset($columns['change-password-old']['value']) &&
-            !empty($columns['change-password-old']['value']) &&
-            isset($columns['change-password-new']['value']) &&
-            !empty($columns['change-password-new']['value']) &&
-            isset($columns['change-password-repeat']['value']) &&
-            !empty($columns['change-password-repeat']['value'])) {
-            if (array_sum($this->confirmPassword($columns['change-password-old']['value'], $ids, $table_name))) {
-                if ($columns['change-password-new'] === $columns['change-password-repeat']) {
-                    echo 'ok!';
-                }
-            }
-        }
         $set_string = '';
+        $counter = 0;
+        $counts = count($columns) - 1;
         foreach ($columns as $column_name => $column) {
             if ($column['type'] != 'set') {
-
-                $set_string .= $column_name . "='" . $column['value'] . "' ";
+                $set_string .= $column_name . "='" . $column['value'] . "'";
+                if ($counter != $counts) {
+                    $set_string .= ', ';
+                }
             } else {
                 $imploded = implode(',', $column['value']);
-                $set_string .= $column_name . "='" . $imploded . "' ";
+                $set_string .= $column_name . "='" . $imploded . "'";
+                if ($counter != $counts) {
+                    $set_string .= ', ';
+                }
             }
+            $counter++;
         }
         return $set_string;
     }
@@ -247,11 +259,12 @@ class Tables
         return $orderby;
     }
 
-    private function getQueryWhere(array $ids, string $counts)
+    private function getQueryWhere(array $ids)
     {
+        $where_query = 'id IN (';
+        $counter = 0;
+        $counts = (count($ids) - 1);
         if (is_array($ids)) {
-            $where_query = 'id IN (';
-            $counter = 0;
             if (!empty($ids)) {
                 foreach ($ids as $id) {
                     $where_query .= $id;
@@ -271,12 +284,49 @@ class Tables
         }
     }
 
+    private function getQueryColumns(string $table_name, array $columns)
+    {
+        $columns_string = '';
+        $counter = 0;
+        $counts = (count($columns) - 1);
+        foreach ($columns as $column_key => $column) {
+            $columns_string .= $column_key;
+            if ($counter != $counts) {
+                $columns_string .= ', ';
+            }
+            $counter++;
+        }
+        return $columns_string;
+    }
+
+    private function getQueryValues(string $table_name, array $values)
+    {
+        $values_string = '';
+        $counter = 0;
+        $counts = (count($values) - 1);
+        foreach ($values as $value_key => $value) {
+            if ($value['type'] != 'set') {
+                $values_string .= "'" . $value['value'] . "'";
+                if ($counter != $counts) {
+                    $values_string .= ', ';
+                }
+            } else {
+                $imploded = implode(',', $value['value']);
+                $values_string .= "'" . $imploded . "'";
+                if ($counter != $counts) {
+                    $values_string .= ', ';
+                }
+            }
+            $counter++;
+        }
+        return $values_string;
+    }
+
     private function getTableRows(string $table_name, array $args)
     {
         $items_name = $table_name . '-items';
         if (isset($args[$items_name]) && !empty($args[$items_name])) {
-            $count = (count($args[$items_name]) - 1);
-            $where = $this->getQueryWhere($args[$items_name], $count);
+            $where = $this->getQueryWhere($args[$items_name]);
             if ($where) {
                 $db = new Db();
                 return $db->select("*")->
@@ -284,6 +334,42 @@ class Tables
                     where("{$where}")->
                     execute("assoc");
             }
+        }
+    }
+
+    public static function getTableCount(string $table_name)
+    {
+        if (!empty($table_name)) {
+            $db = new Db();
+            return $db->select("COUNT(*) as count")->
+                from("{$table_name}")->
+                execute("assoc");
+        }
+    }
+
+    public static function getTableColumnNames(string $table_name)
+    {
+        if (!empty($table_name)) {
+            $db = new Db();
+            return $db->customQuery("SHOW FULL COLUMNS FROM {$table_name}")->
+                execute("assoc");
+        }
+    }
+
+    private function getTablePasswordField(string $table_name)
+    {
+        $db = new Db();
+        $table_all_field = $this->getTableColumnNames($table_name);
+        $password_field = '';
+        if (!empty($table_all_field)) {
+            $table_password_field = preg_grep('/_password$/', array_column($table_all_field, 'Field'));
+            $first_password_field = reset($table_password_field);
+            if (!empty($first_password_field)) {
+                $password_field = $first_password_field;
+            }
+        }
+        if (!empty($password_field)) {
+            return $password_field;
         }
     }
 
@@ -297,25 +383,49 @@ class Tables
     {
         $db = new Db();
         $table_all_field = $this->getTableColumnNames($table_name);
-        $password_field = '';
-        if (!empty($table_all_field)) {
-            $table_password_field = preg_grep('/_password$/', array_column($table_all_field, 'Field'));
-            $first_password_field = reset($table_password_field);
-            if ($first_password_field) {
-                $password_field = $first_password_field;
+        $password_field = $this->getTablePasswordField($table_name);
+        if ($password_field) {
+            $results = [];
+            foreach ($ids as $id) {
+                $current_password = $db->select("{$password_field}")->
+                    from("{$table_name}")->
+                    where("id='{$id}'")->
+                    execute("assoc");
+                if (md5($password) === $current_password[0][$password_field]) {
+                    $results = array($id => true);
+                }
+            }
+            return $results;
+        }
+    }
+
+    private function passwordFieldCorrector(string $table_name, array $fields_array, array $ids = null)
+    {
+        $password_field = $this->getTablePasswordField($table_name);
+        if (isset($fields_array[$password_field . '-change']['value']) &&
+            $fields_array[$password_field . '-change']['value'] == 1 &&
+            !empty($fields_array[$password_field . '-old']['value']) &&
+            !empty($fields_array[$password_field . '-new']['value']) &&
+            !empty($fields_array[$password_field . '-repeat']['value'])) {
+            if (array_sum($this->confirmPassword($fields_array[$password_field . '-old']['value'], $ids, $table_name))) {
+                if ($fields_array[$password_field . '-new']['value'] === $fields_array[$password_field . '-repeat']['value']) {
+                    $fields_array[$password_field] = array('value' => md5($fields_array[$password_field . '-new']['value']), 'type' => 'varchar');
+                }
+            }
+        } else if (
+            !empty($fields_array[$password_field . '-new']['value']) &&
+            !empty($fields_array[$password_field . '-repeat']['value'])) {
+            if ($fields_array[$password_field . '-new']['value'] === $fields_array[$password_field . '-repeat']['value']) {
+                $fields_array[$password_field] = array('value' => md5($fields_array[$password_field . '-new']['value']), 'type' => 'varchar');
+                unset($fields_array[$password_field . '-repeat']);
+                unset($fields_array[$password_field . '-new']);
             }
         }
-        $results = [];
-        foreach ($ids as $id) {
-            $current_password = $db->select("{$password_field}")->
-                from("{$table_name}")->
-                where("id='{$id}'")->
-                execute("assoc");
-            if (md5($password) === $current_password[0][$password_field]) {
-                $results =array($id => true);
-            }
-        }
-        return $results;
+        unset($fields_array[$password_field . '-old']);
+        unset($fields_array[$password_field . '-new']);
+        unset($fields_array[$password_field . '-repeat']);
+        unset($fields_array[$password_field . '-change']);
+        return $fields_array;
     }
 
     public function changeTable(string $table_name, array $args, string $form_action)
@@ -328,42 +438,53 @@ class Tables
                         $count = (count($args[$items_name]) - 1);
                         $where = $this->getQueryWhere(Tools::protector($table_name, 'remove', $args[$items_name]), $count);
                         if ($where) {
-                            return $this->prepareTableRemoveQuery($table_name, $where);
+                            return $this->prepareRemoveQuery($table_name, $where);
                         } else {
                             return array();
                         }
                     }
                     break;
-                case 'edit':
-                    if (isset($args[$items_name]) && !empty($args[$items_name])) {
-
-                    }
-                    break;
-                case 'add':
-                    break;
-                case 'save':
-                    $new_named_array = array();
-                    $items = '';
+                case 'update':
+                    $new_names_array = array();
+                    $items = [];
                     foreach ($args as $key => $value) {
                         $field_name_cut = str_replace($table_name . '-', '', $key);
                         $exploded_field_name = explode('-', $field_name_cut);
                         $field_type = end($exploded_field_name);
                         $real_field_name = preg_replace('/(-varchar|-int|-tinyint|-smallint|-mediumint|-bigint|-double|-decimal|-tinytext|-text|-mediumtext|-longtext|-enum|-set|-date|-time|-timestamp|-datetime)/', '', $field_name_cut);
                         if ($real_field_name != 'form-action') {
-                            $new_named_array[$real_field_name]['value'] = $value;
-                            $new_named_array[$real_field_name]['type'] = $field_type;
+                            $new_names_array[$real_field_name]['value'] = $value;
+                            $new_names_array[$real_field_name]['type'] = $field_type;
                         }
                     }
-                    if (isset($new_named_array['item']) && !empty($new_named_array['item'])) {
-                        $items = [];
-                        array_push($items, $new_named_array['item']['value']);
-                        unset($new_named_array['item']);
+                    if (isset($new_names_array['item']) && !empty($new_names_array['item'])) {
+                        array_push($items, $new_names_array['item']['value']);
+                        unset($new_names_array['item']);
                     }
                     if (!empty($items)) {
-                        $count = (count($items) - 1);
-                        $where = $this->getQueryWhere(Tools::protector($table_name, 'update', $items), $count);
-                        $set = $this->getQuerySet($new_named_array, $table_name, $items);
+                        $new_names_array = $this->passwordFieldCorrector($table_name, $new_names_array, $items);
+                        $where = $this->getQueryWhere(Tools::protector($table_name, 'update', $items));
+                        $set = $this->getQuerySet($new_names_array, $table_name);
                         return $this->prepareUpdateQuery($table_name, $where, $set);
+                    }
+                    break;
+                case 'save':
+                    $new_names_array = array();
+                    foreach ($args as $key => $value) {
+                        $field_name_cut = str_replace($table_name . '-', '', $key);
+                        $exploded_field_name = explode('-', $field_name_cut);
+                        $field_type = end($exploded_field_name);
+                        $real_field_name = preg_replace('/(-varchar|-int|-tinyint|-smallint|-mediumint|-bigint|-double|-decimal|-tinytext|-text|-mediumtext|-longtext|-enum|-set|-date|-time|-timestamp|-datetime)/', '', $field_name_cut);
+                        if ($real_field_name != 'form-action') {
+                            $new_names_array[$real_field_name]['value'] = $value;
+                            $new_names_array[$real_field_name]['type'] = $field_type;
+                        }
+                    }
+                    if (!empty($new_names_array)) {
+                        $new_names_array = $this->passwordFieldCorrector($table_name, $new_names_array);
+                        $columns = $this->getQueryColumns($table_name, $new_names_array);
+                        $values = $this->getQueryValues($table_name, $new_names_array);
+                        return $this->prepareSaveQuery($table_name, $columns, $values);
                     }
                     break;
                 default:

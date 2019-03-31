@@ -61,11 +61,12 @@ class Tools
     public function themeHeadLinks($head_links, $type, $theme)
     {
         if (!empty($type)) {
-            $type_select = $type == 'admin' ? ADMIN_THEMES : FRONT_THEMES;
+            $type_select = ($type == 'admin') ? ADMIN_THEMES : FRONT_THEMES;
             $styles_file = $type_select . $theme . DS . 'css' . DS . 'styles.css';
             $ajax_file = $type_select . $theme . DS . 'js' . DS . 'ajax.js';
             $scripts_file = $type_select . $theme . DS . 'js' . DS . 'scripts.js';
             $forms_file = $type_select . $theme . DS . 'js' . DS . 'forms.js';
+            $validation_file = $type_select . $theme . DS . 'js' . DS . 'validation.js';
             if (file_exists($styles_file) && !empty($styles_file)) {
                 array_push($head_links['css'], self::returnAbsolutePath($styles_file));
             }
@@ -78,15 +79,17 @@ class Tools
             if (file_exists($forms_file) && !empty($forms_file)) {
                 array_push($head_links['js'], self::returnAbsolutePath($forms_file));
             }
+            if (file_exists($forms_file) && !empty($validation_file)) {
+                array_push($head_links['js'], self::returnAbsolutePath($validation_file));
+            }
             return $head_links;
         }
-
     }
 
     public function templateHeadLinks($head_links, $links, $type, $theme, $link_type)
     {
         if (!empty($links)) {
-            $type_select = $type == 'admin' ? ADMIN_THEMES : FRONT_THEMES;
+            $type_select = ($type == 'admin') ? ADMIN_THEMES : FRONT_THEMES;
             if (is_array($links)) {
                 foreach ($links as $link) {
                     $link_source = $type_select . $theme . DS . $link_type . DS . $link;

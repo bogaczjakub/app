@@ -5981,6 +5981,10 @@ html body {
       html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .form-control,
       html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .btn {
         margin-bottom: 5px; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .form-control.validation_success {
+        border-color: green; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .form-control.validation_failed {
+        border-color: red; }
       html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .input-group {
         margin-bottom: 5px; }
         html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .input-group .input-group-addon {
@@ -5991,8 +5995,10 @@ html body {
         padding: 4px 8px;
         font-size: 12px;
         margin-bottom: 0; }
-      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert-info .glyphicon {
-        margin-right: 5px; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert {
+        margin-bottom: 4px; }
+        html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert .glyphicon {
+          margin-right: 5px; }
       html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right textarea {
         min-height: 150px; }
       html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .cke {

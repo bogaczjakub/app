@@ -21,6 +21,8 @@ class AdminUsersController extends Page
             'users_info',
             'privileges_id',
             'privileges_enum',
+            'settest',
+            'tinyinttest',
         ), $args);
         $this->display('admin_users');
     }
@@ -30,16 +32,19 @@ class AdminUsersController extends Page
         if (isset($args['admin_users-form-action']) && !empty($args['admin_users-form-action'])) {
             switch ($args['admin_users-form-action'][0]) {
                 case 'remove':
-                $this->remove($args);
-                break;
+                    $this->remove($args);
+                    break;
                 case 'add':
-                $this->add($args);
-                break;
-                case 'edit':
-                $this->edit($args);
-                break;
+                    $this->add($args);
+                    break;
                 case 'save':
                     $this->save($args);
+                    break;
+                case 'edit':
+                    $this->edit($args);
+                    break;
+                case 'update':
+                    $this->update($args);
                     break;
                 default:
             }
@@ -48,7 +53,21 @@ class AdminUsersController extends Page
 
     private function add(array $args)
     {
-
+        $forms = new Forms();
+        $forms->buildAdminForm('admin_users', 'add', array(
+            'users_login',
+            'users_firstname',
+            'users_lastname',
+            'users_birthday',
+            'users_password',
+            'users_email',
+            'users_info',
+            'privileges_id',
+            'privileges_enum',
+            'settest',
+            'tinyinttest',
+        ), $args);
+        $this->display('user_add');
     }
 
     private function edit(array $args)
@@ -92,6 +111,21 @@ class AdminUsersController extends Page
         Url::redirectUrl('AdminUsers', 'index', array());
     }
 
+    private function update(array $args)
+    {
+        if (isset($args) && !empty($args)) {
+            $forms = new Forms();
+            $alerts = new Alerts();
+            $check = $forms->formHandler('admin_users', 'table', $args, 'update');
+            if ($check) {
+                $alerts->newAlert('success', 'Admin users', 'Item(s) updated successfully.', 'AdminUsers');
+            } else {
+                $alerts->newAlert('danger', 'Admin users', 'Could not update selected item(s).', 'AdminUsers');
+            }
+        }
+        Url::redirectUrl('AdminUsers', 'index', array());
+    }
+
     private function save(array $args)
     {
         if (isset($args) && !empty($args)) {
@@ -99,7 +133,7 @@ class AdminUsersController extends Page
             $alerts = new Alerts();
             $check = $forms->formHandler('admin_users', 'table', $args, 'save');
             if ($check) {
-                $alerts->newAlert('success', 'Admin users', 'Item(s) updated successfully.', 'AdminUsers');
+                $alerts->newAlert('success', 'Admin users', 'Item(s) added successfully.', 'AdminUsers');
             } else {
                 $alerts->newAlert('danger', 'Admin users', 'Could not update selected item(s).', 'AdminUsers');
             }

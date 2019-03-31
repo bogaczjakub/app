@@ -1,8 +1,5 @@
-<html>
-<head>
-    <title></title>
-</head>
-    <body>
-        <h2>TEST</h2>
-</body>
-</html>
+<div class="row">
+    <div class="col-xs-12">
+      Front 
+    </div>
+</div>

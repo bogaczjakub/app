@@ -327,6 +327,16 @@ html {
                                                         margin-bottom: 5px;
                                                     }
 
+                                                    .form-control {
+                                                        &.validation_success {
+                                                            border-color: green;
+                                                        }
+
+                                                        &.validation_failed {
+                                                            border-color: red;
+                                                        }
+                                                    }
+
                                                     .input-group {
                                                         margin-bottom: 5px;
 
@@ -345,7 +355,8 @@ html {
                                                         margin-bottom: 0;
                                                     }
 
-                                                    .alert-info {
+                                                    .alert {
+                                                        margin-bottom: 4px;
                                                         .glyphicon {
                                                             margin-right: 5px;
                                                         }

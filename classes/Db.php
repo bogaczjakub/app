@@ -81,7 +81,7 @@ class Db
         }
     }
 
-    public function columns()
+    public function columns($chunk)
     {
         try {
             if (end($this->query['function']) == 'insert') {

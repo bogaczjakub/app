@@ -19,6 +19,9 @@ class Forms
         if (!empty($table_name) && $form_type == 'edit') {
             array_push(Page::$collection['page_forms'], $this->editForm($table_name, $columns, $args));
         }
+        if (!empty($table_name) && $form_type == 'add') {
+            array_push(Page::$collection['page_forms'], $this->addForm($table_name, $columns, $args));
+        }
     }
 
     private function settingsForm(string $table_name, array $columns, array $args)
@@ -159,7 +162,7 @@ class Forms
             $form_html[key($table)] .= $tables->buildTablePagination($table_name, $args);
             $form_html[key($table)] .= '</div>';
             $form_html[key($table)] .= '<div class="panel-footer clearfix">';
-            $form_html[key($table)] .= '<button type="submit" name="' . key($table) . '-form-action[]" value="add" class="btn btn-success form-button-save pull-right"><span class="glyphicon glyphicon-plus"></span>Add</button>';
+            $form_html[key($table)] .= '<button type="submit" name="' . key($table) . '-form-action[]" value="add" class="btn btn-success form-button-add pull-right"><span class="glyphicon glyphicon-plus"></span>Add</button>';
             $form_html[key($table)] .= '<button type="submit" name="' . key($table) . '-form-action[]" value="edit" class="btn btn-primary form-button-edit pull-right"><span class="glyphicon glyphicon-pencil"></span>Edit</button>';
             $form_html[key($table)] .= '<button type="submit" name="' . key($table) . '-form-action[]" value="remove" class="btn btn-danger form-button-remove pull-right"><span class="glyphicon glyphicon-remove"></span>Remove</button>';
             $form_html[key($table)] .= '</form>';
@@ -173,10 +176,10 @@ class Forms
     private function editForm($table_name, array $columns, $args)
     {
         $tables = new Tables();
-        $tables = $tables->getTableForEdit($table_name, $columns, $args);
+        $table = $tables->getTableForEdit($table_name, $columns, $args);
         $form_action = Url::buildPageUrl('this', 'form');
-        if (!empty($tables) && !empty($form_action)) {
-            foreach ($tables as $table_key => $forms) {
+        if (!empty($table) && !empty($form_action)) {
+            foreach ($table as $table_key => $forms) {
                 foreach ($forms as $form_key => $form) {
                     $form_html[$form_key] = '<div class="panel panel-default form-panel">';
                     $form_html[$form_key] .= '<div class="panel-heading"><div class="table-name">' . $form_key . '</div><div class="window-buttons"><button type="button" class="btn btn-success panel-hide-toggle"><span class="glyphicon glyphicon-minus"></span></button><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button></div></div>';
@@ -202,17 +205,17 @@ class Forms
                             case 'mediumtext':
                             case 'longtext':
                                 if ($this->passwordInput($setting['setting_name'], $setting['setting_type'])) {
-                                    $form_html[$form_key] .= '<input type="password" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="password" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '" disabled="disabled">';
-                                    $form_html[$form_key] .= '<input type="hidden" name="' . $table_key . '-change-password-tinyint" value="0" class="form-control change-password" id="' . $table_key . '-change-password-tinyint" data-input-default="0">';
-                                    $form_html[$form_key] .= '<button type="button" name="' . $table_key . '-change-password-button" value="0" class="btn btn-success change-password-button">Change Password</button>';
+                                    $form_html[$form_key] .= '<input type="password" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="password" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '" id="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" disabled="disabled">';
+                                    $form_html[$form_key] .= '<input type="hidden" name="' . $table_key . '-' . $setting['setting_name'] . '-change-' . $setting['setting_type'] . '" value="0" class="form-control change-password" id="' . $table_key . '-' . $setting['setting_name'] . '-change-' . $setting['setting_type'] . '" data-input-default="0">';
+                                    $form_html[$form_key] .= '<button type="button" name="' . $table_key . '-' . $setting['setting_name'] . '-button-' . $setting['setting_type'] . '" value="0" class="btn btn-success change-password-button" id="' . $table_key . '-' . $setting['setting_name'] . '-button-' . $setting['setting_type'] . '">Change Password</button>';
                                     $form_html[$form_key] .= '<div class="change-password-container" style="display: none">';
-                                    $form_html[$form_key] .= '<div class="input-group"><input type="password" name="' . $table_key . '-change-password-old-varchar" value="" placeholder="old password" class="form-control" id="' . $table_key . '-change-password-old"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
-                                    $form_html[$form_key] .= '<div class="input-group"><input type="password" name="' . $table_key . '-change-password-new-varchar" value="" placeholder="new password" class="form-control" id="' . $table_key . '-change-password-new"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
-                                    $form_html[$form_key] .= '<div class="input-group"><input type="password" name="' . $table_key . '-change-password-repeat-varchar" value="" placeholder="repeat new password" class="form-control" "' . $table_key . '-change-password-repeat"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
+                                    $form_html[$form_key] .= '<div class="input-group"><input type="password" name="' . $table_key . '-' . $setting['setting_name'] . '-old-' . $setting['setting_type'] . '" value="" placeholder="old password" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-old-' . $setting['setting_type'] . '"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
+                                    $form_html[$form_key] .= '<div class="input-group"><input type="password" name="' . $table_key . '-' . $setting['setting_name'] . '-new-' . $setting['setting_type'] . '" value="" placeholder="new password" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-new-' . $setting['setting_type'] . '"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
+                                    $form_html[$form_key] .= '<div class="input-group"><input type="password" name="' . $table_key . '-' . $setting['setting_name'] . '-repeat-' . $setting['setting_type'] . '" value="" placeholder="repeat new password" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-repeat-' . $setting['setting_type'] . '"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
                                     $form_html[$form_key] .= '</div>';
 
                                 } else {
-                                    $form_html[$form_key] .= '<input type="text" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="' . $setting['setting_value'] . '" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '" data-input-default="' . $setting['setting_value'] . '">';
+                                    $form_html[$form_key] .= '<input type="text" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="' . $setting['setting_value'] . '" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '" data-input-default="' . $setting['setting_value'] . '" data-input-validation="' . $setting['setting_type'] . '">';
                                 }
                                 break;
                             case 'tinyint':
@@ -244,7 +247,7 @@ class Forms
                                 break;
                             case 'date':
                                 $form_html[$form_key] .= '<div class="input-group date datepicker-date" data-provide="datepicker">';
-                                $form_html[$form_key] .= '<input type="text" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="' . $setting['setting_value'] . '" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" data-input-default="' . $setting['setting_value'] . '">';
+                                $form_html[$form_key] .= '<input type="text" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="' . $setting['setting_value'] . '" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" data-input-default="' . $setting['setting_value'] . '" data-input-validation="' . $setting['setting_type'] . '">';
                                 $form_html[$form_key] .= '<div class="input-group-addon">';
                                 $form_html[$form_key] .= '<span class="glyphicon glyphicon-th"></span>';
                                 $form_html[$form_key] .= '</div>';
@@ -266,12 +269,110 @@ class Forms
                     }
                     $form_html[$form_key] .= '</div>';
                     $form_html[$form_key] .= '<div class="panel-footer clearfix">';
-                    $form_html[$form_key] .= '<button type="submit" name="' . $table_name . '-form-action[]" value="save" class="btn btn-success form-button-save pull-right"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>';
+                    $form_html[$form_key] .= '<button type="submit" name="' . $table_name . '-form-action[]" value="update" class="btn btn-success form-button-update pull-right"><span class="glyphicon glyphicon-floppy-disk"></span>Update</button>';
                     $form_html[$form_key] .= '<button type="button" name="' . $table_name . '-form-action[]" class="btn btn-primary form-button-reset pull-right"><span class="glyphicon glyphicon-repeat"></span>Reset</button>';
                     $form_html[$form_key] .= '</form>';
                     $form_html[$form_key] .= '</div>';
                     $form_html[$form_key] .= '</div>';
                 }
+                if (!empty($form_html)) {
+                    return $form_html;
+                }
+            }
+        }
+    }
+
+    private function addForm(string $table_name, array $columns, $args)
+    {
+        $tables = new Tables();
+        $table = $tables->getTableForAdd($table_name, $columns, $args);
+        $form_action = Url::buildPageUrl('this', 'form');
+        if (!empty($table) && !empty($form_action)) {
+            foreach ($table as $table_key => $forms) {
+                $form_html['new'] = '<div class="panel panel-default form-panel">';
+                $form_html['new'] .= '<div class="panel-heading"><div class="table-name"></div><div class="window-buttons"><button type="button" class="btn btn-success panel-hide-toggle"><span class="glyphicon glyphicon-minus"></span></button><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button></div></div>';
+                $form_html['new'] .= '<div class="panel-body">';
+                $form_html['new'] .= '<form id="' . $table_name . '-add" class="form-horizontal admin-form" action="' . $form_action . '" method="POST" target="_self">';
+                foreach ($forms as $setting_key => $setting) {
+                    $form_html['new'] .= '<div class="form-group">';
+                    $form_html['new'] .= '<div class="col-xs-12 col-sm-3 admin-form-left"><label for="' . $setting['setting_name'] . '" class="control-label">' . Tables::createColumnName($table_name, $setting['setting_name']) . '</label>';
+                    $form_html['new'] .= '</div>';
+                    $form_html['new'] .= '<div class="col-xs-12 col-sm-9 admin-form-right">';
+                    switch ($setting['setting_type']) {
+                        case 'varchar':
+                        case 'smallint':
+                        case 'mediumint':
+                        case 'int':
+                        case 'bigint':
+                        case 'float':
+                        case 'double':
+                        case 'decimal':
+                        case 'tinytext':
+                        case 'text':
+                        case 'mediumtext':
+                        case 'longtext':
+                            if ($this->passwordInput($setting['setting_name'], $setting['setting_type'])) {
+                                $form_html['new'] .= '<div class="input-group"><input type="password" name="' . $table_key . '-' . $setting['setting_name'] . '-new-' . $setting['setting_type'] . '" value="" placeholder="password" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-new-' . $setting['setting_type'] . '"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
+                                $form_html['new'] .= '<div class="input-group"><input type="password" name="' . $table_key . '-' . $setting['setting_name'] . '-repeat-' . $setting['setting_type'] . '" value="" placeholder="repeat password" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-repeat-' . $setting['setting_type'] . '"><div class="input-group-addon"><span class="glyphicon glyphicon-eye-open"></span></div></div>';
+
+                            } else {
+                                $form_html['new'] .= '<input type="text" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '" data-input-validation="' . $setting['setting_type'] . '">';
+                            }
+                            break;
+                        case 'tinyint':
+                            $form_html['new'] .= '<div class="btn-group btn-switch switch-off" role="group" aria-label="">';
+                            $form_html['new'] .= '<button type="button" class="btn btn-switch-on">On</button>';
+                            $form_html['new'] .= '<input type="hidden" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="" class="form-control btn-switch-input" id="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '">';
+                            $form_html['new'] .= '<button type="button" class="btn btn-switch-off">Off</button>';
+                            $form_html['new'] .= '</div>';
+                            break;
+                        case 'enum':
+                            $form_html['new'] .= '<select name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '">';
+                            if (!empty($setting['multiple_fields'])) {
+                                foreach ($setting['multiple_fields'] as $option) {
+                                    $form_html['new'] .= '<option value="' . $option . '">' . $option . '</option>';
+                                }
+                            }
+                            $form_html['new'] .= '</select>';
+                            break;
+                        case 'set':
+                            $form_html['new'] .= '<select multiple name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '[]" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '">';
+                            if (!empty($setting['multiple_fields'])) {
+                                foreach ($setting['multiple_fields'] as $option) {
+                                    $form_html['new'] .= '<option value="' . $option . '">' . $option . '</option>';
+                                }
+                            }
+                            $form_html['new'] .= '</select>';
+                            break;
+                        case 'date':
+                            $form_html['new'] .= '<div class="input-group date datepicker-date" data-provide="datepicker">';
+                            $form_html['new'] .= '<input type="text" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" data-input-validation="' . $setting['setting_type'] . '">';
+                            $form_html['new'] .= '<div class="input-group-addon">';
+                            $form_html['new'] .= '<span class="glyphicon glyphicon-th"></span>';
+                            $form_html['new'] .= '</div>';
+                            $form_html['new'] .= '</div>';
+                            break;
+                        case 'datetime':
+                        case 'time':
+                        case 'timestamp':
+                            $form_html['new'] .= '<input type="text" name="' . $table_key . '-' . $setting['setting_name'] . '-' . $setting['setting_type'] . '" value="" class="form-control" id="' . $table_key . '-' . $setting['setting_name'] . '" disabled="disabled">';
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!empty($setting['setting_information'])) {
+                        $form_html['new'] .= '<div class="alert alert-info" role="alert"><span class="glyphicon glyphicon-info-sign"></span>' . $setting['setting_information'] . '</div>';
+                    }
+                    $form_html['new'] .= '</div>';
+                    $form_html['new'] .= '</div>';
+                }
+                $form_html['new'] .= '</div>';
+                $form_html['new'] .= '<div class="panel-footer clearfix">';
+                $form_html['new'] .= '<button type="submit" name="' . $table_name . '-form-action[]" value="save" class="btn btn-success form-button-save pull-right"><span class="glyphicon glyphicon-floppy-disk"></span>Save</button>';
+                $form_html['new'] .= '<button type="button" name="' . $table_name . '-form-action[]" class="btn btn-primary form-button-reset pull-right"><span class="glyphicon glyphicon-repeat"></span>Reset</button>';
+                $form_html['new'] .= '</form>';
+                $form_html['new'] .= '</div>';
+                $form_html['new'] .= '</div>';
                 if (!empty($form_html)) {
                     return $form_html;
                 }

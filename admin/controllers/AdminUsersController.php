@@ -78,7 +78,6 @@ class AdminUsersController extends Page
                 'users_login',
                 'users_firstname',
                 'users_lastname',
-                'users_create_date',
                 'users_birthday',
                 'users_password',
                 'users_email',
@@ -101,11 +100,15 @@ class AdminUsersController extends Page
         if (isset($args) && !empty($args)) {
             $forms = new Forms();
             $alerts = new Alerts();
-            $check = $forms->formHandler('admin_users', 'table', $args, 'remove');
-            if ($check) {
-                $alerts->newAlert('success', 'Admin users', 'Item(s) deleted successfully.', 'AdminUsers');
+            $raport = $forms->formHandler('admin_users', 'table', $args, 'remove');
+            if ($raport['status']) {
+                if ($raport['query_status']) {
+                    $alerts->newPredefinedAlert('table', 'remove', 'success', 'AdminUsers');
+                } else {
+                    $alerts->newPredefinedAlert('table', 'remove', 'danger', 'AdminUsers');
+                }
             } else {
-                $alerts->newAlert('danger', 'Admin users', 'Could not delete selected item(s).', 'AdminUsers');
+                $alerts->newAlertFromRaport('AdminUsers', $raport);
             }
         }
         Url::redirectUrl('AdminUsers', 'index', array());
@@ -116,11 +119,15 @@ class AdminUsersController extends Page
         if (isset($args) && !empty($args)) {
             $forms = new Forms();
             $alerts = new Alerts();
-            $check = $forms->formHandler('admin_users', 'table', $args, 'update');
-            if ($check) {
-                $alerts->newAlert('success', 'Admin users', 'Item(s) updated successfully.', 'AdminUsers');
+            $raport = $forms->formHandler('admin_users', 'table', $args, 'update');
+            if ($raport['status']) {
+                if ($raport['query_status']) {
+                    $alerts->newPredefinedAlert('table', 'update', 'success', 'AdminUsers');
+                } else {
+                    $alerts->newPredefinedAlert('table', 'update', 'danger', 'AdminUsers');
+                }
             } else {
-                $alerts->newAlert('danger', 'Admin users', 'Could not update selected item(s).', 'AdminUsers');
+                $alerts->newAlertFromRaport('AdminUsers', $raport);
             }
         }
         Url::redirectUrl('AdminUsers', 'index', array());
@@ -131,11 +138,15 @@ class AdminUsersController extends Page
         if (isset($args) && !empty($args)) {
             $forms = new Forms();
             $alerts = new Alerts();
-            $check = $forms->formHandler('admin_users', 'table', $args, 'save');
-            if ($check) {
-                $alerts->newAlert('success', 'Admin users', 'Item(s) added successfully.', 'AdminUsers');
+            $raport = $forms->formHandler('admin_users', 'table', $args, 'save');
+            if ($raport['status']) {
+                if ($raport['query_status']) {
+                    $alerts->newPredefinedAlert('table', 'save', 'success', 'AdminUsers');
+                } else {
+                    $alerts->newPredefinedAlert('table', 'save', 'danger', 'AdminUsers');
+                }
             } else {
-                $alerts->newAlert('danger', 'Admin users', 'Could not update selected item(s).', 'AdminUsers');
+                $alerts->newAlertFromRaport('AdminUsers', $raport);
             }
         }
         Url::redirectUrl('AdminUsers', 'index', array());

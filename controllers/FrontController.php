@@ -1,27 +1,36 @@
 <?php
 
-class FrontController extends Controller
+class FrontController
 {
-    private $front_settings;
     private $request;
+    public $settings;
+    public $url;
 
-    public function __construct($settings)
+    public function __construct($collector)
     {
-        global $config;
-        $this->front_settings = $settings;
-        $this->request = Url::requestToArray();
-        parent::__construct(Settings::getSettingValue($this->front_settings, 'theme'), 'front');
-        $this->pageConstructor($this->request, 'front');
+        $this->settings = new Settings();
+        $this->url = new Url();
+        $collector->collection['type_settings'] = $this->settings->getFrontSettings();
+        $collector->collection['theme'] = $config['page']['theme'] = $this->settings->getSettingValue($collector->collection['type_settings'], 'theme');
+        $collector->collection['request'] = $this->url->requestToArray();
+        
+        $disable_front = $this->settings->getSettingValue($collector->collection['type_settings'], 'disable_front');
+        if ($disable_front) {
+            $disable_front_message = $this->settings->getSettingValue($collector->collection['type_settings'], 'disable_front_message');
+            die($disable_front_message);
+        } else {
+            $this->pageConstructor($collector);
+        }
     }
-
-    private function pageConstructor()
+    
+    private function pageConstructor($collector)
     {
         try {
-            if (!empty($this->request)) {
-                isset($this->request['query']['controller']) ? $this->request['query']['controller'] : $this->request['query']['controller'] = 'Index';
-                $controller_path = _ROOT_DIR_ . Page::$type . DS . 'controllers' . DS . $this->request['query']['controller'] . 'Controller.php';
+            if (!empty($collector->collection['request'])) {
+                (isset($collector->collection['request']['controller']) && (!empty($collector->collection['request']['controller'])) ? $collector->collection['request']['controller'] : $collector->collection['request']['controller'] = 'Index');
+                $controller_path = _ROOT_DIR_ . $collector->collection['type'] . DS . 'controllers' . DS . $collector->collection['request']['controller'] . 'Controller.php';
                 if (file_exists($controller_path) && !empty($controller_path)) {
-                    parent::Page($this->request);
+                    $page = new Page($collector->collection, true);
                 } else {
                     throw new CustomException('Can not find controller file or it is empty.');
                 }
@@ -34,3 +43,4 @@ class FrontController extends Controller
         }
     }
 }
+

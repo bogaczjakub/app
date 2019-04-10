@@ -39,7 +39,6 @@ html {
 
         #page-container {
 
-
             #alerts {}
 
             #header-section {
@@ -265,7 +264,8 @@ html {
                                                         padding: 0;
                                                     }
 
-                                                    .update-info {
+                                                    .update-info,
+                                                    .required-field {
                                                         font-size: 10px;
                                                         margin: 5px 0;
                                                         font-style: italic;
@@ -352,11 +352,8 @@ html {
                                                     .alert {
                                                         padding: 4px 8px;
                                                         font-size: 12px;
-                                                        margin-bottom: 0;
-                                                    }
-
-                                                    .alert {
                                                         margin-bottom: 4px;
+
                                                         .glyphicon {
                                                             margin-right: 5px;
                                                         }
@@ -403,6 +400,22 @@ html {
                                     .alert-content {
                                         flex: 28;
                                         order: 2;
+
+                                        .alert-timestamp {
+                                            margin-bottom: 5px;
+                                            font-size: 10px;
+                                            font-style: italic;
+                                        }
+
+                                        .alert-header {
+                                            margin-bottom: 10px;
+                                            margin-top: 0;
+                                        }
+
+                                        .alert-body {
+                                            margin-bottom: 8px;
+                                        }
+
                                     }
 
                                     button.close {

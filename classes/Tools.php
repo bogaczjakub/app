@@ -58,7 +58,7 @@ class Tools
         }
     }
 
-    public function themeHeadLinks($head_links, $type, $theme)
+    public function themeHeadLinks(array $head_links, string $type, string $theme)
     {
         if (!empty($type)) {
             $type_select = ($type == 'admin') ? ADMIN_THEMES : FRONT_THEMES;
@@ -86,7 +86,7 @@ class Tools
         }
     }
 
-    public function templateHeadLinks($head_links, $links, $type, $theme, $link_type)
+    public function templateHeadLinks(array $head_links, array $links, string $type, string $theme, string $link_type)
     {
         if (!empty($links)) {
             $type_select = ($type == 'admin') ? ADMIN_THEMES : FRONT_THEMES;
@@ -107,7 +107,7 @@ class Tools
         return $head_links;
     }
 
-    public function modulesHeadLinks($head_links, $links, $type, $theme, $link_type, $module_name)
+    public function modulesHeadLinks(array $head_links, array $links, string $type, string $theme, string $link_type, string $module_name)
     {
         if (!empty($links)) {
             if (is_array($links)) {
@@ -127,7 +127,7 @@ class Tools
         return $head_links;
     }
 
-    private function librarySelection($type, $head_links)
+    private function librarySelection(array $type, array $head_links)
     {
         foreach ($type as $key => $library) {
             foreach ($library as $value) {
@@ -162,10 +162,9 @@ class Tools
             }
         }
         return $head_links;
-
     }
 
-    public function addLibraries($head_links, $for_type)
+    public function addLibraries(array $head_links, string $for_type)
     {
         global $config;
         $library_array_all = $config['global_libs']['all'];
@@ -188,21 +187,6 @@ class Tools
         }
     }
 
-    public function getGapModules(string $gap)
-    {
-        if (!empty($gap)) {
-            $db = new Db();
-            return $db->select("modules_name")->
-                from("global_modules")->
-                innerJoin("system_modules_gaps")->
-                on("global_modules.id=system_modules_gaps.modules_id")->
-                innerJoin("system_gaps")->
-                on("system_modules_gaps.gaps_id=system_gaps.id")->
-                where("system_gaps.gaps_name='{$gap}'")->
-                execute('assoc');
-        }
-    }
-
     public function getModuleController(string $controller_name, string $module_name, string $type)
     {
         $controller_postfix = $controller_name . 'ModuleController';
@@ -221,7 +205,7 @@ class Tools
         }
     }
 
-    public function getModuleAllowedPages($module_name)
+    public function getModuleAllowedPages(string $module_name)
     {
         if (!empty($module_name)) {
             $db = new Db();
@@ -232,7 +216,7 @@ class Tools
         }
     }
 
-    public function getModuleSilencePages($module_name)
+    public function getModuleSilencePages(string $module_name)
     {
         if (!empty($module_name)) {
             $db = new Db();
@@ -259,21 +243,5 @@ class Tools
             }
         }
         return $input;
-    }
-
-    public static function protector(string $table_name, string $forbidden_action, array $ids)
-    {
-        if (!empty($table_name) && !empty($forbidden_action)) {
-            $db = new Db();
-            $protected = $db->select("protected_data_row_id")->
-                from("system_protected_data")->
-                where("protected_data_forbidden_action='{$forbidden_action}' AND protected_data_table_name='{$table_name}'")->
-                execute("assoc");
-            if (!empty($protected) && !empty($ids)) {
-                return array_diff($ids, array_column($protected, 'protected_data_row_id'));
-            } else if (!empty($ids)) {
-                return $ids;
-            }
-        }
     }
 }

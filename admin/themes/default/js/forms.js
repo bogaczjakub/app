@@ -76,7 +76,7 @@ jQuery(document).ready(function () {
         }
     }
 
-    $('.admin-form .change-password-container .input-group-addon').on('click', showPassword)
+    $('.admin-form .change-password-container .input-group-addon').on('click', showPassword);
 
     function showPassword(event) {
         var $this = $(event.currentTarget);

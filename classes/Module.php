@@ -122,8 +122,8 @@ class Module
     {
         $alert_array = compact('type', 'title', 'message');
         if (!empty($alert_array['type']) && !empty($alert_array['message'])) {
-            $alert = new Alerts($alert_array);
-            array_push(Page::$collection['alerts'], $alert->getAlert());
+            $alerts = new Alerts($alert_array);
+            array_push(Page::$collection['alerts'], $alerts->getAlert());
         }
     }
 
@@ -181,6 +181,22 @@ class Module
         if (!empty($class_name)) {
             $tools = new Tools();
             $tools->getModuleClass($class_name, self::$current_module, self::$collection['type']);
+        }
+    }
+
+    public function getGapModules(string $gap)
+    {
+        if (!empty($gap)) {
+            $type = Page::$collection['type'];
+            $db = new Db();
+            return $db->select("modules_name")->
+                from("global_modules")->
+                innerJoin("system_modules_gaps")->
+                on("global_modules.id=system_modules_gaps.modules_id")->
+                innerJoin("system_gaps")->
+                on("system_modules_gaps.gaps_id=system_gaps.id")->
+                where("system_gaps.gaps_name='{$gap}' AND global_modules.modules_type_allowed IN ('{$type}','all')")->
+                execute('assoc');
         }
     }
 

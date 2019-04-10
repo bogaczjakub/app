@@ -21,6 +21,7 @@ $config = array(
         'Breadcrumbs',
         'Forms',
         'Tables',
+        'Validation'
     ),
     'modules' => array(
         'navigation',

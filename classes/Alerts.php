@@ -7,7 +7,8 @@ class Alerts
         'alert_title' => '',
         'alert_message' => '',
         'alert_controller' => '',
-        'alert_site' => '');
+        'alert_site' => '',
+    );
 
     public function __construct()
     {
@@ -21,13 +22,40 @@ class Alerts
             $this->setMessage($message);
             $this->setController($controller);
             $this->setSite(Page::$collection['type']);
+            $this->saveAlert();
         }
-        if (!empty($this->new_alert)) {
-            $db = new Db();
-            extract($this->new_alert);
-            $results = $db->insert("global_alerts")->
-                values("'0','{$alert_controller}','{$alert_type}','{$alert_title}','{$alert_message}','{$alert_site}'")->
-                execute('bool');
+    }
+
+    public function newAlertFromRaport(string $controller, array $raport)
+    {
+        $controller_split = preg_split('/(?=[A-Z])/', $controller);
+        $table_name = implode(' ', $controller_split);
+        if ($raport['status']) {
+            $title = sprintf('%s alert', $table_name);
+        } else {
+            $title = sprintf('There were %d errors during the operation on the %s table', $raport['failures'], $table_name);
+            $message = $this->createMessageFromRaport($raport);
+            $this->setType('danger');
+            $this->setTitle($title, $controller);
+            $this->setMessage($message);
+            $this->setController($controller);
+            $this->setSite(Page::$collection['type']);
+            $this->saveAlert();
+        }
+    }
+
+    public function newPredefinedAlert(string $category, string $event, string $type, string $controller)
+    {
+        if (!empty($category) && !empty($event) && !empty($type) && !empty($controller)) {
+            $alert_message = self::getPredefinedAlert($category, $event, $type);
+            $controller_split = preg_split('/(?=[A-Z])/', $controller);
+            $title = implode(' ', $controller_split) . ' alert';
+            $this->setType($type);
+            $this->setTitle($title, $controller);
+            $this->setMessage($alert_message[0]['alerts_predefined_message']);
+            $this->setController($controller);
+            $this->setSite(Page::$collection['type']);
+            $this->saveAlert();
         }
     }
 
@@ -35,7 +63,7 @@ class Alerts
     {
         if (!empty($controller)) {
             $db = new Db();
-            $alerts = $db->select("id,alerts_type,alerts_title,alerts_message")->
+            $alerts = $db->select("id,alerts_type,alerts_title,alerts_message,alerts_timestamp")->
                 from("global_alerts")->
                 where("alerts_page_controller='{$controller}'")->
                 execute("assoc");
@@ -100,10 +128,50 @@ class Alerts
     {
         if (isset($request['query']['id']) && !empty($request['query']['id'])) {
             $db = new Db();
-            return $db->delete()->
+            $result = $db->delete()->
                 from("global_alerts")->
                 where("id={$request['query']['id']}")->
                 execute("bool");
+            if ($result) {
+                $predefined_alert = self::getPredefinedAlert('alert', 'remove', 'success');
+                echo $predefined_alert[0]['alerts_predefined_message'];
+            }
+        }
+    }
+
+    private function createMessageFromRaport(array $raport)
+    {
+        print_r($raport);
+        $message = '';
+        if ($raport['action_type'] == 'save' || $raport['action_type'] == 'update') {
+            foreach ($raport['failure_fields'] as $field_key => $field) {
+                $message .= '<p><span><b>' . $field_key . ': </b></span><span>' . $field['failure_message'] . '</span></p>';
+            }
+        } else if ($raport['action_type'] == 'remove') {
+            $message .= $raport['failure_action_message'];
+        }
+        return $message;
+    }
+
+    public static function getPredefinedAlert(string $category, string $event, string $type)
+    {
+        $db = new Db();
+        return $db->select("alerts_predefined_message")->
+            from("global_alerts_predefined")->
+            where("alerts_predefined_category='{$category}' AND alerts_predefined_event='{$event}' AND alerts_predefined_type='{$type}'")->
+            execute("assoc");
+    }
+
+    private function saveAlert()
+    {
+        if (!empty($this->new_alert)) {
+            $db = new Db();
+            extract($this->new_alert);
+            $escaped_message = htmlspecialchars($alert_message);
+            $results = $db->insert("global_alerts")->
+                columns("alerts_page_controller, alerts_type, alerts_title, alerts_message, alerts_site")->
+                values("'{$alert_controller}','{$alert_type}','{$alert_title}','{$escaped_message}','{$alert_site}'")->
+                execute('bool');
         }
     }
 }

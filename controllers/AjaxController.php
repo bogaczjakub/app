@@ -2,7 +2,6 @@
 
 class AjaxController
 {
-
     public function __construct(object $collector)
     {
         $url = new Url();

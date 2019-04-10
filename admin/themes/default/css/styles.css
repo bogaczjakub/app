@@ -5943,7 +5943,8 @@ html body {
       flex-direction: column; }
       html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-left label {
         padding: 0; }
-      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-left .update-info {
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-left .update-info,
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-left .required-field {
         font-size: 10px;
         margin: 5px 0;
         font-style: italic;
@@ -5994,8 +5995,6 @@ html body {
       html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert {
         padding: 4px 8px;
         font-size: 12px;
-        margin-bottom: 0; }
-      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert {
         margin-bottom: 4px; }
         html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-body .admin-form .form-group .admin-form-right .alert .glyphicon {
           margin-right: 5px; }
@@ -6019,6 +6018,15 @@ html body {
     html body #page-container #content-section #content-container #content-row #center-column #alerts .alert .alert-content {
       flex: 28;
       order: 2; }
+      html body #page-container #content-section #content-container #content-row #center-column #alerts .alert .alert-content .alert-timestamp {
+        margin-bottom: 5px;
+        font-size: 10px;
+        font-style: italic; }
+      html body #page-container #content-section #content-container #content-row #center-column #alerts .alert .alert-content .alert-header {
+        margin-bottom: 10px;
+        margin-top: 0; }
+      html body #page-container #content-section #content-container #content-row #center-column #alerts .alert .alert-content .alert-body {
+        margin-bottom: 8px; }
     html body #page-container #content-section #content-container #content-row #center-column #alerts .alert button.close {
       flex: 1;
       order: 3; }

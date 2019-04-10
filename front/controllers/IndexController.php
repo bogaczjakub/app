@@ -4,7 +4,6 @@ class IndexController extends Page
 {
     public function __construct()
     {
-
     }
 
     public function index($args)
@@ -13,4 +12,3 @@ class IndexController extends Page
         $this->display('index');
     }
 }
-

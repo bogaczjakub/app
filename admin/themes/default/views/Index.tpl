@@ -4,6 +4,7 @@
 <head>
     {include file="head.tpl"}
 </head>
+
 <body id="{$page_details[0].pages_controller}">
     <div id="page-container">
         {if isset($pages_gaps_allowed.header_gap)}
@@ -35,7 +36,8 @@
                     {/if}
                     {/if}
                     {if isset($pages_gaps_allowed.center_column_gap)}
-                    <div id="center-column" class="col-xs-12 {if $page_details[0].pages_column_structure == 'full_width'}col-sm-12{elseif $page_details[0].pages_column_structure == 'left_column' || $page_details[0].pages_column_structure == 'right_column'}col-sm-9 col-lg-10{/if}">
+                    <div id="center-column"
+                        class="col-xs-12 {if $page_details[0].pages_column_structure == 'full_width'}col-sm-12{elseif $page_details[0].pages_column_structure == 'left_column' || $page_details[0].pages_column_structure == 'right_column'}col-sm-9 col-lg-10{/if}">
                         {include file="alerts.tpl"}
                         <div class="page-header">
                             <h1 class="page-name">
@@ -85,7 +87,7 @@
         {if isset($pages_gaps_allowed.footer_gap)}
         <div id="footer-section">
             <div id="footer-container" class="container-fluid">
-                <div id="footer-row" class="row">
+                <div id="footer" class="row">
                     <div class="col-xs-12">
                         {include file="footer.tpl"}
                     </div>

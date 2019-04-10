@@ -44,7 +44,7 @@ class Page
             $this->setAction();
         }
     }
-
+    
     public function setAction(array $query = array(), string $action = 'index')
     {
         if (self::$passive) {
@@ -73,20 +73,20 @@ class Page
     public function render(string $template = 'index')
     {
         $this->preRenderActions();
-        self::$module = new Module(self::$collection);
         $tools = new Tools();
+        self::$module = new Module(self::$collection);
         try {
             if (file_exists(self::$collection['theme_index'])) {
                 $template_path = _ROOT_DIR_ . self::$collection['type'] . DS . 'themes' . DS . self::$collection['theme'] . DS . 'views' . DS . $template . '.tpl';
                 if (file_exists($template_path)) {
-                    self::$smarty->assign('head_gap', self::$module->getModule($tools->getGapModules('head_gap')));
-                    self::$smarty->assign('header_gap', self::$module->getModule($tools->getGapModules('header_gap')));
-                    self::$smarty->assign('left_column_gap', self::$module->getModule($tools->getGapModules('left_column_gap')));
-                    self::$smarty->assign('right_column_gap', self::$module->getModule($tools->getGapModules('right_column_gap')));
-                    self::$smarty->assign('top_gap', self::$module->getModule($tools->getGapModules('top_gap')));
-                    self::$smarty->assign('center_column_gap', self::$module->getModule($tools->getGapModules('center_column_gap')));
-                    self::$smarty->assign('bottom_gap', self::$module->getModule($tools->getGapModules('bottom_gap')));
-                    self::$smarty->assign('footer_gap', self::$module->getModule($tools->getGapModules('footer_gap')));
+                    self::$smarty->assign('head_gap', self::$module->getModule(self::$module->getGapModules('head_gap')));
+                    self::$smarty->assign('header_gap', self::$module->getModule(self::$module->getGapModules('header_gap')));
+                    self::$smarty->assign('left_column_gap', self::$module->getModule(self::$module->getGapModules('left_column_gap')));
+                    self::$smarty->assign('right_column_gap', self::$module->getModule(self::$module->getGapModules('right_column_gap')));
+                    self::$smarty->assign('top_gap', self::$module->getModule(self::$module->getGapModules('top_gap')));
+                    self::$smarty->assign('center_column_gap', self::$module->getModule(self::$module->getGapModules('center_column_gap')));
+                    self::$smarty->assign('bottom_gap', self::$module->getModule(self::$module->getGapModules('bottom_gap')));
+                    self::$smarty->assign('footer_gap', self::$module->getModule(self::$module->getGapModules('footer_gap')));
                     self::$smarty->assign('content', $template_path);
                     self::$smarty->assign('global_details', self::$collection['global_details']);
                     self::$smarty->assign('page_details', self::$collection['page_details']);
@@ -132,7 +132,6 @@ class Page
 
     public function postRenderActions()
     {
-
     }
 
     public function assignData($data)
@@ -145,7 +144,13 @@ class Page
     private function getAlerts()
     {
         $alerts = new Alerts();
-        array_push(self::$collection['alerts'], $alerts->getAlerts(self::$collection['request']['controller']));
+        $page_alerts = $alerts->getAlerts(self::$collection['request']['controller']);
+        if (!empty($page_alerts)) {
+            foreach ($page_alerts as $alert_key =>$alert) {
+                $page_alerts[$alert_key]['alerts_message'] = htmlspecialchars_decode($alert['alerts_message']);
+            }
+        }
+        array_push(self::$collection['alerts'], $page_alerts);
     }
 
     public function addJs($js)

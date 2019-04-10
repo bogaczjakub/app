@@ -3,7 +3,6 @@
 class AdminController
 {
     private $request;
-    protected $login_required;
     public $settings;
     public $url;
 
@@ -12,23 +11,23 @@ class AdminController
         $this->settings = new Settings();
         $this->url = new Url();
         $collector->collection['type_settings'] = $this->settings->getAdminSettings();
-        $this->login_required = $this->settings->getSettingValue($collector->collection['type_settings'], 'login_required');
         $collector->collection['theme'] = $config['page']['theme'] = $this->settings->getSettingValue($collector->collection['type_settings'], 'theme');
         $collector->collection['request'] = $this->url->requestToArray();
-
-        if ($this->login_required && !Tools::isLogged() && $collector->collection['request']['controller'] == 'Login') {
+        
+        $login_required = $this->settings->getSettingValue($collector->collection['type_settings'], 'login_required');
+        if ($login_required && !Tools::isLogged() && $collector->collection['request']['controller'] == 'Login') {
             $this->pageConstructor($collector);
         }
-        if ($this->login_required && !Tools::isLogged() && $collector->collection['request']['controller'] != 'Login') {
+        if ($login_required && !Tools::isLogged() && $collector->collection['request']['controller'] != 'Login') {
             Url::redirectUrl('Login', 'index', array());
         }
-        if ($this->login_required && Tools::isLogged() && $collector->collection['request']['controller'] != 'Login') {
+        if ($login_required && Tools::isLogged() && $collector->collection['request']['controller'] != 'Login') {
             $this->pageConstructor($collector);
         }
-        if ($this->login_required && Tools::isLogged() && $collector->collection['request']['controller'] == 'Login') {
+        if ($login_required && Tools::isLogged() && $collector->collection['request']['controller'] == 'Login') {
             Url::redirectUrl('Index', 'index', array());
         }
-        if (!$this->login_required) {
+        if (!$login_required) {
             $this->pageConstructor($collector);
         }
     }

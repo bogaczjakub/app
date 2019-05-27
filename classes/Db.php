@@ -112,7 +112,7 @@ class Db
             exit();
         }
     }
-
+    
     public function where($chunk)
     {
         try {

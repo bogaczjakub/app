@@ -3,12 +3,14 @@
 class Page
 {
     public $page;
+    public $gap_content;
+    public static $passive;
     public static $js = array();
     public static $css = array();
     public static $smarty;
     public static $collection;
     public static $module;
-    public static $passive;
+    public static $blocks;
 
     public function __construct(array $collection = array(), bool $passive = true)
     {
@@ -25,7 +27,7 @@ class Page
             self::$collection['type'] = $type;
             self::$collection['theme'] = $theme;
         }
-        self::$collection['theme_index'] = _ROOT_DIR_ . self::$collection['type'] . DS . 'themes' . DS . self::$collection['theme'] . DS . 'views' . DS . 'Index.tpl';
+        self::$collection['theme_index'] = _ROOT_DIR_ . self::$collection['type'] . DS . 'themes' . DS . self::$collection['theme'] . DS . 'views' . DS . 'main.tpl';
         if (self::$passive) {
             $this->setPage();
         }
@@ -73,20 +75,18 @@ class Page
     public function render(string $template = 'index')
     {
         $this->preRenderActions();
-        $tools = new Tools();
-        self::$module = new Module(self::$collection);
         try {
             if (file_exists(self::$collection['theme_index'])) {
                 $template_path = _ROOT_DIR_ . self::$collection['type'] . DS . 'themes' . DS . self::$collection['theme'] . DS . 'views' . DS . $template . '.tpl';
                 if (file_exists($template_path)) {
-                    self::$smarty->assign('head_gap', self::$module->getModule(self::$module->getGapModules('head_gap')));
-                    self::$smarty->assign('header_gap', self::$module->getModule(self::$module->getGapModules('header_gap')));
-                    self::$smarty->assign('left_column_gap', self::$module->getModule(self::$module->getGapModules('left_column_gap')));
-                    self::$smarty->assign('right_column_gap', self::$module->getModule(self::$module->getGapModules('right_column_gap')));
-                    self::$smarty->assign('top_gap', self::$module->getModule(self::$module->getGapModules('top_gap')));
-                    self::$smarty->assign('center_column_gap', self::$module->getModule(self::$module->getGapModules('center_column_gap')));
-                    self::$smarty->assign('bottom_gap', self::$module->getModule(self::$module->getGapModules('bottom_gap')));
-                    self::$smarty->assign('footer_gap', self::$module->getModule(self::$module->getGapModules('footer_gap')));
+                    self::$smarty->assign('head_gap', $this->gap_content['head_gap']);
+                    self::$smarty->assign('header_gap', $this->gap_content['header_gap']);
+                    self::$smarty->assign('left_column_gap', $this->gap_content['left_column_gap']);
+                    self::$smarty->assign('right_column_gap', $this->gap_content['right_column_gap']);
+                    self::$smarty->assign('top_gap', $this->gap_content['top_gap']);
+                    self::$smarty->assign('center_column_gap', $this->gap_content['center_column_gap']);
+                    self::$smarty->assign('bottom_gap', $this->gap_content['bottom_gap']);
+                    self::$smarty->assign('footer_gap', $this->gap_content['footer_gap']);
                     self::$smarty->assign('content', $template_path);
                     self::$smarty->assign('global_details', self::$collection['global_details']);
                     self::$smarty->assign('page_details', self::$collection['page_details']);
@@ -100,7 +100,7 @@ class Page
                     self::$smarty->assign('session', $_SESSION);
                     if (isset(self::$collection['request']['ajax']) && self::$collection['request']['ajax'] == true) {
                         self::$smarty->display($template_path);
-                    }else {
+                    } else {
                         self::$smarty->display(self::$collection['theme_index']);
                     }
                 } else {
@@ -128,11 +128,11 @@ class Page
         $this->initSmarty();
         $this->buildBreadcrumbs();
         $this->getAlerts();
+        $this->fillGaps();
     }
 
     public function postRenderActions()
-    {
-    }
+    { }
 
     public function assignData($data)
     {
@@ -146,7 +146,7 @@ class Page
         $alerts = new Alerts();
         $page_alerts = $alerts->getAlerts(self::$collection['request']['controller']);
         if (!empty($page_alerts)) {
-            foreach ($page_alerts as $alert_key =>$alert) {
+            foreach ($page_alerts as $alert_key => $alert) {
                 $page_alerts[$alert_key]['alerts_message'] = htmlspecialchars_decode($alert['alerts_message']);
             }
         }
@@ -160,7 +160,7 @@ class Page
                 array_push(self::$js, $js);
             } elseif (is_array($js)) {
                 foreach ($js as $element) {
-                    if (preg_match('/^.+\.js$/', $element, $matches)) {
+                    if (preg_match('/^.+\.js$/', $element)) {
                         array_push(self::$js, $element);
                     }
                 }
@@ -212,5 +212,20 @@ class Page
     {
         $breadcrumbs = new Breadcrumbs();
         self::$collection['breadcrumbs'] = $breadcrumbs->build(self::$collection['request']['controller'], self::$collection['type']);
+    }
+
+    private function fillGaps()
+    {
+        $db = new Db();
+        self::$module = new Module(self::$collection);
+        self::$blocks = new Blocks(self::$collection);
+        $gaps = $db->select("gaps_name")->from("system_gaps")->execute("assoc");
+        if (!empty($gaps)) {
+            foreach ($gaps as $gap_name) {
+                $gap = $gap_name['gaps_name'];
+                $this->gap_content[$gap]['modules'] = self::$module->getModule(self::$module->getGapModules($gap));
+                $this->gap_content[$gap]['blocks'] = self::$blocks->getBlock(self::$blocks->getGapBlocks($gap));
+            }
+        }
     }
 }

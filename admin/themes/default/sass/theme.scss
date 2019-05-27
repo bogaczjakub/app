@@ -2,9 +2,9 @@
 @import "mixins";
 
 @font-face {
-    font-family: 'Glyphicons Halflings';
-    src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot");
-    src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"),
+    font-family: "Glyphicons Halflings";
+    src        : url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot");
+    src        : url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"),
         url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"),
         url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"),
         url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"),
@@ -14,7 +14,7 @@
 html,
 body,
 #page-container {
-    height: auto;
+    height    : auto;
     min-height: 100%;
 }
 
@@ -27,59 +27,57 @@ html {
 
             table tr td.active.active {
                 background-color: #337ab7;
-                border-color: #337ab7;
+                border-color    : #337ab7;
 
                 &:hover {
                     background-color: #286090;
-                    border-color: #204d74;
+                    border-color    : #204d74;
                 }
             }
         }
 
-
         #page-container {
-
             #alerts {}
 
             #header-section {
                 .navbar-header {
                     .navbar-brand {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
+                        display         : flex;
+                        align-items     : center;
+                        justify-content : center;
                         -ms-text-justify: center;
-                        padding: 0 15px;
+                        padding         : 0 15px;
 
                         .admin-icon {
-                            top: 0;
-                            margin: 0 4px 0 0;
+                            top      : 0;
+                            margin   : 0 4px 0 0;
                             font-size: 22px;
                         }
                     }
                 }
 
                 #admin-navbar {
-                    border-radius: 0;
-                    border-top: 0;
-                    border-left: 0;
-                    border-right: 0;
+                    border-radius   : 0;
+                    border-top      : 0;
+                    border-left     : 0;
+                    border-right    : 0;
                     background-color: #ffffff;
 
                     .navbar-form {
                         .btn-group {
-                            display: flex;
-                            align-items: center;
-                            justify-content: flex-start;
+                            display         : flex;
+                            align-items     : center;
+                            justify-content : flex-start;
                             -ms-text-justify: flex-start;
 
                             input {
-                                flex: none;
-                                border-top-right-radius: 0;
+                                flex                      : none;
+                                border-top-right-radius   : 0;
                                 border-bottom-right-radius: 0;
                             }
 
                             button {
-                                float: none;
+                                float : none;
                                 height: 34px;
                             }
                         }
@@ -88,39 +86,37 @@ html {
                     .admin-navbar-dropdown {
                         &>li.dropdown {
                             &>a {
-                                display: flex;
-                                align-items: center;
-                                justify-content: flex-start;
+                                display         : flex;
+                                align-items     : center;
+                                justify-content : flex-start;
                                 -ms-text-justify: flex-start;
 
                                 &>.glyphicon {
                                     margin-right: 5px;
-                                    top: 0;
-                                    line-height: unset;
+                                    top         : 0;
+                                    line-height : unset;
                                 }
                             }
 
                             &>.dropdown-menu {
                                 li.logout-li {
                                     &>a {
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
+                                        display         : flex;
+                                        align-items     : center;
+                                        justify-content : center;
                                         -ms-text-justify: center;
 
                                         &>.glyphicon {
-                                            top: 0;
-                                            line-height: unset;
+                                            top         : 0;
+                                            line-height : unset;
                                             margin-right: 5px;
-                                            font-size: 12px;
+                                            font-size   : 12px;
                                         }
                                     }
                                 }
                             }
                         }
-
                     }
-
                 }
             }
 
@@ -146,13 +142,12 @@ html {
                                 }
 
                                 &.form-panel {
-
                                     .form-panel-save {}
 
                                     .panel-heading {
-                                        display: flex;
+                                        display        : flex;
                                         justify-content: space-between;
-                                        align-items: center;
+                                        align-items    : center;
 
                                         .table-name {}
 
@@ -163,7 +158,7 @@ html {
                                                 }
 
                                                 font-size: 9px;
-                                                padding: 2px 4px;
+                                                padding  : 2px 4px;
                                             }
                                         }
                                     }
@@ -179,9 +174,9 @@ html {
                                                             color: black;
 
                                                             .sort {
-                                                                display: inline-block;
+                                                                display    : inline-block;
                                                                 margin-left: 4px;
-                                                                cursor: pointer;
+                                                                cursor     : pointer;
 
                                                                 &.asc {
                                                                     .caret-asc {
@@ -204,11 +199,11 @@ html {
                                                                 }
 
                                                                 .caret {
-                                                                    margin: 0;
+                                                                    margin : 0;
                                                                     display: block;
 
                                                                     &.caret-asc {
-                                                                        transform: rotate(180deg);
+                                                                        transform    : rotate(180deg);
                                                                         margin-bottom: 2px;
                                                                     }
 
@@ -242,23 +237,23 @@ html {
 
                                             .form-group {
                                                 background-color: #f8f8f8;
-                                                border-radius: 4px;
-                                                margin: 1% 5%;
+                                                border-radius   : 4px;
+                                                margin          : 1% 5%;
 
-                                                display: flex;
+                                                display        : flex;
                                                 justify-content: center;
-                                                align-items: stretch;
+                                                align-items    : stretch;
 
                                                 .admin-form-left {
-                                                    display: flex;
-                                                    justify-content: center;
-                                                    align-items: center;
-                                                    padding: 10px 0;
-                                                    background-color: #f2f2f2;
-                                                    border-top-left-radius: 4px;
-                                                    padding: 15px 30px;
+                                                    display                  : flex;
+                                                    justify-content          : center;
+                                                    align-items              : center;
+                                                    padding                  : 10px 0;
+                                                    background-color         : #f2f2f2;
+                                                    border-top-left-radius   : 4px;
+                                                    padding                  : 15px 30px;
                                                     border-bottom-left-radius: 4px;
-                                                    flex-direction: column;
+                                                    flex-direction           : column;
 
                                                     label {
                                                         padding: 0;
@@ -266,58 +261,58 @@ html {
 
                                                     .update-info,
                                                     .required-field {
-                                                        font-size: 10px;
-                                                        margin: 5px 0;
+                                                        font-size : 10px;
+                                                        margin    : 5px 0;
                                                         font-style: italic;
-                                                        color: darkgrey;
+                                                        color     : darkgrey;
                                                     }
                                                 }
 
                                                 .admin-form-right {
-                                                    padding: 15px 30px;
-                                                    display: flex;
+                                                    padding        : 15px 30px;
+                                                    display        : flex;
                                                     justify-content: start;
-                                                    align-items: start;
-                                                    flex-direction: column;
+                                                    align-items    : start;
+                                                    flex-direction : column;
 
                                                     .btn-switch {
                                                         &.switch-on {
                                                             .btn-switch-on {
-                                                                color: #fff;
+                                                                color           : #fff;
                                                                 background-color: #5cb85c;
-                                                                border-color: #4cae4c;
+                                                                border-color    : #4cae4c;
                                                             }
 
                                                             .btn-switch-off {
-                                                                color: #333;
+                                                                color           : #333;
                                                                 background-color: #fff;
-                                                                border-color: #ccc;
+                                                                border-color    : #ccc;
 
                                                                 &:hover {
-                                                                    color: #333;
+                                                                    color           : #333;
                                                                     background-color: #e6e6e6;
-                                                                    border-color: #adadad;
+                                                                    border-color    : #adadad;
                                                                 }
                                                             }
                                                         }
 
                                                         &.switch-off {
                                                             .btn-switch-on {
-                                                                color: #333;
+                                                                color           : #333;
                                                                 background-color: #fff;
-                                                                border-color: #ccc;
+                                                                border-color    : #ccc;
 
                                                                 &:hover {
-                                                                    color: #333;
+                                                                    color           : #333;
                                                                     background-color: #e6e6e6;
-                                                                    border-color: #adadad;
+                                                                    border-color    : #adadad;
                                                                 }
                                                             }
 
                                                             .btn-switch-off {
-                                                                color: #fff;
+                                                                color           : #fff;
                                                                 background-color: #d9534f;
-                                                                border-color: #d43f3a;
+                                                                border-color    : #d43f3a;
                                                             }
                                                         }
                                                     }
@@ -350,8 +345,8 @@ html {
                                                     }
 
                                                     .alert {
-                                                        padding: 4px 8px;
-                                                        font-size: 12px;
+                                                        padding      : 4px 8px;
+                                                        font-size    : 12px;
                                                         margin-bottom: 4px;
 
                                                         .glyphicon {
@@ -365,10 +360,9 @@ html {
 
                                                     .cke {
                                                         border-radius: 4px;
-                                                        padding: 2px 0;
+                                                        padding      : 2px 0;
                                                     }
                                                 }
-
                                             }
                                         }
                                     }
@@ -387,39 +381,38 @@ html {
 
                             #alerts {
                                 .alert {
-                                    display: flex;
+                                    display        : flex;
                                     justify-content: flex-start;
-                                    align-items: center;
+                                    align-items    : center;
 
                                     .glyphicon {
                                         font-size: 24px;
-                                        flex: 1;
-                                        order: 1;
+                                        flex     : 1;
+                                        order    : 1;
                                     }
 
                                     .alert-content {
-                                        flex: 28;
+                                        flex : 28;
                                         order: 2;
 
                                         .alert-timestamp {
                                             margin-bottom: 5px;
-                                            font-size: 10px;
-                                            font-style: italic;
+                                            font-size    : 10px;
+                                            font-style   : italic;
                                         }
 
                                         .alert-header {
                                             margin-bottom: 10px;
-                                            margin-top: 0;
+                                            margin-top   : 0;
                                         }
 
                                         .alert-body {
                                             margin-bottom: 8px;
                                         }
-
                                     }
 
                                     button.close {
-                                        flex: 1;
+                                        flex : 1;
                                         order: 3;
                                     }
                                 }
@@ -427,28 +420,27 @@ html {
                         }
                     }
                 }
-
             }
 
             #footer-section {
                 background-color: #ffffff;
-                border-top: 1px solid #e7e7e7;
-                margin-top: 20px;
-                height: 50px;
-                bottom: 0;
-                width: 100%;
+                border-top      : 1px solid #e7e7e7;
+                margin-top      : 20px;
+                height          : 50px;
+                bottom          : 0;
+                width           : 100%;
 
                 #footer {
-                    position: relative;
-                    display: flex;
+                    position       : relative;
+                    display        : flex;
                     justify-content: center;
-                    align-items: center;
-                    height: 50px;
+                    align-items    : center;
+                    height         : 50px;
 
                     p.footer-info {
                         text-align: center;
-                        color: #777777;
-                        margin: 0;
+                        color     : #777777;
+                        margin    : 0;
                     }
                 }
             }

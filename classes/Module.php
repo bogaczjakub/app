@@ -107,9 +107,7 @@ class Module
     }
 
     public function postRenderActions()
-    {
-
-    }
+    { }
 
     public function assignData($data)
     {
@@ -187,16 +185,9 @@ class Module
     public function getGapModules(string $gap)
     {
         if (!empty($gap)) {
-            $type = Page::$collection['type'];
+            $type = self::$collection['type'];
             $db = new Db();
-            return $db->select("modules_name")->
-                from("global_modules")->
-                innerJoin("system_modules_gaps")->
-                on("global_modules.id=system_modules_gaps.modules_id")->
-                innerJoin("system_gaps")->
-                on("system_modules_gaps.gaps_id=system_gaps.id")->
-                where("system_gaps.gaps_name='{$gap}' AND global_modules.modules_type_allowed IN ('{$type}','all')")->
-                execute('assoc');
+            return $db->select("modules_name")->from("global_modules")->innerJoin("system_modules_gaps")->on("global_modules.id=system_modules_gaps.modules_id")->innerJoin("system_gaps")->on("system_modules_gaps.gaps_id=system_gaps.id")->where("system_gaps.gaps_name='{$gap}' AND global_modules.modules_type_allowed IN ('{$type}','all')")->execute('assoc');
         }
     }
 
@@ -232,6 +223,5 @@ class Module
                 return true;
             }
         }
-
     }
 }

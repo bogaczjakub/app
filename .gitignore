@@ -45,4 +45,7 @@ Thumbs.db
 # Node modules and libs files #
 ###############################
 node_modules/
-libs/
+
+# Editors settings #
+###############################
+.vscode

@@ -27,13 +27,13 @@ class Url
             self::$url['controller'] = $query_array['controller'];
             unset($query_array['controller']);
         } else {
-            self::$url['controller'] = '';
+            self::$url['controller'] = 'Index';
         }
         if (isset($query_array['action'])) {
             self::$url['action'] = $query_array['action'];
             unset($query_array['action']);
         } else {
-            self::$url['action'] = '';
+            self::$url['action'] = 'index';
         }
         if (isset($query_array['module']['name'])) {
             self::$url['module']['name'] = $query_array['module']['name'];
@@ -70,16 +70,23 @@ class Url
 
     public static function redirectUrl(string $controller, string $action, array $args = array())
     {
-        if (Tools::checkExisting($controller, 'controller')) {
-            $class_methods = get_class_methods($controller . 'Controller');
-            if (array_search($action, $class_methods)) {
-                $args_query = http_build_query($args);
-                $location = 'Location: ?controller=' . $controller . '&action=' . $action;
-                if (!empty($args_query)) {
-                    $location .= '&' . $args_query;
+        try {
+            if (Tools::checkExisting($controller, 'controller')) {
+                $class_methods = get_class_methods($controller . 'Controller');
+                if (array_search($action, $class_methods)) {
+                    $args_query = http_build_query($args);
+                    $location = 'Location: ?controller=' . $controller . '&action=' . $action;
+                    if (!empty($args_query)) {
+                        $location .= '&' . $args_query;
+                    }
+                    header($location);
                 }
-                header($location);
+            } else {
+                throw new Exception('Could not find ' . $controller . ' file.');
             }
+        } catch (CustomException $e) {
+            echo $e->getCustomMessage($e);
+            exit();
         }
     }
 
@@ -105,7 +112,7 @@ class Url
             }
             if (isset($params['sort']) && !empty($params['sort'])) {
                 if (isset(self::$url['query']['sort']) && !empty(self::$url['query']['sort'])) {
-                    $merge_sort = array_merge( self::$url['query']['sort'], $params['sort']);
+                    $merge_sort = array_merge(self::$url['query']['sort'], $params['sort']);
                     $table_query_array['sort'] = $merge_sort;
                     if (isset(self::$url['query']['page']) && !empty(self::$url['query']['page'])) {
                         $table_query_array['page'] = self::$url['query']['page'];

@@ -14,5 +14,5 @@ if (isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == true) {
         die($e->getMessage());
     }
 } else {
-    header('Location: ' . PATH_SEPARATOR . 'front');
+    header('Location: ' . DIRECTORY_SEPARATOR . 'front');
 }

@@ -2,7 +2,6 @@
 
 class AdminController
 {
-    private $request;
     public $settings;
     public $url;
 

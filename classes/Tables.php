@@ -4,9 +4,7 @@ class Tables
 {
 
     public function __construct()
-    {
-
-    }
+    { }
 
     public function getTable(string $table_name, array $columns, array $args)
     {
@@ -14,10 +12,12 @@ class Tables
         $new_table[$table_name] = array();
         $row_limit = $settings->getSettingValue($settings->getAdminSettings(), 'table_row_limit');
         $row_total = self::getTableCount($table_name);
-        $pages = ceil((int) $row_total / (int) $row_limit);
+        $pages = ceil((int)$row_total / (int)$row_limit);
+        $select = $this->getQuerySelect($columns);
         $limit = $this->getQueryLimit($args, $row_limit, $pages);
         $order = $this->getQueryOrder($args);
-        $result = $this->buildTableUpdateQuery($table_name, $limit, $order, $this->getQuerySelect($columns));
+        $result = $this->buildTableQuery($table_name, $limit, $order, $select);
+        $new_table = [];
         if (!empty($result)) {
             $index = 0;
             foreach ($result as $key => $row) {
@@ -35,44 +35,61 @@ class Tables
 
     public function getTableForEdit(string $table_name, array $columns, array $args)
     {
+        global $config;
         $table_columns = self::getTableColumnNames($table_name);
         $items = $this->getItemFields($table_name, $args);
         $new_table = array();
         foreach ($items as $item) {
-            foreach ($item as $field_name => $value) {
-                $check = array_search(strtolower($field_name), $columns);
+            foreach ($item as $column_name => $value) {
+                $check = array_search(strtolower($column_name), $columns);
                 if (is_numeric($check)) {
-                    $column_key = array_search($field_name, array_column($table_columns, 'Field'));
-                    $single_type = ($table_columns[$column_key]['Type'] == 'datetime' || $table_columns[$column_key]['Type'] == 'timestamp' || $table_columns[$column_key]['Type'] == 'time' || $table_columns[$column_key]['Type'] == 'date') ? 1 : 0;
-                    if (!$single_type) {
-                        $column_type = substr($table_columns[$column_key]['Type'], 0, strpos($table_columns[$column_key]['Type'], '('));
-                    }
-                    $new_table[$table_name][$item['id']][$field_name]['setting_name'] = $table_columns[$column_key]['Field'];
-                    if ($single_type) {
-                        $new_table[$table_name][$item['id']][$field_name]['setting_type'] = $table_columns[$column_key]['Type'];
-                    } else {
-                        $new_table[$table_name][$item['id']][$field_name]['setting_type'] = $column_type;
-                        if ($column_type == 'enum' || $column_type == 'set') {
-                            if ($column_type == 'enum') {
-                                $values = preg_match('/^enum\(\'(.*)\'\)$/', $table_columns[$column_key]['Type'], $matches);
-                            } else if ($column_type == 'set') {
-                                $values = preg_match('/^set\(\'(.*)\'\)$/', $table_columns[$column_key]['Type'], $matches);
+                    $is_foregin_key = $this->foreignKeyCheck($column_name, $table_name);
+                    $column_key = array_search($column_name, array_column($table_columns, 'Field'));
+                    if ($is_foregin_key) {
+                        $foreign_key_values = $this->getForeignKeyValues($column_name, $table_name);
+                        $new_table[$table_name][$item['id']][$column_name]['setting_name'] = $table_columns[$column_key]['Field'];
+                        $new_table[$table_name][$item['id']][$column_name]['setting_type'] = 'enum';
+                        $new_table[$table_name][$item['id']][$column_name]['setting_value'] = $value;
+                        if (!empty($foreign_key_values)) {
+                            $new_values = array();
+                            foreach ($foreign_key_values as $value_key => $value) {
+                                array_push($new_values, $value[key($value)]);
                             }
-                            if ($values) {
-                                $exploded = explode("','", $matches[1]);
-                                $new_table[$table_name][$item['id']][$field_name]['multiple_fields'] = $exploded;
+                            $new_table[$table_name][$item['id']][$column_name]['multiple_fields'] = $new_values;
+                        }
+                    } else {
+                        $column_type = '';
+                        $single_type = (in_array(strtolower($table_columns[$column_key]['Type']), $config['data_types']['no_length_required'])) ? 1 : 0;
+                        if (!$single_type) {
+                            $column_type = substr($table_columns[$column_key]['Type'], 0, strpos($table_columns[$column_key]['Type'], '('));
+                        }
+                        $new_table[$table_name][$item['id']][$column_name]['setting_name'] = $table_columns[$column_key]['Field'];
+                        if ($single_type) {
+                            $new_table[$table_name][$item['id']][$column_name]['setting_type'] = $table_columns[$column_key]['Type'];
+                        } else {
+                            $new_table[$table_name][$item['id']][$column_name]['setting_type'] = $column_type;
+                            if ($column_type == 'enum' || $column_type == 'set') {
+                                if ($column_type == 'enum') {
+                                    $values = preg_match('/^enum\(\'(.*)\'\)$/', $table_columns[$column_key]['Type'], $matches);
+                                } elseif ($column_type == 'set') {
+                                    $values = preg_match('/^set\(\'(.*)\'\)$/', $table_columns[$column_key]['Type'], $matches);
+                                }
+                                if ($values) {
+                                    $exploded = explode("','", $matches[1]);
+                                    $new_table[$table_name][$item['id']][$column_name]['multiple_fields'] = $exploded;
+                                }
                             }
                         }
-                    }
-                    if ($column_type != 'set') {
-                        $new_table[$table_name][$item['id']][$field_name]['setting_value'] = $value;
-                    } else {
-                        $exploded = explode(',', $value);
-                        if (!empty($exploded)) {
-                            $new_table[$table_name][$item['id']][$field_name]['setting_value'] = $exploded;
+                        if ($column_type == 'set') {
+                            $exploded = explode(',', $value);
+                            if (!empty($exploded)) {
+                                $new_table[$table_name][$item['id']][$column_name]['setting_value'] = $exploded;
+                            }
+                        } else {
+                            $new_table[$table_name][$item['id']][$column_name]['setting_value'] = $value;
                         }
                     }
-                    $new_table[$table_name][$item['id']][$field_name]['setting_information'] = $table_columns[$column_key]['Comment'];
+                    $new_table[$table_name][$item['id']][$column_name]['setting_information'] = $table_columns[$column_key]['Comment'];
                 }
             }
         }
@@ -81,29 +98,45 @@ class Tables
 
     public function getTableForAdd(string $table_name, array $columns, array $args)
     {
+        global $config;
         $table_columns = self::getTableColumnNames($table_name);
         $new_table = array();
-        foreach ($table_columns as $column) {
+        foreach ($table_columns as $column_key => $column) {
             $check = array_search(strtolower($column['Field']), $columns);
             if (is_numeric($check)) {
-                $single_type = ($column['Type'] == 'datetime' || $column['Type'] == 'timestamp' || $column['Type'] == 'time' || $column['Type'] == 'date') ? 1 : 0;
-                if (!$single_type) {
-                    $column_type = substr($column['Type'], 0, strpos($column['Type'], '('));
-                }
-                $new_table[$table_name][$column['Field']]['setting_name'] = $column['Field'];
-                if ($single_type) {
-                    $new_table[$table_name][$column['Field']]['setting_type'] = $column['Type'];
-                } else {
-                    $new_table[$table_name][$column['Field']]['setting_type'] = $column_type;
-                    if ($column_type == 'enum' || $column_type == 'set') {
-                        if ($column_type == 'enum') {
-                            $values = preg_match('/^enum\(\'(.*)\'\)$/', $column['Type'], $matches);
-                        } else if ($column_type == 'set') {
-                            $values = preg_match('/^set\(\'(.*)\'\)$/', $column['Type'], $matches);
+                $is_foregin_key = $this->foreignKeyCheck($column['Field'], $table_name);
+                if ($is_foregin_key) {
+                    $foreign_key_values = $this->getForeignKeyValues($column['Field'], $table_name);
+                    $new_table[$table_name][$column['Field']]['setting_name'] = $table_columns[$column_key]['Field'];
+                    $new_table[$table_name][$column['Field']]['setting_type'] = 'enum';
+                    if (!empty($foreign_key_values)) {
+                        $new_values = array();
+                        foreach ($foreign_key_values as $value_key => $value) {
+                            array_push($new_values, $value[key($value)]);
                         }
-                        if ($values) {
-                            $exploded = explode("','", $matches[1]);
-                            $new_table[$table_name][$column['Field']]['multiple_fields'] = $exploded;
+                        $new_table[$table_name][$column['Field']]['multiple_fields'] = $new_values;
+                    }
+                } else {
+                    $column_type = '';
+                    $single_type = (in_array(strtolower($column['Type']), $config['data_types']['no_length_required'])) ? 1 : 0;
+                    if (!$single_type) {
+                        $column_type = substr($column['Type'], 0, strpos($column['Type'], '('));
+                    }
+                    $new_table[$table_name][$column['Field']]['setting_name'] = $column['Field'];
+                    if ($single_type) {
+                        $new_table[$table_name][$column['Field']]['setting_type'] = $column['Type'];
+                    } else {
+                        $new_table[$table_name][$column['Field']]['setting_type'] = $column_type;
+                        if ($column_type == 'enum' || $column_type == 'set') {
+                            if ($column_type == 'enum') {
+                                $values = preg_match('/^enum\(\'(.*)\'\)$/', $column['Type'], $matches);
+                            } elseif ($column_type == 'set') {
+                                $values = preg_match('/^set\(\'(.*)\'\)$/', $column['Type'], $matches);
+                            }
+                            if ($values) {
+                                $exploded = explode("','", $matches[1]);
+                                $new_table[$table_name][$column['Field']]['multiple_fields'] = $exploded;
+                            }
                         }
                     }
                 }
@@ -117,8 +150,8 @@ class Tables
     {
         $settings = new Settings();
         $row_limit = $settings->getSettingValue($settings->getAdminSettings(), 'table_row_limit');
-        $row_total = self::getTableCount('admin_users');
-        $pages = ceil((int) $row_total / (int) $row_limit);
+        $row_total = self::getTableCount($table_name);
+        $pages = ceil((int)$row_total / (int)$row_limit);
         $pagination_html = '';
         $pagination_html .= '<nav aria-label="table pagination"><ul class="pagination pagination-md">';
         if ((isset($args['page']) && !empty($args['page']) && $args['page'] == 1) || (isset($args['page']) && !empty($args['page']) && $args['page'] == 0) || (!isset($args['page']) || empty($args['page']) || $pages == 1)) {
@@ -126,12 +159,12 @@ class Tables
         } else {
             if (isset($args['page']) && !empty($args['page']) && ($args['page'] - 1 > 0)) {
                 $offset = (isset($args['page']) && !empty($args['page']) && $args['page'] > $pages) ? ($pages - 1) : ($args['page'] - 1);
-                $previous_link = Url::buildPageUrl('this', 'index', array('page' => $offset), true);
+                $previous_link = Url::buildPageUrl('this', 'index', array('page' => $offset,), true);
                 $pagination_html .= '<li><a href="' . $previous_link . '" aria-label="Previous" target="_self"><span aria-hidden="true">«</span></a></li>';
             }
         }
-        for ($i = 1; $i < (int) $pages + 1; $i++) {
-            $page_link = Url::buildPageUrl('this', 'index', array('page' => $i), true);
+        for ($i = 1; $i < (int)$pages + 1; $i++) {
+            $page_link = Url::buildPageUrl('this', 'index', array('page' => $i,), true);
             if ((empty($args['page']) || !isset($args['page']) || $args['page'] == 0) && ($i == 1 && $pages >= 1) || (isset($args['page']) && !empty($args['page']) && $args['page'] == $i) || (isset($args['page']) && !empty($args['page']) && $args['page'] > $pages && $i == $pages)) {
                 $pagination_html .= '<li class="active"><a href="' . $page_link . '" target="_self">' . $i . '<span class="sr-only"></span></a></li>';
             } else {
@@ -143,7 +176,7 @@ class Tables
         } else {
             if (((isset($args['page']) && !empty($args['page']) && $args['page'] + 1 <= $pages)) || (!isset($args['page']) || empty($args['page']) || $args['page'] == 0) && $pages > 1) {
                 $offset = ($pages > 1 && (!isset($args['page']) || $args['page'] == 0)) ? 2 : ($args['page'] + 1);
-                $next_link = Url::buildPageUrl('this', 'index', array('page' => $offset), true);
+                $next_link = Url::buildPageUrl('this', 'index', array('page' => $offset,), true);
                 $pagination_html .= '<li><a href="' . $next_link . '" aria-label="Next" target="_self"><span aria-hidden="true">»</span></a></li>';
             }
         }
@@ -151,41 +184,28 @@ class Tables
         return $pagination_html;
     }
 
-    private function buildTableUpdateQuery(string $table_name, string $limit, string $order, string $select)
+    private function buildTableQuery(string $table_name, string $limit, string $order, string $select)
     {
         $db = new Db();
-        return $db->select("{$select}")->
-            from("{$table_name}")->
-            orderby("{$order}")->
-            limit("{$limit}")->
-            execute("assoc");
+        return $db->select("{$select}")->from("{$table_name}")->orderby("{$order}")->limit("{$limit}")->execute("assoc");
     }
 
     private function buildRemoveQuery(string $table_name, string $where_query)
     {
         $db = new Db();
-        return $db->delete()->
-            from("{$table_name}")->
-            where("{$where_query}")->
-            execute('bool');
+        return $db->delete()->from("{$table_name}")->where("{$where_query}")->execute('bool');
     }
 
     private function buildUpdateQuery(string $table_name, string $where, string $set)
     {
         $db = new Db();
-        return $db->update("{$table_name}")->
-            set("{$set}")->
-            where("{$where}")->
-            execute("bool");
+        return $db->update("{$table_name}")->set("{$set}")->where("{$where}")->execute("bool");
     }
 
     private function buildSaveQuery(string $table_name, string $columns, string $values)
     {
         $db = new Db();
-        return $db->insert("{$table_name}")->
-            columns("{$columns}")->
-            values("{$values}")->
-            execute("bool");
+        return $db->insert("{$table_name}")->columns("{$columns}")->values("{$values}")->execute("bool");
     }
 
     private function getQuerySelect(array $columns)
@@ -332,7 +352,7 @@ class Tables
         foreach ($values as $value_key => $value) {
             switch ($value['type']) {
                 case 'set':
-                    if (!empty($column['value'])) {
+                    if (!empty($value['value'])) {
                         $imploded = implode(',', $value['value']);
                         $values_string .= "'" . $imploded . "'";
                     } else {
@@ -385,12 +405,11 @@ class Tables
         $items_name = $table_name . '-items';
         if (isset($args[$items_name]) && !empty($args[$items_name])) {
             $where = $this->getQueryWhere($args[$items_name]);
-            if ($where) {
+            if (!empty($where)) {
                 $db = new Db();
-                return $db->select("*")->
-                    from("{$table_name}")->
-                    where("{$where}")->
-                    execute("assoc");
+                return $db->select("*")->from("{$table_name}")->where("{$where}")->execute("assoc");
+            } else {
+                return null;
             }
         }
     }
@@ -399,10 +418,10 @@ class Tables
     {
         if (!empty($table_name)) {
             $db = new Db();
-            $total = $db->select("COUNT(*) as count")->
-                from("{$table_name}")->
-                execute("assoc");
+            $total = $db->select("COUNT(*) as count")->from("{$table_name}")->execute("assoc");
             return $total[0]['count'];
+        } else {
+            return null;
         }
     }
 
@@ -410,12 +429,13 @@ class Tables
     {
         if (!empty($table_name)) {
             $db = new Db();
-            return $db->customQuery("SHOW FULL COLUMNS FROM {$table_name}")->
-                execute("assoc");
+            return $db->customQuery("SHOW FULL COLUMNS FROM {$table_name}")->execute("assoc");
+        } else {
+            return null;
         }
     }
 
-    private function getNewNamesArray($table_name, array $args)
+    private function getNewNamesArray(string $table_name, array $args)
     {
         $new_names_array = [];
         foreach ($args as $key => $value) {
@@ -438,6 +458,60 @@ class Tables
         $name_differences = array_diff($exploded_name, $exploded_table_name);
         $new_column_name = implode(' ', $name_differences);
         return $new_column_name;
+    }
+
+    private function foreignKeyCheck(string $field_name, string $table_name)
+    {
+        $table_columns = $this->getTableColumnNames($table_name);
+        $column_key = array_search($field_name, array_column($table_columns, 'Field'));
+        if (!empty($table_columns[$column_key]['Key']) && $table_columns[$column_key]['Key'] == 'MUL') {
+            return true;
+        }
+    }
+
+    private function getForeignKeyValues(string $field_name, string $table_name)
+    {
+        if (!empty($field_name) && !empty($table_name)) {
+            $db = new Db();
+            $referenced_data = $db->select("COLUMN_NAME,CONSTRAINT_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME")->from("INFORMATION_SCHEMA.KEY_COLUMN_USAGE")->where("TABLE_NAME='{$table_name}'")->execute("assoc");
+            if (!empty($referenced_data)) {
+                $referenced_key = array_search($field_name, array_column($referenced_data, 'COLUMN_NAME'));
+                if (!empty($referenced_key)) {
+                    if (!empty($referenced_data[$referenced_key]['REFERENCED_TABLE_NAME']) && !empty($referenced_data[$referenced_key]['REFERENCED_COLUMN_NAME'])) {
+                        $referred_table = $referenced_data[$referenced_key]['REFERENCED_TABLE_NAME'];
+                        $referred_column = $referenced_data[$referenced_key]['REFERENCED_COLUMN_NAME'];
+                        return $db->select("{$referred_column}")->from("{$referred_table}")->execute("assoc");
+                    }
+                }
+            }
+        }
+    }
+
+    public function getPrimaryKeyName(string $field_name, $field_value, string $table_name)
+    {
+        if (!empty($field_name) && !empty($table_name)) {
+            $db = new Db();
+            $referenced_data = $db->select("COLUMN_NAME,CONSTRAINT_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME")->from("INFORMATION_SCHEMA.KEY_COLUMN_USAGE")->where("TABLE_NAME='{$table_name}'")->execute("assoc");
+            if (!empty($referenced_data)) {
+                $referenced_key = array_search($field_name, array_column($referenced_data, 'COLUMN_NAME'));
+                if (!empty($referenced_key)) {
+                    if (!empty($referenced_data[$referenced_key]['REFERENCED_TABLE_NAME']) && !empty($referenced_data[$referenced_key]['REFERENCED_COLUMN_NAME'])) {
+                        $referred_table = $referenced_data[$referenced_key]['REFERENCED_TABLE_NAME'];
+                        $referred_column = $referenced_data[$referenced_key]['REFERENCED_COLUMN_NAME'];
+                        $exploded_table_name = explode('_', $referred_table);
+                        array_shift($exploded_table_name);
+                        $imploded = implode('_', $exploded_table_name);
+                        $name_field = $imploded . '_display_name';
+                        $name = $db->select("{$name_field}")->from("{$referred_table}")->where("{$referred_column}={$field_value}")->execute("assoc");
+                        if (!empty($name)) {
+                            return $name[0][$name_field];
+                        } else {
+                            return '';
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function changeTable(string $table_name, array $args, string $form_action)

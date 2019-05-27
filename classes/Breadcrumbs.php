@@ -52,19 +52,19 @@ class Breadcrumbs
             where("id='{$parent_id}'")->
             execute("object");
     }
-
+    
     private function buildBreadcrumbsArray($collection)
     {
         if (!empty($collection)) {
             $home = array('category_id' => '1',
                 'category_name' => 'home',
                 'category_controller' => 'Index',
-                'category_uri' => $_SERVER['DOCUMENT_URI'] . '?controller=Index' . '&action=index');
+                'category_uri' => $_SERVER['REQUEST_URI'] . '?controller=Index' . '&action=index');
             foreach ($collection as $pack) {
                 $temporary_array['category_id'] = (int) $pack->id;
                 $temporary_array['category_name'] = $pack->categories_name;
                 $temporary_array['category_controller'] = $pack->categories_controller;
-                $temporary_array['category_uri'] = $_SERVER['DOCUMENT_URI'] . '?controller=' . $pack->categories_controller . '&action=index';
+                $temporary_array['category_uri'] = $_SERVER['REQUEST_URI'] . '?controller=' . $pack->categories_controller . '&action=index';
                 array_push($this->breadcrumbs_array, $temporary_array);
             }
             usort($this->breadcrumbs_array, function ($a, $b) {

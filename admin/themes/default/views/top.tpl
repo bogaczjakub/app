@@ -12,7 +12,9 @@
     </ol>
 </div>
 {if isset($top_gap) && !empty($top_gap)}
-{foreach $top_gap as $key => $value}
-{$value}
+{foreach $top_gap as $type}
+{foreach $type as $content}
+{$content}
+{/foreach}
 {/foreach}
 {/if}

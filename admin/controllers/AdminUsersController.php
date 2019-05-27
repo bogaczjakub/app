@@ -3,9 +3,7 @@
 class AdminUsersController extends Page
 {
     public function __construct()
-    {
-
-    }
+    { }
 
     public function index(array $args)
     {
@@ -97,7 +95,7 @@ class AdminUsersController extends Page
 
     private function remove(array $args)
     {
-        if (isset($args) && !empty($args)) {
+        if (isset($args['admin_users-items']) && !empty($args['admin_users-items'])) {
             $forms = new Forms();
             $alerts = new Alerts();
             $raport = $forms->formHandler('admin_users', 'table', $args, 'remove');
@@ -110,6 +108,10 @@ class AdminUsersController extends Page
             } else {
                 $alerts->newAlertFromRaport('AdminUsers', $raport);
             }
+        } else {
+            $alerts = new Alerts();
+            $alerts->newAlert('warning', 'Admin users', 'At least one element must be selected.', 'AdminUsers');
+            Url::redirectUrl('AdminUsers', 'index', array());
         }
         Url::redirectUrl('AdminUsers', 'index', array());
     }

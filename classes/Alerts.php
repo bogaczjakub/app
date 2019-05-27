@@ -3,7 +3,8 @@
 class Alerts
 {
     public $alert_array = array();
-    public $new_alert = array('alert_type' => '',
+    public $new_alert = array(
+        'alert_type' => '',
         'alert_title' => '',
         'alert_message' => '',
         'alert_controller' => '',
@@ -11,8 +12,7 @@ class Alerts
     );
 
     public function __construct()
-    {
-    }
+    { }
 
     public function newAlert(string $type, string $title, string $message, string $controller, string $global = null)
     {
@@ -52,7 +52,7 @@ class Alerts
             $title = implode(' ', $controller_split) . ' alert';
             $this->setType($type);
             $this->setTitle($title, $controller);
-            $this->setMessage($alert_message[0]['alerts_predefined_message']);
+            $this->setMessage($alert_message[0]['alerts_static_message']);
             $this->setController($controller);
             $this->setSite(Page::$collection['type']);
             $this->saveAlert();
@@ -63,10 +63,7 @@ class Alerts
     {
         if (!empty($controller)) {
             $db = new Db();
-            $alerts = $db->select("id,alerts_type,alerts_title,alerts_message,alerts_timestamp")->
-                from("global_alerts")->
-                where("alerts_page_controller='{$controller}'")->
-                execute("assoc");
+            $alerts = $db->select("id,alerts_type,alerts_title,alerts_message,alerts_timestamp")->from("global_alerts")->where("alerts_page_controller='{$controller}'")->execute("assoc");
             if (!empty($alerts)) {
                 return $alerts;
             }
@@ -114,10 +111,7 @@ class Alerts
     {
         if (!empty($controller)) {
             $db = new Db();
-            $alerts_count = $db->select("COUNT(*) as count")->
-                from("global_alerts")->
-                where("alerts_page_controller='{$controller}'")->
-                execute("assoc");
+            $alerts_count = $db->select("COUNT(*) as count")->from("global_alerts")->where("alerts_page_controller='{$controller}'")->execute("assoc");
             if (!empty($alerts_count)) {
                 return $alerts_count;
             }
@@ -128,20 +122,16 @@ class Alerts
     {
         if (isset($request['query']['id']) && !empty($request['query']['id'])) {
             $db = new Db();
-            $result = $db->delete()->
-                from("global_alerts")->
-                where("id={$request['query']['id']}")->
-                execute("bool");
+            $result = $db->delete()->from("global_alerts")->where("id={$request['query']['id']}")->execute("bool");
             if ($result) {
                 $predefined_alert = self::getPredefinedAlert('alert', 'remove', 'success');
-                echo $predefined_alert[0]['alerts_predefined_message'];
+                echo $predefined_alert[0]['alerts_static_message'];
             }
         }
     }
 
     private function createMessageFromRaport(array $raport)
     {
-        print_r($raport);
         $message = '';
         if ($raport['action_type'] == 'save' || $raport['action_type'] == 'update') {
             foreach ($raport['failure_fields'] as $field_key => $field) {
@@ -156,10 +146,7 @@ class Alerts
     public static function getPredefinedAlert(string $category, string $event, string $type)
     {
         $db = new Db();
-        return $db->select("alerts_predefined_message")->
-            from("global_alerts_predefined")->
-            where("alerts_predefined_category='{$category}' AND alerts_predefined_event='{$event}' AND alerts_predefined_type='{$type}'")->
-            execute("assoc");
+        return $db->select("alerts_static_message")->from("global_alerts_static")->where("alerts_static_category='{$category}' AND alerts_static_event='{$event}' AND alerts_static_type='{$type}'")->execute("assoc");
     }
 
     private function saveAlert()
@@ -168,10 +155,7 @@ class Alerts
             $db = new Db();
             extract($this->new_alert);
             $escaped_message = htmlspecialchars($alert_message);
-            $results = $db->insert("global_alerts")->
-                columns("alerts_page_controller, alerts_type, alerts_title, alerts_message, alerts_site")->
-                values("'{$alert_controller}','{$alert_type}','{$alert_title}','{$escaped_message}','{$alert_site}'")->
-                execute('bool');
+            $results = $db->insert("global_alerts")->columns("alerts_page_controller, alerts_type, alerts_title, alerts_message, alerts_site")->values("'{$alert_controller}','{$alert_type}','{$alert_title}','{$escaped_message}','{$alert_site}'")->execute('bool');
         }
     }
 }

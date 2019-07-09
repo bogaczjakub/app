@@ -46,7 +46,7 @@ class Page
             $this->setAction();
         }
     }
-    
+
     public function setAction(array $query = array(), string $action = 'index')
     {
         if (self::$passive) {
@@ -87,12 +87,15 @@ class Page
                     self::$smarty->assign('center_column_gap', $this->gap_content['center_column_gap']);
                     self::$smarty->assign('bottom_gap', $this->gap_content['bottom_gap']);
                     self::$smarty->assign('footer_gap', $this->gap_content['footer_gap']);
+                    self::$smarty->assign('page_top_gap', $this->gap_content['page_top_gap']);
+                    self::$smarty->assign('page_bottom_gap', $this->gap_content['page_bottom_gap']);
                     self::$smarty->assign('content', $template_path);
                     self::$smarty->assign('global_details', self::$collection['global_details']);
                     self::$smarty->assign('page_details', self::$collection['page_details']);
-                    self::$smarty->assign('pages_gaps_allowed', $this->getPageGapsAllowed(self::$collection['page_details']));
+                    self::$smarty->assign('gaps_allowed', $this->getPageGapsAllowed(self::$collection['page_details']));
                     self::$smarty->assign('template_data', self::$collection['template_data']);
                     self::$smarty->assign('head_links', self::$collection['head_links']);
+                    self::$smarty->assign('head_styles', self::$collection['head_styles']);
                     self::$smarty->assign('alerts', self::$collection['alerts']);
                     self::$smarty->assign('breadcrumbs', self::$collection['breadcrumbs']);
                     self::$smarty->assign('page_forms', self::$collection['page_forms']);
@@ -129,6 +132,7 @@ class Page
         $this->buildBreadcrumbs();
         $this->getAlerts();
         $this->fillGaps();
+        $this->runSilenceModules();
     }
 
     public function postRenderActions()
@@ -147,7 +151,7 @@ class Page
         $page_alerts = $alerts->getAlerts(self::$collection['request']['controller']);
         if (!empty($page_alerts)) {
             foreach ($page_alerts as $alert_key => $alert) {
-                $page_alerts[$alert_key]['alerts_message'] = htmlspecialchars_decode($alert['alerts_message']);
+                $page_alerts[$alert_key]['message'] = htmlspecialchars_decode($alert['message']);
             }
         }
         array_push(self::$collection['alerts'], $page_alerts);
@@ -200,7 +204,7 @@ class Page
     {
         if (!empty($page_details)) {
             $return_array = array();
-            $page_gaps = explode(',', $page_details[0]['pages_gaps_allowed']);
+            $page_gaps = explode(',', $page_details[0]['gaps_allowed']);
             foreach ($page_gaps as $key => $value) {
                 $return_array[$value] = 1;
             }
@@ -217,15 +221,21 @@ class Page
     private function fillGaps()
     {
         $db = new Db();
-        self::$module = new Module(self::$collection);
-        self::$blocks = new Blocks(self::$collection);
-        $gaps = $db->select("gaps_name")->from("system_gaps")->execute("assoc");
+        self::$module = new Module();
+        self::$blocks = new Blocks();
+        $gaps = $db->select("name")->from("system_gaps")->execute("assoc");
         if (!empty($gaps)) {
             foreach ($gaps as $gap_name) {
-                $gap = $gap_name['gaps_name'];
+                $gap = $gap_name['name'];
                 $this->gap_content[$gap]['modules'] = self::$module->getModule(self::$module->getGapModules($gap));
                 $this->gap_content[$gap]['blocks'] = self::$blocks->getBlock(self::$blocks->getGapBlocks($gap));
             }
         }
+    }
+
+    private function runSilenceModules()
+    {
+        self::$module = new Module(self::$collection);
+        self::$module->runSilenceModules();
     }
 }

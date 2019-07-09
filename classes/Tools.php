@@ -3,9 +3,7 @@
 class Tools
 {
     public function __construct()
-    {
-
-    }
+    { }
 
     public static function checkExisting(string $file, string $type)
     {
@@ -20,14 +18,21 @@ class Tools
                     }
                     break;
                 case 'class':
-                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . $file . '.php') || file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . $file . '.php')) {
+                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . $file . 'Class.php') || file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . $file . '.php')) {
                         return true;
                     } else {
                         return false;
                     }
                     break;
                 case 'module':
-                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $file . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . $file . '.php')) {
+                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $file . 'Module' . DIRECTORY_SEPARATOR . $config['page']['type'] . DIRECTORY_SEPARATOR . $file . 'Module.php')) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case 'module_configuration':
+                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $file . 'Module' . DIRECTORY_SEPARATOR . 'configuration' . DIRECTORY_SEPARATOR . 'configuration.php')) {
                         return true;
                     } else {
                         return false;
@@ -107,6 +112,16 @@ class Tools
         return $head_links;
     }
 
+    public function blocksHeadStyles(string $block_styles)
+    {
+        if (!empty($block_styles)) {
+            $styles = '<style type="text/css">';
+            $styles .= $block_styles;
+            $styles .= '</style>';
+            return $styles;
+        }
+    }
+
     public function modulesHeadLinks(array $head_links, array $links, string $type, string $theme, string $link_type, string $module_name)
     {
         if (!empty($links)) {
@@ -125,6 +140,15 @@ class Tools
             }
         }
         return $head_links;
+    }
+
+    public static function isModuleConfigurationExist(string $module_name)
+    {
+        if (!empty($module_name)) {
+            return self::checkExisting($module_name, 'module_configuration');
+        } else {
+            return false;
+        }
     }
 
     private function librarySelection(array $type, array $head_links)
@@ -176,7 +200,6 @@ class Tools
             $head_links = $this->librarySelection($library_array_type, $head_links);
         }
         return $head_links;
-
     }
 
     public static function returnAbsolutePath(string $path)
@@ -190,40 +213,46 @@ class Tools
     public function getModuleController(string $controller_name, string $module_name, string $type)
     {
         $controller_postfix = $controller_name . 'ModuleController';
-        $controller_file = MODULES_DIR . $module_name . DS . $type . DS . 'controllers' . DS . $controller_postfix . '.php';
+        $controller_file = MODULES_DIR . $module_name . 'Module' . DS . $type . DS . 'controllers' . DS . $controller_postfix . '.php';
         if (file_exists($controller_file) && !empty($controller_file)) {
             return new $controller_postfix();
         }
     }
 
-    public function getModuleClass($class_name, $module_name, $type)
+    public function getModuleClass(string $class_name, string $module_name, string $type)
     {
         $class_postfix = $class_name . 'ModuleClass';
-        $class_file = MODULES_DIR . $module_name . DS . $type . DS . 'classes' . DS . $class_name . 'Class.php';
+        $class_file = MODULES_DIR . $module_name . 'Module' . DS . $type . DS . 'classes' . DS . $class_name . 'Class.php';
         if (file_exists($class_file) && !empty($class_file)) {
             require_once $class_postfix;
         }
     }
 
-    public function getModuleAllowedPages(string $module_name)
+    public function getModuleModel(string $module_name, string $model_name)
     {
-        if (!empty($module_name)) {
-            $db = new Db();
-            return $results = $db->select("modules_pages_allowed")->
-                from("global_modules")->
-                where("modules_name='{$module_name}'")->
-                execute("assoc");
+        $model = new Model();
+        return $model->getModuleModel($module_name, $model_name);
+    }
+
+    public function getControllerClass(string $class_name)
+    {
+        if (!empty($class_name) && Tools::checkExisting($class_name, 'class')) {
+            $real_class_name = $class_name . 'Class';
+            return new $real_class_name();
         }
     }
 
-    public function getModuleSilencePages(string $module_name)
+    public function getClassModel(string $model_name)
     {
-        if (!empty($module_name)) {
+        $model = new Model();
+        return $model->getClassModel($model_name);
+    }
+
+    public function getPageSilenceModules(string $controller, string $type)
+    {
+        if (!empty($controller)) {
             $db = new Db();
-            return $db->select("modules_silence_pages_allowed")->
-                from("global_modules")->
-                where("modules_name='{$module_name}'")->
-                execute('assoc');
+            return $db->select("global_modules.name")->from("global_modules")->innerJoin("{$type}_modules_silence_associations")->on("global_modules.id={$type}_modules_silence_associations.module_id")->innerJoin("{$type}_pages")->on("{$type}_modules_silence_associations.page_id={$type}_pages.id")->where("{$type}_pages.controller='{$controller}'")->execute("assoc");
         }
     }
 
@@ -243,5 +272,14 @@ class Tools
             }
         }
         return $input;
+    }
+
+    public static function getStaticMessage(string $message_name)
+    {
+        if (!empty($message_name)) {
+            $db = new Db();
+            $resutls = $db->select("message")->from("global_messages_static")->where("message='{$message_name}'")->execute("assoc");
+            return $resutls[0]['message_static_message'];
+        }
     }
 }

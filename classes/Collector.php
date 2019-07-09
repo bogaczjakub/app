@@ -12,15 +12,14 @@ class Collector
         'page_details' => array(),
         'template_data' => array(),
         'head_links' => array('js' => array(), 'css' => array()),
+        'head_styles' => array(),
         'alerts' => array(),
         'breadcrumbs' => array(),
         'page_forms' => array()
     );
 
     public function __construct()
-    {
-
-    }
+    { }
 
     public function type(string $type = '')
     {
@@ -29,13 +28,15 @@ class Collector
         }
     }
 
-    public function globalDetails(array $global_details = array()) {
+    public function globalDetails(array $global_details = array())
+    {
         if (!empty($global_details)) {
             $this->collection['global_details'] = $global_details;
         }
     }
 
-    public function theme(string $theme = '') {
+    public function theme(string $theme = '')
+    {
         if (!empty($theme)) {
             $this->collection['theme'] = $theme;
         }

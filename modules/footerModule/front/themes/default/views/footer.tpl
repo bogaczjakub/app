@@ -1,0 +1,1 @@
+<div id="footer-module" class="container">Footer - module</div>

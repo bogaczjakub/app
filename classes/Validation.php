@@ -26,12 +26,12 @@ class Validation
                         $field_rules = $this->getFieldRules($field_key, $table_name);
                         $field_name = Tables::createColumnName($table_name, $field_key);
                         if (isset($field_rules[0]['id'])) {
-                            if ($field_rules[0]['forms_rules_required'] == 1 && empty($field['value'])) {
-                                $this->validation_raport['failure_fields'][$field_name] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['forms_rules_requirement_failure_message']);
+                            if ($field_rules[0]['required'] == 1 && empty($field['value'])) {
+                                $this->validation_raport['failure_fields'][$field_name] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['requirement_failure_message']);
                                 $this->validation_raport['failures'] += 1;
                             }
-                            if (!empty($field_rules[0]['forms_rules_validation_pattern']) && !empty($field['value']) && !preg_match($field_rules[0]['forms_rules_validation_pattern'], $field['value'])) {
-                                $this->validation_raport['failure_fields'][$field_name] = array('pattern_failure' => 1, 'failure_message' => $field_rules[0]['forms_rules_pattern_failure_message']);
+                            if (!empty($field_rules[0]['validation_pattern']) && !empty($field['value']) && !preg_match($field_rules[0]['validation_pattern'], $field['value'])) {
+                                $this->validation_raport['failure_fields'][$field_name] = array('pattern_failure' => 1, 'failure_message' => $field_rules[0]['pattern_failure_message']);
                                 $this->validation_raport['failures'] += 1;
                             }
                         }
@@ -44,13 +44,13 @@ class Validation
                 if (!empty($remove_protected)) {
                     $form_fields = $remove_protected;
                 } else {
-                    $static_alert = Alerts::getstaticAlert('table', 'remove', 'danger');
-                    $this->validation_raport['failure_action_message'] = $static_alert[0]['alerts_static_message'];
+                    $static_alert = Alerts::getStaticAlert('table', 'remove', 'danger');
+                    $this->validation_raport['failure_action_message'] = $static_alert[0]['message'];
                     $this->validation_raport['failures'] += 1;
                 }
             } else {
-                $static_alert = Alerts::getstaticAlert('table', 'remove', 'danger');
-                $this->validation_raport['failure_action_message'] = $static_alert[0]['alerts_static_message'];
+                $static_alert = Alerts::getStaticAlert('table', 'remove', 'danger');
+                $this->validation_raport['failure_action_message'] = $static_alert[0]['message'];
                 $this->validation_raport['failures'] += 1;
             }
         }
@@ -77,19 +77,19 @@ class Validation
         ) {
             if (array_sum($this->confirmPassword($fields_array[$password_field . '-old']['value'], $id, $table_name))) {
                 if ($fields_array[$password_field . '-new']['value'] === $fields_array[$password_field . '-repeat']['value']) {
-                    if (!empty($field_rules[0]['forms_rules_validation_pattern']) && !empty($fields_array[$password_field . '-new']['value']) && !preg_match($field_rules[0]['forms_rules_validation_pattern'], $fields_array[$password_field . '-new']['value'])) {
-                        $this->validation_raport['failure_fields'][$password_field] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['forms_rules_requirement_failure_message']);
+                    if (!empty($field_rules[0]['validation_pattern']) && !empty($fields_array[$password_field . '-new']['value']) && !preg_match($field_rules[0]['validation_pattern'], $fields_array[$password_field . '-new']['value'])) {
+                        $this->validation_raport['failure_fields'][$password_field] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['requirement_failure_message']);
                     } else {
                         $fields_array[$password_field] = array('value' => md5($fields_array[$password_field . '-new']['value']), 'type' => 'varchar');
                     }
                 } else {
-                    $static_alert = Alerts::getstaticAlert('password', 'typing', 'danger');
-                    $this->validation_raport['failure_fields'][$password_field_real_name] = array('pattern_failure' => 1, 'failure_message' => $static_alert[0]['alerts_static_message']);
+                    $static_alert = Alerts::getStaticAlert('password', 'typing', 'danger');
+                    $this->validation_raport['failure_fields'][$password_field_real_name] = array('pattern_failure' => 1, 'failure_message' => $static_alert[0]['message']);
                     $this->validation_raport['failures'] += 1;
                 }
             } else {
-                $static_alert = Alerts::getstaticAlert('password', 'match', 'danger');
-                $this->validation_raport['failure_fields'][$password_field_real_name] = array('pattern_failure' => 1, 'failure_message' => $static_alert[0]['alerts_static_message']);
+                $static_alert = Alerts::getStaticAlert('password', 'match', 'danger');
+                $this->validation_raport['failure_fields'][$password_field_real_name] = array('pattern_failure' => 1, 'failure_message' => $static_alert[0]['message']);
                 $this->validation_raport['failures'] += 1;
             }
         } else if (
@@ -97,8 +97,8 @@ class Validation
             !empty($fields_array[$password_field . '-repeat']['value'])
         ) {
             if ($fields_array[$password_field . '-new']['value'] === $fields_array[$password_field . '-repeat']['value']) {
-                if (!empty($field_rules[0]['forms_rules_validation_pattern']) && !empty($fields_array[$password_field . '-new']['value']) && !preg_match($field_rules[0]['forms_rules_validation_pattern'], $fields_array[$password_field . '-new']['value'])) {
-                    $this->validation_raport['failure_fields'][$password_field] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['forms_rules_requirement_failure_message']);
+                if (!empty($field_rules[0]['validation_pattern']) && !empty($fields_array[$password_field . '-new']['value']) && !preg_match($field_rules[0]['validation_pattern'], $fields_array[$password_field . '-new']['value'])) {
+                    $this->validation_raport['failure_fields'][$password_field] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['requirement_failure_message']);
                 } else {
                     $fields_array[$password_field] = array('value' => md5($fields_array[$password_field . '-new']['value']), 'type' => 'varchar');
                 }
@@ -108,8 +108,8 @@ class Validation
                 $this->validation_raport['failure_fields'][$password_field_real_name] = array('pattern_failure' => 1, 'failure_message' => 'New password and repeat password does not match.');
                 $this->validation_raport['failures'] += 1;
             }
-        } else if (!empty($field_rules[0]['forms_rules_required']) && $field_rules[0]['forms_rules_required'] == 1 && $form_action != 'update') {
-            $this->validation_raport['failure_fields'][$password_field_real_name] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['forms_rules_requirement_failure_message']);
+        } else if (!empty($field_rules[0]['required']) && $field_rules[0]['required'] == 1 && $form_action != 'update') {
+            $this->validation_raport['failure_fields'][$password_field_real_name] = array('requirement_failure' => 1, 'failure_message' => $field_rules[0]['requirement_failure_message']);
             $this->validation_raport['failures'] += 1;
         }
         unset($fields_array[$password_field . '-old']);
@@ -136,11 +136,10 @@ class Validation
 
     private function getTablePasswordField(string $table_name)
     {
-        $db = new Db();
         $table_all_field = Tables::getTableColumnNames($table_name);
         $password_field = '';
         if (!empty($table_all_field)) {
-            $table_password_field = preg_grep('/_password$/', array_column($table_all_field, 'Field'));
+            $table_password_field = preg_grep('/password$/', array_column($table_all_field, 'Field'));
             $first_password_field = reset($table_password_field);
             if (!empty($first_password_field)) {
                 $password_field = $first_password_field;
@@ -155,9 +154,9 @@ class Validation
     {
         if (!empty($table_name) && !empty($forbidden_action)) {
             $db = new Db();
-            $protected = $db->select("protected_data_row_id")->from("system_protected_data")->where("protected_data_forbidden_action='{$forbidden_action}' AND protected_data_table_name='{$table_name}'")->execute("assoc");
+            $protected = $db->select("row_id")->from("system_protected_data")->where("forbidden_action='{$forbidden_action}' AND table_name='{$table_name}'")->execute("assoc");
             if (!empty($protected) && !empty($ids)) {
-                return array_diff($ids, array_column($protected, 'protected_data_row_id'));
+                return array_diff($ids, array_column($protected, 'row_id'));
             } else if (!empty($ids)) {
                 return $ids;
             }
@@ -167,6 +166,6 @@ class Validation
     public static function getFieldRules(string $field_name, string $table_name)
     {
         $db = new Db();
-        return $db->select("*")->from("system_forms_rules")->where("forms_rules_table_name='{$table_name}' AND forms_rules_field_name='{$field_name}'")->execute("assoc");
+        return $db->select("*")->from("system_forms_rules")->where("table_name='{$table_name}' AND field_name='{$field_name}'")->execute("assoc");
     }
 }

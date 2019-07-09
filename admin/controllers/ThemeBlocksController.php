@@ -3,21 +3,20 @@
 class ThemeBlocksController extends Page
 {
     public function __construct()
-    {}
+    { }
 
     public function index(array $args)
     {
         $forms = new Forms();
         $forms->buildAdminForm('front_theme_blocks', 'table', array(
             'id',
-            'theme_blocks_name',
-            'theme_blocks_display_name',
-            'theme_blocks_last_update',
-            'theme_blocks_information',
-            'theme_blocks_active',
-            'theme_blocks_content',
-            'theme_blocks_styles',
-            'gaps_id',
+            'name',
+            'display_name',
+            'last_update',
+            'information',
+            'is_active',
+            'content',
+            'styles',
         ), $args);
         $this->display('theme_blocks');
     }
@@ -50,13 +49,12 @@ class ThemeBlocksController extends Page
     {
         $forms = new Forms();
         $forms->buildAdminForm('front_theme_blocks', 'add', array(
-            'theme_blocks_name',
-            'theme_blocks_display_name',
-            'theme_blocks_information',
-            'theme_blocks_active',
-            'theme_blocks_content',
-            'theme_blocks_styles',
-            'gaps_id',
+            'name',
+            'display_name',
+            'information',
+            'is_active',
+            'content',
+            'styles',
         ), $args);
         $this->display('theme_blocks_add');
     }
@@ -66,14 +64,13 @@ class ThemeBlocksController extends Page
         if (isset($args['front_theme_blocks-items']) && !empty($args['front_theme_blocks-items'])) {
             $forms = new Forms();
             $forms->buildAdminForm('front_theme_blocks', 'edit', array(
-                'theme_blocks_name',
-                'theme_blocks_display_name',
-                'theme_blocks_last_update',
-                'theme_blocks_information',
-                'theme_blocks_active',
-                'theme_blocks_content',
-                'theme_blocks_styles',
-                'gaps_id',
+                'name',
+                'display_name',
+                'last_update',
+                'information',
+                'is_active',
+                'content',
+                'styles',
             ), $args);
             $this->display('theme_blocks_edit');
         } else {
@@ -85,7 +82,7 @@ class ThemeBlocksController extends Page
 
     private function remove(array $args)
     {
-        if (isset($args) && !empty($args)) {
+        if (isset($args['front_theme_blocks-items']) && !empty($args['front_theme_blocks-items'])) {
             $forms = new Forms();
             $alerts = new Alerts();
             $raport = $forms->formHandler('front_theme_blocks', 'table', $args, 'remove');
@@ -98,6 +95,10 @@ class ThemeBlocksController extends Page
             } else {
                 $alerts->newAlertFromRaport('ThemeBlocks', $raport);
             }
+        } else {
+            $alerts = new Alerts();
+            $alerts->newAlert('warning', 'Front theme blocks', 'At least one element must be selected.', 'ThemeBlocks');
+            Url::redirectUrl('ThemeBlocks', 'index', array());
         }
         Url::redirectUrl('ThemeBlocks', 'index', array());
     }

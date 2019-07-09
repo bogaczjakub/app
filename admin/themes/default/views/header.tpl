@@ -74,10 +74,13 @@
         </ul>
     </div>
 </nav>
-{if isset($header_gap) && !empty($header_gap)}
-{foreach $header_gap as $type}
-{foreach $type as $content}
-{$content}
+{if isset($header_gap['modules']) && !empty($header_gap['modules'])}
+{foreach $header_gap['modules'] as $module}
+{$module}
 {/foreach}
+{/if}
+{if isset($header_gap['blocks']) && !empty($header_gap['blocks'])}
+{foreach $header_gap['blocks'] as $block}
+{$block}
 {/foreach}
 {/if}

@@ -453,11 +453,10 @@ class Tables
 
     public static function createColumnName(string $table_name, string $column_name)
     {
-        $exploded_name = explode('_', $column_name);
         $exploded_table_name = explode('_', $table_name);
-        $name_differences = array_diff($exploded_name, $exploded_table_name);
-        $new_column_name = implode(' ', $name_differences);
-        return $new_column_name;
+        array_splice($exploded_table_name, 0, 1);
+        $new_column_name = str_replace(implode('_', $exploded_table_name) . '_', '', $column_name);
+        return str_replace('_', ' ', $new_column_name);
     }
 
     private function foreignKeyCheck(string $field_name, string $table_name)
@@ -498,13 +497,9 @@ class Tables
                     if (!empty($referenced_data[$referenced_key]['REFERENCED_TABLE_NAME']) && !empty($referenced_data[$referenced_key]['REFERENCED_COLUMN_NAME'])) {
                         $referred_table = $referenced_data[$referenced_key]['REFERENCED_TABLE_NAME'];
                         $referred_column = $referenced_data[$referenced_key]['REFERENCED_COLUMN_NAME'];
-                        $exploded_table_name = explode('_', $referred_table);
-                        array_shift($exploded_table_name);
-                        $imploded = implode('_', $exploded_table_name);
-                        $name_field = $imploded . '_display_name';
-                        $name = $db->select("{$name_field}")->from("{$referred_table}")->where("{$referred_column}={$field_value}")->execute("assoc");
+                        $name = $db->select("display_name")->from("{$referred_table}")->where("{$referred_column}={$field_value}")->execute("assoc");
                         if (!empty($name)) {
-                            return $name[0][$name_field];
+                            return $name[0]['display_name'];
                         } else {
                             return '';
                         }

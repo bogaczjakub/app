@@ -13,7 +13,7 @@ class loginModuleModel
             $db = new Db();
             return $db->select("id")->
                 from("admin_users")->
-                where("users_login='{$db->escapeString($args['login_form-login'])}' AND users_password='{$db->escapeString(md5($args['login_form-password']))}'")->
+                where("login='{$db->escapeString($args['login_form-login'])}' AND password='{$db->escapeString(md5($args['login_form-password']))}'")->
                 execute("object");
         }
     }

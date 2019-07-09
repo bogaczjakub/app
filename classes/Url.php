@@ -6,9 +6,7 @@ class Url
     public static $page_url;
 
     public function __construct()
-    {
-
-    }
+    { }
 
     public function requestToArray()
     {
@@ -92,7 +90,7 @@ class Url
 
     public static function buildPageUrl(string $page_controller, string $page_action, array $params = null, bool $table = false)
     {
-        $page_controller = (empty($page_controller) || $page_controller = 'this') ? self::$url['controller'] : $page_controller;
+        $page_controller = (empty($page_controller) || $page_controller == 'this') ? self::$url['controller'] : $page_controller;
         $page_action = (empty($page_controller)) ? self::$url['action'] : $page_action;
         $query_params = '&';
         if ($table) {
@@ -138,5 +136,4 @@ class Url
         }
         return $_SERVER['PHP_SELF'] . '?controller=' . $page_controller . '&action=' . $page_action . $query_params;
     }
-
 }

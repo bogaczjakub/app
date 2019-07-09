@@ -1,9 +1,9 @@
 <title>{if isset($page_details[0].head_title) && !empty($page_details[0].head_title)}{$page_details[0].head_title}{/if}
 </title>
 <meta name="description"
-    content="{if isset($page_details[0].pages_description) && !empty($page_details[0].pages_description)}{$page_details[0].pages_description}{/if}">
+    content="{if isset($page_details[0].description) && !empty($page_details[0].description)}{$page_details[0].description}{/if}">
 <meta name="keywords"
-    content="{if isset($page_details[0].pages_keywords) && !empty($page_details[0].pages_keywords)}{$page_details[0].pages_keywords}{/if}">
+    content="{if isset($page_details[0].keywords) && !empty($page_details[0].keywords)}{$page_details[0].keywords}{/if}">
 <meta name="author"
     content="{if isset($global_details.site_author) && !empty($global_details.site_author)}{$global_details.site_author}{/if}">
 <meta http-equiv="refresh" content="">
@@ -23,8 +23,18 @@
 {/if}
 {/foreach}
 {/if}
-{if isset($head_gap) && !empty($head_gap)}
-{foreach $head_gap as $key => $value}
-{$value}
+{if isset($head_styles) && !empty($head_styles)}
+{foreach $head_styles as $style}
+{$style}
+{/foreach}
+{/if}
+{if isset($head_gap['modules']) && !empty($head_gap['modules'])}
+{foreach $head_gap['modules'] as $module}
+{$module}
+{/foreach}
+{/if}
+{if isset($head_gap['blocks']) && !empty($head_gap['blocks'])}
+{foreach $head_gap['blocks'] as $block}
+{$block}
 {/foreach}
 {/if}

@@ -10,31 +10,31 @@ class Settings
     public function getGlobalSettings()
     {
         $db = new Db();
-        return $db->select("system_settings_values.settings_pointers_id,settings_types_type,settings_name,settings_display_name,settings_values_value,settings_values_active,settings_information,settings_values_active,settings_last_update")->from("global_settings")->innerJoin("system_settings_pointers")->on("global_settings.settings_pointers_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.settings_pointers_id")->where("system_settings_values.settings_values_active='1'")->orderBy("settings_pointers_id,settings_types_type")->execute("assoc");
+        return $db->select("system_settings_values.pointer_id,data_type,name,display_name,setting_value,is_active,information,is_active,last_update")->from("global_settings")->innerJoin("system_settings_pointers")->on("global_settings.pointer_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.pointer_id")->where("system_settings_values.is_active='1'")->orderBy("pointer_id,data_type")->execute("assoc");
     }
 
     public function getAdminSettings()
     {
         $db = new Db();
-        return $db->select("system_settings_values.settings_pointers_id,settings_types_type,settings_name,settings_display_name,settings_values_value,settings_values_active,settings_information,settings_values_active,settings_last_update")->from("admin_settings")->innerJoin("system_settings_pointers")->on("admin_settings.settings_pointers_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.settings_pointers_id")->where("system_settings_values.settings_values_active='1'")->orderBy("settings_pointers_id,settings_types_type")->execute("assoc");
+        return $db->select("system_settings_values.pointer_id,data_type,name,display_name,setting_value,is_active,information,is_active,last_update")->from("admin_settings")->innerJoin("system_settings_pointers")->on("admin_settings.pointer_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.pointer_id")->where("system_settings_values.is_active='1'")->orderBy("pointer_id,data_type")->execute("assoc");
     }
 
     public function getFrontSettings()
     {
         $db = new Db();
-        return $db->select("system_settings_values.settings_pointers_id,settings_types_type,settings_name,settings_display_name,settings_values_value,settings_values_active,settings_information,settings_values_active,settings_last_update")->from("front_settings")->innerJoin("system_settings_pointers")->on("front_settings.settings_pointers_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.settings_pointers_id")->where("system_settings_values.settings_values_active='1'")->orderBy("settings_pointers_id,settings_types_type")->execute("assoc");
+        return $db->select("system_settings_values.pointer_id,data_type,name,display_name,setting_value,is_active,information,is_active,last_update")->from("front_settings")->innerJoin("system_settings_pointers")->on("front_settings.pointer_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.pointer_id")->where("system_settings_values.is_active='1'")->orderBy("pointer_id,data_type")->execute("assoc");
     }
 
-    public function getSettingValue(array $settings_array, string $settings_name)
+    public function getSettingValue(array $settings_array, string $setting_name)
     {
-        $key = array_search($settings_name, array_column($settings_array, 'settings_name'));
-        return $settings_array[$key]['settings_values_value'];
+        $key = array_search($setting_name, array_column($settings_array, 'name'));
+        return $settings_array[$key]['setting_value'];
     }
 
     public function getPageDetails(string $page, string $type)
     {
         $db = new Db();
-        return $db->select("*")->from("{$type}_pages")->where("pages_controller='{$page}'")->execute("assoc");
+        return $db->select("*")->from("{$type}_pages")->where("controller='{$page}'")->execute("assoc");
     }
 
     public function fillGlobalDetails(array $settings_array)
@@ -54,52 +54,52 @@ class Settings
         if (!empty($columns)) {
             $select = implode(',', $columns);
         } else {
-            $select = 'system_settings_values.settings_pointers_id,settings_types_type,settings_name,settings_display_name,settings_values_value,settings_values_active,settings_information,settings_values_active,settings_last_update';
+            $select = 'system_settings_values.pointer_id,data_type,name,display_name,setting_value,is_active,information,is_active,last_update';
         }
-        $require_table = $db->select("{$select}")->from("{$table_name}")->innerJoin("system_settings_pointers")->on("{$table_name}.settings_pointers_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.settings_pointers_id")->orderBy("settings_pointers_id,settings_types_type")->execute("assoc");
+        $require_table = $db->select("{$select}")->from("{$table_name}")->innerJoin("system_settings_pointers")->on("{$table_name}.pointer_id=system_settings_pointers.id")->innerJoin("system_settings_values")->on("system_settings_pointers.id=system_settings_values.pointer_id")->orderBy("pointer_id,data_type")->execute("assoc");
         if (!empty($require_table)) {
             foreach ($require_table as $key => $row) {
-                $pointer = $row['settings_pointers_id'];
-                if (array_key_exists($pointer, $new_table[$table_name]) && ($row['settings_types_type'] == 'select' || $row['settings_types_type'] == 'radio')) {
+                $pointer = $row['pointer_id'];
+                if (array_key_exists($pointer, $new_table[$table_name]) && ($row['data_type'] == 'select' || $row['data_type'] == 'radio')) {
                     if (!isset($new_table[$table_name][$pointer]['multiple_fields'])) {
                         $new_table[$table_name][$pointer]['multiple_fields'] = array();
                     }
-                    if ($row['settings_values_active'] == 1) {
-                        $new_table[$table_name][$pointer]['setting_value'] = $row['settings_values_value'];
+                    if ($row['is_active'] == 1) {
+                        $new_table[$table_name][$pointer]['setting_value'] = $row['setting_value'];
                     }
-                    array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['settings_values_value']);
-                } elseif (array_key_exists($pointer, $new_table[$table_name]) && ($row['settings_types_type'] == 'multiple' || $row['settings_types_type'] == 'checkbox')) {
+                    array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['setting_value']);
+                } elseif (array_key_exists($pointer, $new_table[$table_name]) && ($row['data_type'] == 'multiple' || $row['data_type'] == 'checkbox')) {
                     if (!isset($new_table[$table_name][$pointer]['multiple_fields'])) {
                         $new_table[$table_name][$pointer]['multiple_fields'] = array();
                     }
-                    if ($row['settings_values_active'] == 1) {
-                        array_push($new_table[$table_name][$pointer]['setting_value'], $row['settings_values_value']);
+                    if ($row['is_active'] == 1) {
+                        array_push($new_table[$table_name][$pointer]['setting_value'], $row['setting_value']);
                     }
-                    array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['settings_values_value']);
+                    array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['setting_value']);
                 } else {
-                    if ($row['settings_types_type'] == 'multiple' || $row['settings_types_type'] == 'checkbox' || $row['settings_types_type'] == 'select' || $row['settings_types_type'] == 'radio') {
-                        if ($row['settings_types_type'] != 'radio') {
+                    if ($row['data_type'] == 'multiple' || $row['data_type'] == 'checkbox' || $row['data_type'] == 'select' || $row['data_type'] == 'radio') {
+                        if ($row['data_type'] != 'radio') {
                             $new_table[$table_name][$pointer]['setting_value'] = array();
                         } else {
                             $new_table[$table_name][$pointer]['setting_value'] = '';
                         }
-                        if ($row['settings_values_active'] == 1 && $row['settings_types_type'] != 'radio') {
-                            array_push($new_table[$table_name][$pointer]['setting_value'], $row['settings_values_value']);
-                        } elseif ($row['settings_types_type'] == 'radio') {
-                            $new_table[$table_name][$pointer]['setting_value'] = $row['settings_values_value'];
+                        if ($row['is_active'] == 1 && $row['data_type'] != 'radio') {
+                            array_push($new_table[$table_name][$pointer]['setting_value'], $row['setting_value']);
+                        } elseif ($row['data_type'] == 'radio') {
+                            $new_table[$table_name][$pointer]['setting_value'] = $row['setting_value'];
                         }
                         if (!isset($new_table[$table_name][$pointer]['multiple_fields'])) {
                             $new_table[$table_name][$pointer]['multiple_fields'] = array();
                         }
-                        array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['settings_values_value']);
+                        array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['setting_value']);
                     } else {
-                        $new_table[$table_name][$pointer]['setting_value'] = ($row['settings_values_active'] == 1) ? $row['settings_values_value'] : '';
+                        $new_table[$table_name][$pointer]['setting_value'] = ($row['is_active'] == 1) ? $row['setting_value'] : '';
                     }
-                    $new_table[$table_name][$pointer]['setting_name'] = $row['settings_name'];
-                    $new_table[$table_name][$pointer]['setting_display_name'] = $row['settings_display_name'];
-                    $new_table[$table_name][$pointer]['setting_type'] = $row['settings_types_type'];
-                    $new_table[$table_name][$pointer]['setting_information'] = $row['settings_information'];
-                    $new_table[$table_name][$pointer]['setting_last_update'] = $row['settings_last_update'];
+                    $new_table[$table_name][$pointer]['setting_name'] = $row['name'];
+                    $new_table[$table_name][$pointer]['setting_display_name'] = $row['display_name'];
+                    $new_table[$table_name][$pointer]['setting_type'] = $row['data_type'];
+                    $new_table[$table_name][$pointer]['setting_information'] = $row['information'];
+                    $new_table[$table_name][$pointer]['setting_last_update'] = $row['last_update'];
                 }
             }
         }
@@ -124,19 +124,19 @@ class Settings
                             $in_values .= ',';
                         }
                     }
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.settings_pointers_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.settings_pointers_id")->set("settings_values_active=CASE WHEN settings_values_value IN({$in_values}) THEN 1 ELSE 0 END")->where("{$input_components[0]}.settings_name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value IN({$in_values}) THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'text' || $input_components[2] == 'string') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.settings_pointers_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.settings_pointers_id")->set("settings_values_active=CASE WHEN front_settings.settings_name = '{$input_components[1]}' THEN 1 ELSE 0 END,settings_values_value='$values'")->where("{$input_components[0]}.settings_name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN front_settings.name = '{$input_components[1]}' THEN 1 ELSE 0 END,setting_value='$values'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'boolean') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.settings_pointers_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.settings_pointers_id")->set("settings_values_active='1',settings_values_value='{$values}'")->where("{$input_components[0]}.settings_name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active='1',setting_value='{$values}'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'select' || $input_components[2] == 'radio') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.settings_pointers_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.settings_pointers_id")->set("settings_values_active=CASE WHEN settings_values_value='{$values}' THEN 1 ELSE 0 END")->where("{$input_components[0]}.settings_name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value='{$values}' THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 }
             }

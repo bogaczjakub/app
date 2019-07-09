@@ -10,17 +10,14 @@ class AdminUsersController extends Page
         $forms = new Forms();
         $forms->buildAdminForm('admin_users', 'table', array(
             'id',
-            'users_login',
-            'users_firstname',
-            'users_lastname',
-            'users_create_date',
-            'users_birthday',
-            'users_email',
-            'users_info',
-            'privileges_id',
-            'privileges_enum',
-            'settest',
-            'tinyinttest',
+            'login',
+            'firstname',
+            'lastname',
+            'create_date',
+            'birthday',
+            'email',
+            'info',
+            'privilege_id',
         ), $args);
         $this->display('admin_users');
     }
@@ -53,17 +50,14 @@ class AdminUsersController extends Page
     {
         $forms = new Forms();
         $forms->buildAdminForm('admin_users', 'add', array(
-            'users_login',
-            'users_firstname',
-            'users_lastname',
-            'users_birthday',
-            'users_password',
-            'users_email',
-            'users_info',
-            'privileges_id',
-            'privileges_enum',
-            'settest',
-            'tinyinttest',
+            'login',
+            'firstname',
+            'lastname',
+            'birthday',
+            'password',
+            'email',
+            'info',
+            'privilege_id',
         ), $args);
         $this->display('user_add');
     }
@@ -73,17 +67,14 @@ class AdminUsersController extends Page
         if (isset($args['admin_users-items']) && !empty($args['admin_users-items'])) {
             $forms = new Forms();
             $forms->buildAdminForm('admin_users', 'edit', array(
-                'users_login',
-                'users_firstname',
-                'users_lastname',
-                'users_birthday',
-                'users_password',
-                'users_email',
-                'users_info',
-                'privileges_id',
-                'privileges_enum',
-                'settest',
-                'tinyinttest',
+                'login',
+                'firstname',
+                'lastname',
+                'birthday',
+                'password',
+                'email',
+                'info',
+                'privilege_id',
             ), $args);
             $this->display('user_edit');
         } else {

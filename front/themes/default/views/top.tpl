@@ -6,10 +6,13 @@
         <button class="btn btn-success btn-lg" href="#" role="button">Learn more</button>
     </div>
 </div>
-{if isset($top_gap) && !empty($top_gap)}
-{foreach $top_gap as $type}
-{foreach $type as $content}
-{$content}
+{if isset($top_gap['modules']) && !empty($top_gap['modules'])}
+{foreach $top_gap['modules'] as $module}
+{$module}
 {/foreach}
+{/if}
+{if isset($top_gap['blocks']) && !empty($top_gap['blocks'])}
+{foreach $top_gap['blocks'] as $block}
+{$block}
 {/foreach}
 {/if}

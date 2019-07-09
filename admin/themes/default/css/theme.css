@@ -1,5 +1,5 @@
 @font-face {
-  font-family: 'Glyphicons Halflings';
+  font-family: "Glyphicons Halflings";
   src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot");
   src: url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("../../../../libs/bootstrap/assets/fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg"); }
 
@@ -11,6 +11,8 @@ body,
 
 html body {
   background-color: #f8f8f8; }
+  html body div[class^="col"] {
+    min-height: unset !important; }
   html body .datepicker {
     padding: 5px 5px; }
     html body .datepicker table tr td.active.active {
@@ -191,6 +193,43 @@ html body {
     margin-left: 5px; }
     html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .panel-footer button .glyphicon {
       margin-right: 5px; }
+  html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-left .media-object {
+      height: 64px;
+      width: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f5f5f5; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-left .media-object .glyphicon {
+        font-size: 24px;
+        color: grey;
+        padding: 0;
+        margin: 0; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-body .module-heading {
+      margin-bottom: 10px;
+      color: #337ab7; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-body .module-category {
+      font-style: italic;
+      font-size: 12px; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-body .module-author {
+      font-style: italic;
+      font-size: 12px; }
+    html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-right .buttons-container {
+      display: flex;
+      justify-content: center;
+      align-items: center; }
+      html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-right .buttons-container .btn-group {
+        margin-right: 5px;
+        display: table-cell;
+        vertical-align: middle; }
+        html body #page-container #content-section #content-container #content-row #center-column .panel.form-panel .module-panel .media .media-right .buttons-container .btn-group ul.dropdown-menu {
+          right: 0;
+          left: unset; }
   html body #page-container #content-section #content-container #content-row #center-column #alerts .alert {
     display: flex;
     justify-content: flex-start;

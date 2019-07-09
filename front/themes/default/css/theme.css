@@ -11,10 +11,13 @@ body,
 
 html body {
   background-color: #FFFFFF; }
+  html body div[class^="col"] {
+    min-height: unset !important; }
   html body #page-container #header-section #front-navbar {
     background-color: white;
     border-radius: 0;
-    margin: 0px; }
+    margin: 0px;
+    border: none; }
   html body #page-container #content-section #content-container #top #top-row > div {
     padding: 0; }
     html body #page-container #content-section #content-container #top #top-row > div #jumbotron {
@@ -38,26 +41,14 @@ html body {
           color: #ffffff;
           padding: 0;
           margin: 0; }
-        html body #page-container #content-section #content-container #top #top-row > div #jumbotron .jumbotron h1, html body #page-container #content-section #content-container #top #top-row > div #jumbotron .jumbotron p, html body #page-container #content-section #content-container #top #top-row > div #jumbotron .jumbotron span {
+        html body #page-container #content-section #content-container #top #top-row > div #jumbotron .jumbotron h1,
+        html body #page-container #content-section #content-container #top #top-row > div #jumbotron .jumbotron p,
+        html body #page-container #content-section #content-container #top #top-row > div #jumbotron .jumbotron span {
           text-align: center; }
         html body #page-container #content-section #content-container #top #top-row > div #jumbotron .jumbotron button {
           margin: 40px 0 0; }
     html body #page-container #content-section #content-container #top #top-row > div #breadcrumb .breadcrumb {
       background-color: #ffffff; }
-  html body #page-container #footer-section {
-    background-color: #ffffff;
-    border-top: 1px solid #e7e7e7;
-    margin-top: 20px;
-    height: 50px;
-    bottom: 0;
-    width: 100%; }
-    html body #page-container #footer-section #footer {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px; }
-      html body #page-container #footer-section #footer p.footer-info {
-        text-align: center;
-        color: #777777;
-        margin: 0; }
+  html body #page-container #footer-section #footer-container {
+    background-color: #f5f5f5;
+    font-size: 14px; }

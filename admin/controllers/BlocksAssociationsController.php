@@ -10,8 +10,9 @@ class BlocksAssociationsController extends Page
         $forms = new Forms();
         $forms->buildAdminForm('front_blocks_associations', 'table', array(
             'id',
-            'pages_id',
-            'theme_blocks_id',
+            'page_id',
+            'block_id',
+            'gap_id'
         ), $args);
         $this->display('blocks_associations');
     }
@@ -44,8 +45,9 @@ class BlocksAssociationsController extends Page
     {
         $forms = new Forms();
         $forms->buildAdminForm('front_blocks_associations', 'add', array(
-            'pages_id',
-            'theme_blocks_id',
+            'page_id',
+            'block_id',
+            'gap_id'
         ), $args);
         $this->display('blocks_associations_add');
     }
@@ -55,8 +57,9 @@ class BlocksAssociationsController extends Page
         if (isset($args['front_blocks_associations-items']) && !empty($args['front_blocks_associations-items'])) {
             $forms = new Forms();
             $forms->buildAdminForm('front_blocks_associations', 'edit', array(
-                'pages_id',
-                'theme_blocks_id',
+                'page_id',
+                'block_id',
+                'gap_id'
             ), $args);
             $this->display('blocks_associations_add');
         } else {

@@ -2,25 +2,24 @@
 
 class Model
 {
-    private $controller;
+    private $model_name;
     private $method;
 
     public function __construct()
-    {
+    { }
 
-    }
-
-    public function getPageModel(string $controller)
+    public function getClassModel(string $model_name)
     {
         global $config;
         try {
-            if (!empty($controller)) {
-                if (preg_match('/.+Controller$/', $controller)) {
-                    $model_name = str_replace('Controller', '', $controller) . 'Model';
+            if (!empty($model_name)) {
+                if (preg_match('/.+Controller$/', $model_name)) {
+                    $model_name = str_replace('Controller', '', $model_name) . 'Model';
                 }
-                $model_path = _ROOT_DIR_ . $config['page']['type'] . DS . 'models' . DS . $model_name . '.php';
+                $model_path = _ROOT_DIR_ . $config['page']['type'] . DS . 'models' . DS . $model_name . 'Model.php';
                 if (file_exists($model_path) && !empty($model_path)) {
-                    return new $model_name;
+                    $real_model_name = $model_name . 'Model';
+                    return new $real_model_name;
                 } else {
                     throw new CustomException('Could not find model file for this controller.');
                 }

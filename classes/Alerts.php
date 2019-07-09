@@ -47,12 +47,12 @@ class Alerts
     public function newPredefinedAlert(string $category, string $event, string $type, string $controller)
     {
         if (!empty($category) && !empty($event) && !empty($type) && !empty($controller)) {
-            $alert_message = self::getPredefinedAlert($category, $event, $type);
+            $alert_message = self::getStaticAlert($category, $event, $type);
             $controller_split = preg_split('/(?=[A-Z])/', $controller);
             $title = implode(' ', $controller_split) . ' alert';
             $this->setType($type);
             $this->setTitle($title, $controller);
-            $this->setMessage($alert_message[0]['alerts_static_message']);
+            $this->setMessage($alert_message[0]['message']);
             $this->setController($controller);
             $this->setSite(Page::$collection['type']);
             $this->saveAlert();
@@ -63,7 +63,7 @@ class Alerts
     {
         if (!empty($controller)) {
             $db = new Db();
-            $alerts = $db->select("id,alerts_type,alerts_title,alerts_message,alerts_timestamp")->from("global_alerts")->where("alerts_page_controller='{$controller}'")->execute("assoc");
+            $alerts = $db->select("id,alert_type,title,message,timestamp")->from("global_alerts")->where("page_controller='{$controller}'")->execute("assoc");
             if (!empty($alerts)) {
                 return $alerts;
             }
@@ -111,7 +111,7 @@ class Alerts
     {
         if (!empty($controller)) {
             $db = new Db();
-            $alerts_count = $db->select("COUNT(*) as count")->from("global_alerts")->where("alerts_page_controller='{$controller}'")->execute("assoc");
+            $alerts_count = $db->select("COUNT(*) as count")->from("global_alerts")->where("page_controller='{$controller}'")->execute("assoc");
             if (!empty($alerts_count)) {
                 return $alerts_count;
             }
@@ -124,8 +124,8 @@ class Alerts
             $db = new Db();
             $result = $db->delete()->from("global_alerts")->where("id={$request['query']['id']}")->execute("bool");
             if ($result) {
-                $predefined_alert = self::getPredefinedAlert('alert', 'remove', 'success');
-                echo $predefined_alert[0]['alerts_static_message'];
+                $predefined_alert = self::getStaticAlert('alert', 'remove', 'success');
+                echo $predefined_alert[0]['message'];
             }
         }
     }
@@ -143,10 +143,10 @@ class Alerts
         return $message;
     }
 
-    public static function getPredefinedAlert(string $category, string $event, string $type)
+    public static function getStaticAlert(string $category, string $event, string $type)
     {
         $db = new Db();
-        return $db->select("alerts_static_message")->from("global_alerts_static")->where("alerts_static_category='{$category}' AND alerts_static_event='{$event}' AND alerts_static_type='{$type}'")->execute("assoc");
+        return $db->select("message")->from("global_alerts_static")->where("category='{$category}' AND event='{$event}' AND type='{$type}'")->execute("assoc");
     }
 
     private function saveAlert()
@@ -155,7 +155,7 @@ class Alerts
             $db = new Db();
             extract($this->new_alert);
             $escaped_message = htmlspecialchars($alert_message);
-            $results = $db->insert("global_alerts")->columns("alerts_page_controller, alerts_type, alerts_title, alerts_message, alerts_site")->values("'{$alert_controller}','{$alert_type}','{$alert_title}','{$escaped_message}','{$alert_site}'")->execute('bool');
+            $results = $db->insert("global_alerts")->columns("page_controller,alert_type,title,message,site")->values("'{$alert_controller}','{$alert_type}','{$alert_title}','{$escaped_message}','{$alert_site}'")->execute('bool');
         }
     }
 }

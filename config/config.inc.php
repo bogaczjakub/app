@@ -72,6 +72,7 @@ $config = array(
     'modules' => array(
         'navigation',
         'login',
+        'footer'
     ),
     'include_paths' => array(
         'admin' => array(
@@ -108,7 +109,7 @@ $config = array(
         ),
         'all' => array(
             'jquery' => array(
-                'jquery.min.js',
+                'dist' . DIRECTORY_SEPARATOR . 'jquery.js',
             ),
             'bootstrap' => array(
                 'assets' . DIRECTORY_SEPARATOR . 'javascripts' . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . '*',

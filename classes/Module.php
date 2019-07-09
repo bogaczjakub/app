@@ -12,16 +12,14 @@ class Module
     public static $current_module;
     public static $silence_flag = 0;
 
-    public function __construct(array $collection)
-    {
-        self::$collection = $collection;
-    }
+    public function __construct()
+    { }
 
     public function setModule(string $module_name = '')
     {
         $module_name_posfix = $module_name . 'Module';
         try {
-            if (Tools::checkExisting($module_name_posfix, 'module')) {
+            if (Tools::checkExisting($module_name, 'module')) {
                 $this->module = new $module_name_posfix();
                 self::$current_module = $module_name_posfix;
             } else {
@@ -32,31 +30,39 @@ class Module
         }
     }
 
-    public function setTheme(string $type = 'front', string $theme = 'default')
+    public function setTheme()
     {
-        self::$collection['type'] = $type;
-        self::$collection['theme'] = $theme;
-        self::$module_smarty = $this->initSmarty(self::$current_module);
+        self::$module_smarty = $this->initSmarty();
     }
 
     public function setAction(array $query = array(), string $action = 'index')
     {
         $methods = get_class_methods($this->module);
-        if (!empty(self::$collection['request']['module']['action']) && !empty(self::$collection['request']['module']['name'])) {
-            if (self::$collection['request']['module']['name'] == strtolower(str_replace('Module', '', self::$current_module))) {
+        if (!empty(Page::$collection['request']['module']['action']) && !empty(Page::$collection['request']['module']['name'])) {
+            if (Page::$collection['request']['module']['name'] == strtolower(str_replace('Module', '', self::$current_module))) {
                 foreach ($methods as $method) {
-                    if ($method == self::$collection['request']['module']['action']) {
-                        $this->module->{$method}(isset(self::$collection['request']['module']['args']) && (!empty(self::$collection['request']['module']['args'])) ? self::$collection['request']['module']['args'] : self::$collection['request']['query']);
+                    if ($method == Page::$collection['request']['module']['action']) {
+                        $this->module->{$method}(isset(Page::$collection['request']['module']['args']) && (!empty(Page::$collection['request']['module']['args'])) ? Page::$collection['request']['module']['args'] : Page::$collection['request']['query']);
                         break;
                     }
                 }
             } else {
-                $this->module->index(self::$collection['request']['query']);
+                $this->module->index(Page::$collection['request']['query']);
             }
         } else {
             if (array_search('index', $methods)) {
-                $this->module->index(self::$collection['request']['query']);
+                $this->module->index(Page::$collection['request']['query']);
             }
+        }
+    }
+
+    public function getGapModules(string $gap)
+    {
+        if (!empty($gap)) {
+            $type = Page::$collection['type'];
+            $controller = Page::$collection['request']['controller'];
+            $db = new Db();
+            return $db->select("global_modules.name")->from("global_modules")->innerJoin("{$type}_modules_associations")->on("global_modules.id={$type}_modules_associations.module_id")->innerJoin("system_gaps")->on("{$type}_modules_associations.gap_id=system_gaps.id")->innerJoin("{$type}_pages")->on("{$type}_modules_associations.page_id={$type}_pages.id")->where("system_gaps.name='{$gap}' AND {$type}_pages.controller='{$controller}'")->execute('assoc');
         }
     }
 
@@ -65,16 +71,11 @@ class Module
         global $config;
         self::$modules_array = array();
         foreach ($modules as $module) {
-            if (isset($module['modules_name']) && !empty($module['modules_name'])) {
-                if (in_array($module['modules_name'], $config['modules']) && $this->moduleAllowedForPage(Url::$url['controller'], $module['modules_name'])) {
+            if (isset($module['name']) && !empty($module['name'])) {
+                if (in_array($module['name'], $config['modules'])) {
                     self::$silence_flag = 0;
-                    $this->setModule($module['modules_name']);
-                    $this->setTheme(self::$collection['type']);
-                    $this->setAction();
-                } elseif (in_array($module['modules_name'], $config['modules']) && $this->moduleSilenceMode($module['modules_name'])) {
-                    self::$silence_flag = 1;
-                    $this->setModule($module['modules_name']);
-                    $this->setTheme(self::$collection['type']);
+                    $this->setModule($module['name']);
+                    $this->setTheme();
                     $this->setAction();
                 }
             }
@@ -84,9 +85,9 @@ class Module
         }
     }
 
-    public function initSmarty(string $module_name)
+    public function initSmarty()
     {
-        return new SmartyApp(self::$collection['theme'], self::$collection['type'], true, $module_name);
+        return new SmartyApp(Page::$collection['theme'], Page::$collection['type'], true, self::$current_module);
     }
 
     public function render(string $template = 'index')
@@ -162,66 +163,127 @@ class Module
     private function addHeadLinks()
     {
         $tools = new Tools();
-        Page::$collection['head_links'] = $tools->modulesHeadLinks(Page::$collection['head_links'], self::$css, self::$collection['type'], self::$collection['theme'], 'css', self::$current_module);
-        Page::$collection['head_links'] = $tools->modulesHeadLinks(Page::$collection['head_links'], self::$js, self::$collection['type'], self::$collection['theme'], 'js', self::$current_module);
+        Page::$collection['head_links'] = $tools->modulesHeadLinks(Page::$collection['head_links'], self::$css, Page::$collection['type'], Page::$collection['theme'], 'css', self::$current_module);
+        Page::$collection['head_links'] = $tools->modulesHeadLinks(Page::$collection['head_links'], self::$js, Page::$collection['type'], Page::$collection['theme'], 'js', self::$current_module);
     }
 
-    public function loadModuleController($controller_name)
+    public function getSilenceModulesForPage(string $controller)
     {
-        if (!empty($controller_name)) {
+        if (!empty($controller)) {
             $tools = new Tools();
-            return $tools->getModuleController($controller_name, self::$current_module, self::$collection['type']);
+            $type = Page::$collection['type'];
+            return $tools->getPageSilenceModules($controller, $type);
         }
     }
 
-    public function loadModuleClass($class_name)
+    public function runSilenceModules()
     {
-        if (!empty($class_name)) {
-            $tools = new Tools();
-            $tools->getModuleClass($class_name, self::$current_module, self::$collection['type']);
-        }
-    }
-
-    public function getGapModules(string $gap)
-    {
-        if (!empty($gap)) {
-            $type = self::$collection['type'];
-            $db = new Db();
-            return $db->select("modules_name")->from("global_modules")->innerJoin("system_modules_gaps")->on("global_modules.id=system_modules_gaps.modules_id")->innerJoin("system_gaps")->on("system_modules_gaps.gaps_id=system_gaps.id")->where("system_gaps.gaps_name='{$gap}' AND global_modules.modules_type_allowed IN ('{$type}','all')")->execute('assoc');
-        }
-    }
-
-    public function moduleAllowedForPage(string $controller, string $module_name)
-    {
-        $tools = new Tools();
-        $allowed = $tools->getModuleAllowedPages($module_name);
-        if (!empty($allowed) && $allowed[0]['modules_pages_allowed'] != 'All') {
-            $pages = explode(',', $allowed[0]['modules_pages_allowed']);
-            foreach ($pages as $key => $value) {
-                if (strtolower($value) === strtolower($controller)) {
-                    return true;
-                }
+        $controller = Page::$collection['request']['controller'];
+        $silence_modules =  $this->getSilenceModulesForPage($controller);
+        if (!empty($silence_modules)) {
+            foreach ($silence_modules as $module) {
+                self::$silence_flag = 1;
+                $this->setModule($module['name']);
+                $this->setTheme();
+                $this->setAction();
             }
-        } elseif ($allowed[0]['modules_pages_allowed'] == 'All') {
-            return true;
         }
     }
 
-    public function moduleSilenceMode($module_name)
+    public function getModuleSettingsTable(string $table_name, array $columns, array $args)
     {
-        if (!empty($module_name) && !empty(Url::$url['controller'])) {
-            $tools = new Tools();
-            $silence_pages = $tools->getModuleSilencePages($module_name);
-            if (!empty($silence_pages) && $silence_pages[0]['modules_silence_pages_allowed'] != 'All') {
-                $exploded = explode(',', $silence_pages[0]['modules_silence_pages_allowed']);
-                foreach ($exploded as $page) {
-                    if ($page === Url::$url['controller']) {
-                        return true;
+        $db = new Db();
+        $new_table[$table_name] = array();
+        if (!empty($columns)) {
+            $select = implode(',', $columns);
+        } else {
+            $select = 'modules_settings_values.pointer_id,data_type,name,display_name,setting_value,is_active,information,is_active,last_update';
+        }
+        $require_table = $db->select("{$select}")->from("{$table_name}")->innerJoin("modules_settings_pointers")->on("{$table_name}.pointer_id=modules_settings_pointers.id")->innerJoin("modules_settings_values")->on("modules_settings_pointers.id=modules_settings_values.pointer_id")->orderBy("pointer_id,data_type")->execute("assoc");
+        if (!empty($require_table)) {
+            foreach ($require_table as $key => $row) {
+                $pointer = $row['pointer_id'];
+                if (array_key_exists($pointer, $new_table[$table_name]) && ($row['data_type'] == 'select' || $row['data_type'] == 'radio')) {
+                    if (!isset($new_table[$table_name][$pointer]['multiple_fields'])) {
+                        $new_table[$table_name][$pointer]['multiple_fields'] = array();
                     }
+                    if ($row['is_active'] == 1) {
+                        $new_table[$table_name][$pointer]['setting_value'] = $row['setting_value'];
+                    }
+                    array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['setting_value']);
+                } elseif (array_key_exists($pointer, $new_table[$table_name]) && ($row['data_type'] == 'multiple' || $row['data_type'] == 'checkbox')) {
+                    if (!isset($new_table[$table_name][$pointer]['multiple_fields'])) {
+                        $new_table[$table_name][$pointer]['multiple_fields'] = array();
+                    }
+                    if ($row['is_active'] == 1) {
+                        array_push($new_table[$table_name][$pointer]['setting_value'], $row['setting_value']);
+                    }
+                    array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['setting_value']);
+                } else {
+                    if ($row['data_type'] == 'multiple' || $row['data_type'] == 'checkbox' || $row['data_type'] == 'select' || $row['data_type'] == 'radio') {
+                        if ($row['data_type'] != 'radio') {
+                            $new_table[$table_name][$pointer]['setting_value'] = array();
+                        } else {
+                            $new_table[$table_name][$pointer]['setting_value'] = '';
+                        }
+                        if ($row['is_active'] == 1 && $row['data_type'] != 'radio') {
+                            array_push($new_table[$table_name][$pointer]['setting_value'], $row['setting_value']);
+                        } elseif ($row['data_type'] == 'radio') {
+                            $new_table[$table_name][$pointer]['setting_value'] = $row['setting_value'];
+                        }
+                        if (!isset($new_table[$table_name][$pointer]['multiple_fields'])) {
+                            $new_table[$table_name][$pointer]['multiple_fields'] = array();
+                        }
+                        array_push($new_table[$table_name][$pointer]['multiple_fields'], $row['setting_value']);
+                    } else {
+                        $new_table[$table_name][$pointer]['setting_value'] = ($row['is_active'] == 1) ? $row['setting_value'] : '';
+                    }
+                    $new_table[$table_name][$pointer]['setting_name'] = $row['name'];
+                    $new_table[$table_name][$pointer]['setting_display_name'] = $row['display_name'];
+                    $new_table[$table_name][$pointer]['setting_type'] = $row['data_type'];
+                    $new_table[$table_name][$pointer]['setting_information'] = $row['information'];
+                    $new_table[$table_name][$pointer]['setting_last_update'] = $row['last_update'];
                 }
-            } elseif ($silence_pages[0]['modules_silence_pages_allowed'] == 'All') {
-                return true;
             }
+        }
+        return $new_table;
+    }
+
+    public function changeSettings(string $form_name, array $form_args)
+    {
+        $db = new Db();
+        $tools = new Tools();
+        $check_results = array();
+        if (!empty($form_args) && is_array($form_args) && !empty($form_name)) {
+            foreach ($form_args as $setting_name => $values) {
+                $input_components = explode('-', $setting_name);
+                $check_results[$input_components[1]]['update_status'] = 0;
+                if ($input_components[2] == 'multiple' || $input_components[2] == 'checkbox') {
+                    $in_values = '';
+                    foreach ($values as $key => $value) {
+                        $value = $tools->cleanInput($value, $input_components[2]);
+                        $in_values .= "'$value'";
+                        if ($value != end($values)) {
+                            $in_values .= ',';
+                        }
+                    }
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value IN({$in_values}) THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $check_results[$input_components[1]]['update_status'] = $results[0];
+                } elseif ($input_components[2] == 'text' || $input_components[2] == 'string') {
+                    $values = $tools->cleanInput($values, $input_components[2]);
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN front_settings.name = '{$input_components[1]}' THEN 1 ELSE 0 END,setting_value='$values'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $check_results[$input_components[1]]['update_status'] = $results[0];
+                } elseif ($input_components[2] == 'boolean') {
+                    $values = $tools->cleanInput($values, $input_components[2]);
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active='1',setting_value='{$values}'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $check_results[$input_components[1]]['update_status'] = $results[0];
+                } elseif ($input_components[2] == 'select' || $input_components[2] == 'radio') {
+                    $values = $tools->cleanInput($values, $input_components[2]);
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value='{$values}' THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $check_results[$input_components[1]]['update_status'] = $results[0];
+                }
+            }
+            return $check_results;
         }
     }
 }

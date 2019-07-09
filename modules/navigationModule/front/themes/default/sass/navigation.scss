@@ -1,75 +1,50 @@
-#navigation {
-    .panel {
-        .panel-body {
-            .nav {
-                li {
-                    a {
-                        display: flex;
-                        justify-content: flex-start;
-                        -ms-text-justify: flex-start;
-                        align-items: center;
+@media screen and (min-width: 768px) {
+    #navigation {
+        &>li {
+            .dropdown-menu {
+                margin-top: -1px;
+            }
 
-                        span.glyphicon {
-                            line-height: unset;
-                            top: 0;
-                            flex: 1;
-                        }
+            &.parent {
+                .caret {
+                    margin-left: 5px;
+                }
+            }
+
+            &>a {
+                padding-right: 20px;
+                padding-left : 20px;
+            }
+
+            .subcategory-nav {
+                &>li {
+                    a {
+                        display        : flex;
+                        justify-content: flex-start;
+                        align-items    : center;
 
                         .category-name {
-                            flex: 8;
-
-                            .badge {
-                                margin-left: 5px;
-                                background-color: #286090;
-                            }
+                            flex: 4;
                         }
 
-                        .caret-container {
-                            text-align: center;
-                            background-color: #f2f2f2;
-                            padding: 3px 6px;
-                            .caret {
-                                margin: 0;
-                                color: #337ab7;
-                            }
+                        .caret {
+                            transform: rotate(-90deg);
                         }
 
-                    }
-
-                    &.opened {
-                        &>a {
-                            .caret-container {
-                                &>.caret {
-                                    transform: rotate(180deg);
-                                }
-                            }
-                        }
-
-                        &>.subcategory-nav {
-                            display: block;
-                        }
                     }
 
                     .subcategory-nav {
-                        display: none;
-                    }
-
-                    &.active {
-                        a {
-                            .badge {
-                                background-color: #ffffff;
-                                color: #286090;
-                            }
-                        }
-                    }
-
-                    .nav {
-                        padding-left: 5%;
-                        margin-top: 5px;
-                        margin-bottom: 5px;
-
+                        left: 98%;
+                        top : 0;
                     }
                 }
+            }
+        }
+
+        li:hover {
+            &>ul {
+                display: block;
+                left   : 0;
             }
         }
     }

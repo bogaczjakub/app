@@ -110,7 +110,7 @@ $config = array(
         ),
         'all' => array(
             'jquery' => array(
-                'dist' . DIRECTORY_SEPARATOR . 'jquery.js',
+                'jquery-3.4.1.min.js',
             ),
             'bootstrap' => array(
                 'assets' . DIRECTORY_SEPARATOR . 'javascripts' . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . '*',

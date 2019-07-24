@@ -13,8 +13,6 @@ class footerModule extends Module
         global $config;
         $tools = new Tools();
         $module_controller = $tools->getModuleController('footer', 'footer', $config['page']['type']);
-        // $footer_block = $module_controller->buildFooter();
-        // $this->assignData('footer_block', $footer_block);
         $this->render('footer.tpl');
     }
 }

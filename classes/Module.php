@@ -5,7 +5,6 @@ class Module
     public $module;
     public static $js = array();
     public static $css = array();
-    public static $collection;
     public static $module_args;
     public static $module_smarty;
     public static $modules_array = array();
@@ -87,7 +86,7 @@ class Module
 
     public function initSmarty()
     {
-        return new SmartyApp(Page::$collection['theme'], Page::$collection['type'], true, self::$current_module);
+        return new SmartyApp(Page::$collection['theme'], Page::$collection['type'], true, false, self::$current_module);
     }
 
     public function render(string $template = 'index')
@@ -267,19 +266,19 @@ class Module
                             $in_values .= ',';
                         }
                     }
-                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value IN({$in_values}) THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("{$form_name}")->on("modules_settings_pointers.id={$form_name}.pointer_id")->set("is_active=CASE WHEN setting_value IN({$in_values}) THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'text' || $input_components[2] == 'string') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN front_settings.name = '{$input_components[1]}' THEN 1 ELSE 0 END,setting_value='$values'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("{$form_name}")->on("modules_settings_pointers.id={$form_name}.pointer_id")->set("is_active=CASE WHEN {$form_name}.name = '{$input_components[1]}' THEN 1 ELSE 0 END,setting_value='$values'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'boolean') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active='1',setting_value='{$values}'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("{$form_name}")->on("modules_settings_pointers.id={$form_name}.pointer_id")->set("is_active='1',setting_value='{$values}'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'select' || $input_components[2] == 'radio') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("front_settings")->on("modules_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value='{$values}' THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("modules_settings_values")->innerJoin("modules_settings_pointers")->on("modules_settings_values.pointer_id=modules_settings_pointers.id")->innerJoin("{$form_name}")->on("modules_settings_pointers.id={$form_name}.pointer_id")->set("is_active=CASE WHEN setting_value='{$values}' THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 }
             }

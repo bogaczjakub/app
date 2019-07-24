@@ -23,7 +23,7 @@ class ModulesModel
                 $this->module_buttons['settings'] = Url::buildPageUrl("ModuleSettings", "index", array('module_name' => $module_name));
             }
             if (!empty($module_configuration)) {
-                $this->module_buttons['configuration'] = Url::buildPageUrl("ModuleConfigurationController", "index", array('module_name' => $module_name));
+                $this->module_buttons['configuration'] = Url::buildPageUrl("ModuleConfiguration", "index", array('module_name' => $module_name));
             }
         }
         return $this->module_buttons;

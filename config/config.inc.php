@@ -17,6 +17,7 @@ $config = array(
         'FrontController',
         'Collector',
         'Module',
+        'ModuleConfiguration',
         'Alerts',
         'Breadcrumbs',
         'Forms',

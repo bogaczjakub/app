@@ -7,9 +7,7 @@ class navigationModuleController
     public $categories;
 
     public function __constructor()
-    {
-
-    }
+    { }
 
     public function buildCategoryTree()
     {
@@ -40,13 +38,14 @@ class navigationModuleController
     public function categoryLevelBuild(int $parent_id = 0)
     {
         $categories = $this->navigation_model->getCategoryByParent($parent_id);
+        $active_category = $this->getActiveCategoryForController(Url::$url['controller']);
         foreach ($categories as $category) {
             $subcategories = $this->navigation_model->getCategoryByParent($category->id);
             if ($category->id != 1) {
-                $active_category = ($category->controller == Url::$url['controller']);
+                $is_current = ($category->controller == $active_category[0]['controller']);
                 $allow_display = $this->navigation_model->categoryAllowedToDisplay($category->id);
                 if ($allow_display[0]['display']) {
-                    $this->html .= '<li ' . ($active_category ? 'class="active"' : '');
+                    $this->html .= '<li ' . ($is_current ? 'class="active"' : '');
                     $this->html .= ($subcategories ? ' class="parent"' : '');
                     $this->html .= 'role="presentation"><a target="_self" href="' . $this->buildCategoryLink($category->controller) . '">';
                     if (!empty($category->icon) && $category->level == 1) {
@@ -83,4 +82,10 @@ class navigationModuleController
         }
     }
 
+    private function getActiveCategoryForController(string $controller_name)
+    {
+        $tools = new Tools();
+        $this->navigation_model = $tools->getModuleModel('navigation', 'navigation');
+        return $this->navigation_model->getActiveCategoryForController($controller_name);
+    }
 }

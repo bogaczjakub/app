@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 	$("form#search-form .search-selector-list li a").on(
 		"click",
 		pickSearchCategory
@@ -13,7 +13,7 @@ jQuery(document).ready(function() {
 		hiddenSelector.val(searchCategory);
 	}
 
-	$("form[method=get]").submit(function(event) {
+	$("form[method=get]").submit(function (event) {
 		const formMethod = $(this).attr("method");
 		const formAction = $(this).attr("action");
 		if (formMethod.toLocaleLowerCase() == "get" && formAction.length > 0) {

@@ -70,6 +70,11 @@ function checkPatches($type_name)
         if (file_exists($module_class_file) && !empty($module_class_file)) {
             array_push($results, $module_class_file);
         }
+    } elseif (isModuleConfiguration($type_name)) {
+        $module_configuration_class_file = MODULES_DIR . str_replace('Configuration', 'Module', $type_name) . DS . 'Configuration' . DS . $class_file;
+        if (file_exists($module_configuration_class_file) && !empty($module_configuration_class_file)) {
+            array_push($results, $module_configuration_class_file);
+        }
     } else {
         if (!empty($config['page']['type']) && $config['page']['type'] == 'front') {
             foreach (INCLUDE_PATHS_FRONT as $path) {
@@ -99,7 +104,6 @@ function checkPatches($type_name)
     } else {
         throw new CustomException('Could not include "' . $class_file . '" file.');
     }
-
 }
 
 function isReserved($name)
@@ -162,6 +166,20 @@ function isModuleClass($name)
     if (preg_match('/.+ModuleClass$/', $name)) {
         $clean_name = str_replace('ModuleClass', '', $name);
         $class_file = MODULES_DIR . $clean_name . 'Module' . DS . $config['page']['type'] . DS . 'classes' . DS . $name . '.php';
+        if (file_exists($class_file)) {
+            $is++;
+        }
+    }
+    return $is;
+}
+
+function isModuleConfiguration($name)
+{
+    global $config;
+    $is = 0;
+    if (preg_match('/.+Configuration$/', $name)) {
+        $clean_name = str_replace('Configuration', '', $name);
+        $class_file = MODULES_DIR . $clean_name . 'Module' . DS . 'Configuration' . DS . $name . '.php';
         if (file_exists($class_file)) {
             $is++;
         }

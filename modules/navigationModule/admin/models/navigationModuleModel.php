@@ -36,4 +36,12 @@ class navigationModuleModel
         $db = new Db();
         return $db->select("display")->from("admin_categories")->where("id={$category_id}")->execute("assoc");
     }
+
+    public function getActiveCategoryForController(string $controller_name)
+    {
+        if (!empty($controller_name)) {
+            $db = new Db();
+            return $db->select("controller")->from("admin_categories")->where("id=(SELECT active_category FROM admin_categories WHERE controller='{$controller_name}')")->execute("assoc");
+         }
+    }
 }

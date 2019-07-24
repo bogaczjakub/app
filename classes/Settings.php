@@ -124,19 +124,19 @@ class Settings
                             $in_values .= ',';
                         }
                     }
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value IN({$in_values}) THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("{$form_name}")->on("system_settings_pointers.id={$form_name}.pointer_id")->set("is_active=CASE WHEN setting_value IN({$in_values}) THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'text' || $input_components[2] == 'string') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN front_settings.name = '{$input_components[1]}' THEN 1 ELSE 0 END,setting_value='$values'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("{$form_name}")->on("system_settings_pointers.id={$form_name}.pointer_id")->set("is_active=CASE WHEN {$form_name}.name = '{$input_components[1]}' THEN 1 ELSE 0 END,setting_value='$values'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'boolean') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active='1',setting_value='{$values}'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("{$form_name}")->on("system_settings_pointers.id={$form_name}.pointer_id")->set("is_active='1',setting_value='{$values}'")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 } elseif ($input_components[2] == 'select' || $input_components[2] == 'radio') {
                     $values = $tools->cleanInput($values, $input_components[2]);
-                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("front_settings")->on("system_settings_pointers.id=front_settings.pointer_id")->set("is_active=CASE WHEN setting_value='{$values}' THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
+                    $results = $db->update("system_settings_values")->innerJoin("system_settings_pointers")->on("system_settings_values.pointer_id=system_settings_pointers.id")->innerJoin("{$form_name}")->on("system_settings_pointers.id={$form_name}.pointer_id")->set("is_active=CASE WHEN setting_value='{$values}' THEN 1 ELSE 0 END")->where("{$input_components[0]}.name='{$input_components[1]}'")->execute("bool");
                     $check_results[$input_components[1]]['update_status'] = $results[0];
                 }
             }

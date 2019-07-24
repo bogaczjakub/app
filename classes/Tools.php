@@ -32,7 +32,7 @@ class Tools
                     }
                     break;
                 case 'module_configuration':
-                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $file . 'Module' . DIRECTORY_SEPARATOR . 'configuration' . DIRECTORY_SEPARATOR . 'configuration.php')) {
+                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $file . 'Module' . DIRECTORY_SEPARATOR . 'configuration' . DIRECTORY_SEPARATOR . $file . 'configuration.php')) {
                         return true;
                     } else {
                         return false;
@@ -134,6 +134,26 @@ class Tools
                 }
             } elseif (is_string($links)) {
                 $link_source = MODULES_DIR . $module_name . DS . $type . DS . 'themes' . DS . $theme . DS . $link_type . DS . $links;
+                if (file_exists($link_source)) {
+                    array_push($head_links[$link_type], self::returnAbsolutePath($link_source));
+                }
+            }
+        }
+        return $head_links;
+    }
+
+    public function modulesConfigurationHeadLinks(array $head_links, array $links, string $type, string $theme, string $link_type, string $module_name)
+    {
+        if (!empty($links)) {
+            if (is_array($links)) {
+                foreach ($links as $link) {
+                    $link_source = MODULES_DIR . $module_name . 'Module' . DS . 'configuration' . DS . 'themes' . DS . $theme . DS . $link_type . DS . $link;
+                    if (file_exists($link_source)) {
+                        array_push($head_links[$link_type], self::returnAbsolutePath($link_source));
+                    }
+                }
+            } elseif (is_string($links)) {
+                $link_source = MODULES_DIR . $module_name . 'Module' . DS . 'configuration' . DS . 'themes' . DS . $theme . DS . $link_type . DS . $links;
                 if (file_exists($link_source)) {
                     array_push($head_links[$link_type], self::returnAbsolutePath($link_source));
                 }
@@ -278,7 +298,7 @@ class Tools
     {
         if (!empty($message_name)) {
             $db = new Db();
-            $resutls = $db->select("message")->from("global_messages_static")->where("message='{$message_name}'")->execute("assoc");
+            $resutls = $db->select("message")->from("global_messages_static")->where("name='{$message_name}'")->execute("assoc");
             return $resutls[0]['message_static_message'];
         }
     }

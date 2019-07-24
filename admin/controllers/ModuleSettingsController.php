@@ -2,21 +2,24 @@
 
 class ModuleSettingsController extends Page
 {
+    private $table_name = '';
     public function __construct()
     { }
 
     public function index(array $args)
     {
         $forms = new Forms();
-        $table_name = 'module_' . $args['module_name'] . '_settings';
-        $forms->buildAdminForm($table_name, 'module_settings', array(), $args);
+        $this->table_name = 'module_' . $args['module_name'] . '_settings';
+        $forms->buildAdminForm($this->table_name, 'module_settings', array(), $args);
+        $this->assignData(array('module_key' => $this->table_name));
         $this->display('module_settings');
     }
 
     public function form(array $args)
     {
-        if (isset($args['module_footer_settings-form-action']) && !empty($args['module_footer_settings-form-action'])) {
-            switch ($args['module_footer_settings-form-action'][0]) {
+        $form_action = $this->table_name . '-form-action';
+        if (isset($args[$form_action]) && !empty($args[$form_action])) {
+            switch ($args[$form_action][0]) {
                 case 'save':
                     $this->save($args);
                     break;

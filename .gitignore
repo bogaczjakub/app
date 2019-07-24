@@ -45,7 +45,6 @@ Thumbs.db
 # Node modules and libs files #
 ###############################
 package-lock.json
-package.json
 node_modules/
 
 # Editors settings #
@@ -55,3 +54,7 @@ node_modules/
 # Gulp #
 ###############################
 gulpfile.js
+
+# System #
+###############################
+.directory
